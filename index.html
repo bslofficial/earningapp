@@ -3,99 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Earning</title>
+    <title>ProEarn - Digital Earning Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    
     <script src="https://www.startappjs.com/v1/startapp.js"></script>
 </head>
 <body>
 
     <div id="auth-container">
         <div class="auth-card" id="login-box">
-            <h2><i class="fas fa-unlock-alt"></i> Login</h2>
+            <h2><i class="fas fa-lock"></i> Login</h2>
             <input type="email" id="login-email" placeholder="Email Address">
             <input type="password" id="login-pass" placeholder="Password">
-            <button class="main-btn" onclick="app.login()">Login Now</button>
-            <p style="font-size: 12px; margin-top: 15px;" onclick="app.toggleAuth(true)">Don't have an account? <span style="color:var(--gold)">Register</span></p>
+            <button class="main-btn" id="login-btn">Login Now</button>
+            <p style="cursor:pointer; margin-top:15px;" id="go-to-reg">Don't have an account? <span style="color:#FFD700">Register</span></p>
         </div>
+
         <div class="auth-card hidden" id="reg-box">
             <h2><i class="fas fa-user-plus"></i> Register</h2>
             <input type="text" id="reg-name" placeholder="Full Name">
             <input type="email" id="reg-email" placeholder="Email Address">
-            <input type="password" id="reg-pass" placeholder="Password (6+ chars)">
-            <button class="main-btn" onclick="app.register()">Create Account</button>
-            <p style="font-size: 12px; margin-top: 15px;" onclick="app.toggleAuth(false)">Already have an account? <span style="color:var(--gold)">Login</span></p>
+            <input type="password" id="reg-pass" placeholder="Password">
+            <button class="main-btn" id="reg-btn">Create Account</button>
+            <p style="cursor:pointer; margin-top:15px;" id="go-to-login">Already have an account? <span style="color:#FFD700">Login</span></p>
         </div>
     </div>
 
     <div id="app-content" class="hidden">
         <header>
-            <div style="font-weight: 600;">Pro<span style="color:var(--violet)">Earn</span></div>
+            <div>ProEarn</div>
             <div class="balance-badge">৳ <span id="u-balance">0.00</span></div>
         </header>
-
-        <div class="notice">
-            <marquee id="msg-scroll">Loading official notice from admin...</marquee>
-        </div>
-
         <div id="view-home" class="page-view">
-            <div id="start-banner-ad" class="slider">
-                <span><i class="fas fa-ads"></i> Loading Ads...</span>
-            </div>
-            
+            <div class="slider">Banner Ads Slot</div>
             <div class="grid-container">
-                <div class="task-card" onclick="app.dailyCheck()">
-                    <i class="fas fa-calendar-check"></i>
-                    <div>Daily Bonus</div>
-                </div>
-                <div class="task-card" onclick="app.changeView('task')">
-                    <i class="fas fa-play-circle"></i>
-                    <div>Watch Ads</div>
-                </div>
-                <div class="task-card">
-                    <i class="fas fa-dice"></i>
-                    <div>Lucky Spin</div>
-                </div>
-                <div class="task-card" onclick="app.changeView('wallet')">
-                    <i class="fas fa-money-check-alt"></i>
-                    <div>Withdraw</div>
-                </div>
+                <div class="task-card" id="daily-btn"><i class="fas fa-calendar-check"></i><div>Daily Bonus</div></div>
+                <div class="task-card" id="task-nav"><i class="fas fa-play-circle"></i><div>Watch Ads</div></div>
+                <div class="task-card"><i class="fas fa-dice"></i><div>Lucky Spin</div></div>
+                <div class="task-card" id="wallet-nav"><i class="fas fa-wallet"></i><div>Withdraw</div></div>
             </div>
         </div>
-
-        <div id="view-task" class="page-view hidden">
-            <h3 style="padding: 15px;">Available Tasks</h3>
-            <div style="padding: 0 15px;">
-                <div class="task-card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span>Video Task #1</span>
-                    <button class="main-btn" style="width: 80px; margin: 0;" onclick="app.completeTask(5)">Start</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="view-wallet" class="page-view hidden">
-            <div class="wallet-ui">
-                <div class="method-box">
-                    <h4>Withdraw Funds</h4>
-                    <select id="w-method" style="width: 100%; padding: 10px; border-radius: 5px; background: #333; color: white;">
-                        <option value="Bkash">bKash</option>
-                        <option value="Nagad">Nagad</option>
-                        <option value="Rocket">Rocket</option>
-                    </select>
-                    <input type="number" id="w-amount" placeholder="Enter Amount">
-                    <input type="text" id="w-number" placeholder="Account Number">
-                    <button class="main-btn" onclick="app.requestWithdraw()">Submit Request</button>
-                </div>
-            </div>
-        </div>
-
+        
         <nav class="bottom-nav">
-            <div class="nav-item active" onclick="app.changeView('home', this)"><i class="fas fa-home"></i>Home</div>
-            <div class="nav-item" onclick="app.changeView('task', this)"><i class="fas fa-tasks"></i>Task</div>
-            <div class="nav-item" onclick="app.changeView('wallet', this)"><i class="fas fa-wallet"></i>Wallet</div>
-            <div class="nav-item" onclick="app.changeView('profile', this)"><i class="fas fa-user"></i>Profile</div>
+            <div class="nav-item active" id="nav-home"><i class="fas fa-home"></i>Home</div>
+            <div class="nav-item" id="nav-task"><i class="fas fa-tasks"></i>Task</div>
+            <div class="nav-item" id="nav-wallet"><i class="fas fa-wallet"></i>Wallet</div>
+            <div class="nav-item" id="logout-btn"><i class="fas fa-sign-out-alt"></i>Logout</div>
         </nav>
     </div>
 
