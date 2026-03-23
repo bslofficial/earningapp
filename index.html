@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProEarn - Digital Earning</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.startappjs.com/v1/startapp.js"></script>
+</head>
+<body>
+
+    <div id="auth-container">
+        <div class="auth-card" id="login-box">
+            <h2><i class="fas fa-lock"></i> Login</h2>
+            <input type="email" id="login-email" placeholder="Email Address">
+            <input type="password" id="login-pass" placeholder="Password">
+            <button class="main-btn" onclick="login()">Login</button>
+            <p onclick="toggleAuth(true)">Register Account</p>
+        </div>
+        <div class="auth-card hidden" id="reg-box">
+            <h2><i class="fas fa-user-plus"></i> Register</h2>
+            <input type="text" id="reg-name" placeholder="Full Name">
+            <input type="email" id="reg-email" placeholder="Email Address">
+            <input type="password" id="reg-pass" placeholder="Password (6+ chars)">
+            <button class="main-btn" onclick="register()">Create Account</button>
+            <p onclick="toggleAuth(false)">Back to Login</p>
+        </div>
+    </div>
+
+    <div id="app-content" class="hidden">
+        <header>
+            <div class="logo">Pro<span class="v-text">Earn</span></div>
+            <div class="balance-badge">৳ <span id="u-balance">0.00</span></div>
+        </header>
+
+        <div class="notice"><marquee>Welcome! App ID: 202682403 Integrated.</marquee></div>
+
+        <div id="banner-ad-home" style="width:100%; height:50px; text-align:center; background:#111;"></div>
+
+        <main id="pages">
+            <section id="view-home" class="page-view">
+                <div class="slider">Start.io Ads Enabled!</div>
+                <div class="grid-container">
+                    <div class="task-card" onclick="dailyCheck()"><i class="fas fa-coins"></i><p>Daily Bonus</p></div>
+                    <div class="task-card" onclick="changeView('task')"><i class="fas fa-play"></i><p>Watch Ads</p></div>
+                    <div class="task-card" onclick="changeView('wallet')"><i class="fas fa-wallet"></i><p>Withdraw</p></div>
+                    <div class="task-card" onclick="changeView('profile')"><i class="fas fa-user"></i><p>Profile</p></div>
+                </div>
+            </section>
+
+            <section id="view-task" class="page-view hidden">
+                <div class="section-title">Video Tasks</div>
+                <div class="task-list">
+                    <div class="item-card"><span>Watch Ad #1 (৳5)</span><button class="sm-btn" onclick="completeTask(5)">Watch</button></div>
+                    <div class="item-card"><span>Watch Ad #2 (৳5)</span><button class="sm-btn" onclick="completeTask(5)">Watch</button></div>
+                </div>
+            </section>
+
+            <section id="view-wallet" class="page-view hidden">
+                <div class="wallet-container">
+                    <h3>Withdraw Money</h3>
+                    <input type="number" id="w-amount" placeholder="Min ৳50">
+                    <input type="text" id="w-number" placeholder="Bkash/Nagad Number">
+                    <button class="main-btn" onclick="requestWithdraw()">Withdraw</button>
+                </div>
+            </section>
+
+            <section id="view-profile" class="page-view hidden">
+                <div class="profile-box">
+                    <h3 id="u-name">User Name</h3>
+                    <p id="u-email">Email</p>
+                    <button class="logout-btn" onclick="logoutUser()">Logout</button>
+                </div>
+            </section>
+        </main>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="changeView('home', this)"><i class="fas fa-home"></i>Home</div>
+            <div class="nav-item" onclick="changeView('task', this)"><i class="fas fa-tasks"></i>Task</div>
+            <div class="nav-item" onclick="changeView('wallet', this)"><i class="fas fa-wallet"></i>Wallet</div>
+            <div class="nav-item" onclick="changeView('profile', this)"><i class="fas fa-user"></i>Profile</div>
+        </nav>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
