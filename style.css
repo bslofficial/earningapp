@@ -1,0 +1,22 @@
+:root { --bg: #050505; --card: #121214; --gold: #FFD700; --violet: #8A2BE2; --text: #fff; }
+body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding-bottom: 70px; }
+.hidden { display: none !important; }
+.v-text { color: var(--violet); }
+#auth-container { height: 100vh; display: flex; align-items: center; justify-content: center; }
+.auth-card { background: var(--card); padding: 25px; width: 85%; max-width: 350px; border-radius: 15px; border: 1px solid var(--violet); text-align: center; }
+input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #1a1a1d; color: #fff; box-sizing: border-box; }
+.main-btn { background: linear-gradient(to right, var(--violet), #4b0082); color: #fff; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+header { display: flex; justify-content: space-between; padding: 15px; background: var(--card); border-bottom: 1px solid #222; }
+.balance-badge { color: var(--gold); border: 1px solid var(--violet); padding: 5px 12px; border-radius: 20px; font-weight: bold; }
+.notice { background: #1a1a1d; padding: 5px; font-size: 12px; color: var(--gold); }
+.grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+.task-card { background: var(--card); padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #222; }
+.task-card i { font-size: 24px; color: var(--gold); margin-bottom: 10px; }
+.bottom-nav { position: fixed; bottom: 0; width: 100%; background: #0c0c0e; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #222; }
+.nav-item { color: #777; font-size: 12px; text-align: center; cursor: pointer; }
+.nav-item.active { color: var(--gold); }
+.item-card { background: var(--card); margin: 10px; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-radius: 10px; }
+.sm-btn { background: var(--violet); color: #fff; border: none; padding: 8px 15px; border-radius: 5px; }
+.profile-box { text-align: center; padding: 30px; }
+.logout-btn { background: #f44; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; margin-top: 20px; }
+.slider { background: #1a1a1d; height: 100px; margin: 15px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 1px dashed #444; }
