@@ -13,43 +13,88 @@
 
     <div id="auth-container">
         <div class="auth-card" id="login-box">
-            <h2><i class="fas fa-lock"></i> Login</h2>
+            <h2><i class="fas fa-unlock-alt"></i> Login</h2>
             <input type="email" id="login-email" placeholder="Email Address">
             <input type="password" id="login-pass" placeholder="Password">
             <button class="main-btn" id="login-btn">Login Now</button>
-            <p style="cursor:pointer; margin-top:15px;" id="go-to-reg">Don't have an account? <span style="color:#FFD700">Register</span></p>
+            <p style="font-size: 12px; margin-top: 15px; cursor:pointer;" id="switch-to-reg">Don't have an account? <span style="color:#FFD700">Register</span></p>
         </div>
-
         <div class="auth-card hidden" id="reg-box">
             <h2><i class="fas fa-user-plus"></i> Register</h2>
             <input type="text" id="reg-name" placeholder="Full Name">
             <input type="email" id="reg-email" placeholder="Email Address">
-            <input type="password" id="reg-pass" placeholder="Password">
+            <input type="password" id="reg-pass" placeholder="Password (6+ chars)">
             <button class="main-btn" id="reg-btn">Create Account</button>
-            <p style="cursor:pointer; margin-top:15px;" id="go-to-login">Already have an account? <span style="color:#FFD700">Login</span></p>
+            <p style="font-size: 12px; margin-top: 15px; cursor:pointer;" id="switch-to-login">Already have an account? <span style="color:#FFD700">Login</span></p>
         </div>
     </div>
 
     <div id="app-content" class="hidden">
         <header>
-            <div>ProEarn</div>
+            <div style="font-weight: 600;">Pro<span style="color:#8A2BE2">Earn</span></div>
             <div class="balance-badge">৳ <span id="u-balance">0.00</span></div>
         </header>
+
+        <div class="notice">
+            <marquee id="msg-scroll">Welcome to ProEarn! Stay active to earn more.</marquee>
+        </div>
+
         <div id="view-home" class="page-view">
-            <div class="slider">Banner Ads Slot</div>
+            <div id="start-banner" class="slider">
+                <span>Loading Banner Ad...</span>
+            </div>
+            
             <div class="grid-container">
-                <div class="task-card" id="daily-btn"><i class="fas fa-calendar-check"></i><div>Daily Bonus</div></div>
-                <div class="task-card" id="task-nav"><i class="fas fa-play-circle"></i><div>Watch Ads</div></div>
-                <div class="task-card"><i class="fas fa-dice"></i><div>Lucky Spin</div></div>
-                <div class="task-card" id="wallet-nav"><i class="fas fa-wallet"></i><div>Withdraw</div></div>
+                <div class="task-card" id="daily-bonus-btn">
+                    <i class="fas fa-calendar-check"></i>
+                    <div>Daily Bonus</div>
+                </div>
+                <div class="task-card" id="nav-to-task">
+                    <i class="fas fa-play-circle"></i>
+                    <div>Watch Ads</div>
+                </div>
+                <div class="task-card">
+                    <i class="fas fa-dice"></i>
+                    <div>Lucky Spin</div>
+                </div>
+                <div class="task-card" id="nav-to-wallet">
+                    <i class="fas fa-money-check-alt"></i>
+                    <div>Withdraw</div>
+                </div>
             </div>
         </div>
-        
+
+        <div id="view-task" class="page-view hidden">
+            <h3 style="padding: 15px;">Available Tasks</h3>
+            <div style="padding: 0 15px;">
+                <div class="task-card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span>Video Task #1</span>
+                    <button class="main-btn" style="width: 80px; margin: 0;" id="start-video-task">Start</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-wallet" class="page-view hidden">
+            <div class="wallet-ui">
+                <div class="method-box">
+                    <h4>Withdraw Funds</h4>
+                    <select id="w-method" style="width: 100%; padding: 10px; border-radius: 5px; background: #333; color: white;">
+                        <option value="Bkash">bKash</option>
+                        <option value="Nagad">Nagad</option>
+                        <option value="Rocket">Rocket</option>
+                    </select>
+                    <input type="number" id="w-amount" placeholder="Enter Amount">
+                    <input type="text" id="w-number" placeholder="Account Number">
+                    <button class="main-btn" id="withdraw-btn">Submit Request</button>
+                </div>
+            </div>
+        </div>
+
         <nav class="bottom-nav">
-            <div class="nav-item active" id="nav-home"><i class="fas fa-home"></i>Home</div>
-            <div class="nav-item" id="nav-task"><i class="fas fa-tasks"></i>Task</div>
-            <div class="nav-item" id="nav-wallet"><i class="fas fa-wallet"></i>Wallet</div>
-            <div class="nav-item" id="logout-btn"><i class="fas fa-sign-out-alt"></i>Logout</div>
+            <div class="nav-item active" id="btn-home"><i class="fas fa-home"></i>Home</div>
+            <div class="nav-item" id="btn-task"><i class="fas fa-tasks"></i>Task</div>
+            <div class="nav-item" id="btn-wallet"><i class="fas fa-wallet"></i>Wallet</div>
+            <div class="nav-item" id="btn-logout"><i class="fas fa-sign-out-alt"></i>Logout</div>
         </nav>
     </div>
 
