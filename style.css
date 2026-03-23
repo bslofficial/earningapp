@@ -1,59 +1,43 @@
 :root {
-    --bg: #0b0b0d;
-    --card: #1a1a1d;
-    --gold: #ffcc00;
-    --violet: #8a2be2;
+    --bg: #050505;
+    --card: #121214;
+    --gold: #FFD700;
+    --violet: #8A2BE2;
     --text: #ffffff;
+    --gray: #b3b3b3;
 }
 
 body {
     background-color: var(--bg);
     color: var(--text);
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0; padding: 0;
+    font-family: 'Poppins', sans-serif;
+    margin: 0; padding-bottom: 70px;
 }
 
 .hidden { display: none !important; }
 
 /* Auth Styling */
-.auth-card {
-    max-width: 350px; margin: 100px auto;
-    background: var(--card); padding: 20px;
-    border-radius: 15px; border: 1px solid var(--gold);
-    text-align: center;
+#auth-container { display: flex; justify-content: center; align-items: center; height: 100vh; }
+.auth-card { background: var(--card); padding: 30px; width: 85%; max-width: 380px; border-radius: 20px; border: 1px solid var(--violet); text-align: center; }
+
+input { width: 100%; padding: 12px; margin: 10px 0; background: #1e1e22; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+.main-btn { background: linear-gradient(45deg, var(--violet), #4b0082); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+header { background: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
+.balance-badge { background: rgba(138, 43, 226, 0.2); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--violet); color: var(--gold); }
+
+/* ব্যানার বিজ্ঞাপনের স্লট */
+.slider {
+    height: 60px; margin: 15px; background: #1a1a1d;
+    border-radius: 10px; display: flex; align-items: center; 
+    justify-content: center; border: 1px dashed #333; overflow: hidden;
 }
 
-input {
-    width: 90%; padding: 10px; margin: 10px 0;
-    background: #333; border: none; color: white; border-radius: 5px;
-}
+.grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+.task-card { background: var(--card); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #222; }
+.task-card i { font-size: 26px; color: var(--violet); margin-bottom: 8px; }
 
-button {
-    background: linear-gradient(45deg, var(--violet), var(--gold));
-    border: none; padding: 10px 20px; color: black; font-weight: bold;
-    border-radius: 5px; cursor: pointer; width: 95%;
-}
-
-/* App Header & Nav */
-header {
-    background: var(--card); padding: 15px;
-    border-bottom: 2px solid var(--violet);
-}
-
-.balance { color: var(--gold); font-size: 1.2rem; float: right; }
-
-.bottom-nav {
-    position: fixed; bottom: 0; width: 100%;
-    background: var(--card); display: flex;
-    justify-content: space-around; padding: 10px 0;
-    border-top: 1px solid var(--gold);
-}
-
-.bottom-nav div { text-align: center; font-size: 0.8rem; cursor: pointer; }
-.bottom-nav i { display: block; font-size: 1.2rem; color: var(--gold); }
-
-/* Task Items */
-.task-item {
-    background: var(--card); margin: 10px; padding: 15px;
-    border-radius: 10px; display: flex; justify-content: space-between;
-}
+.bottom-nav { position: fixed; bottom: 0; width: 100%; background: #0c0c0e; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #222; }
+.nav-item { color: var(--gray); text-align: center; font-size: 11px; cursor: pointer; }
+.nav-item.active { color: var(--gold); }
+.nav-item i { font-size: 18px; display: block; }
