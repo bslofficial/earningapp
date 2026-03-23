@@ -17,15 +17,20 @@
             <input type="email" id="login-email" placeholder="Email Address">
             <input type="password" id="login-pass" placeholder="Password">
             <button class="main-btn" id="login-btn">Login Now</button>
-            <p style="font-size: 12px; margin-top: 15px; cursor:pointer;" id="switch-to-reg">Don't have an account? <span style="color:#FFD700">Register</span></p>
+            <p style="font-size: 14px; margin-top: 15px;">
+                Don't have an account? <span id="switch-to-reg" style="color:#FFD700; cursor:pointer; font-weight:bold; text-decoration:underline;">Register</span>
+            </p>
         </div>
+
         <div class="auth-card hidden" id="reg-box">
             <h2><i class="fas fa-user-plus"></i> Register</h2>
             <input type="text" id="reg-name" placeholder="Full Name">
             <input type="email" id="reg-email" placeholder="Email Address">
             <input type="password" id="reg-pass" placeholder="Password (6+ chars)">
             <button class="main-btn" id="reg-btn">Create Account</button>
-            <p style="font-size: 12px; margin-top: 15px; cursor:pointer;" id="switch-to-login">Already have an account? <span style="color:#FFD700">Login</span></p>
+            <p style="font-size: 14px; margin-top: 15px;">
+                Already have an account? <span id="switch-to-login" style="color:#FFD700; cursor:pointer; font-weight:bold; text-decoration:underline;">Login</span>
+            </p>
         </div>
     </div>
 
@@ -36,65 +41,45 @@
         </header>
 
         <div class="notice">
-            <marquee id="msg-scroll">Welcome to ProEarn! Stay active to earn more.</marquee>
+            <marquee>Welcome to ProEarn! Watch ads and earn money daily.</marquee>
         </div>
 
         <div id="view-home" class="page-view">
-            <div id="start-banner" class="slider">
-                <span>Loading Banner Ad...</span>
-            </div>
-            
+            <div id="start-banner" class="slider"><span>Loading Ads...</span></div>
             <div class="grid-container">
-                <div class="task-card" id="daily-bonus-btn">
-                    <i class="fas fa-calendar-check"></i>
-                    <div>Daily Bonus</div>
-                </div>
-                <div class="task-card" id="nav-to-task">
-                    <i class="fas fa-play-circle"></i>
-                    <div>Watch Ads</div>
-                </div>
-                <div class="task-card">
-                    <i class="fas fa-dice"></i>
-                    <div>Lucky Spin</div>
-                </div>
-                <div class="task-card" id="nav-to-wallet">
-                    <i class="fas fa-money-check-alt"></i>
-                    <div>Withdraw</div>
-                </div>
+                <div class="task-card" id="daily-btn"><i class="fas fa-calendar-check"></i><div>Daily Bonus</div></div>
+                <div class="task-card" id="nav-task"><i class="fas fa-play-circle"></i><div>Watch Ads</div></div>
+                <div class="task-card"><i class="fas fa-dice"></i><div>Lucky Spin</div></div>
+                <div class="task-card" id="nav-wallet"><i class="fas fa-wallet"></i><div>Withdraw</div></div>
             </div>
         </div>
 
         <div id="view-task" class="page-view hidden">
             <h3 style="padding: 15px;">Available Tasks</h3>
-            <div style="padding: 0 15px;">
-                <div class="task-card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span>Video Task #1</span>
-                    <button class="main-btn" style="width: 80px; margin: 0;" id="start-video-task">Start</button>
-                </div>
+            <div class="task-card" style="margin: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <span>Video Task #1</span>
+                <button class="main-btn" style="width: 80px; margin: 0;" id="start-video">Start</button>
             </div>
         </div>
 
         <div id="view-wallet" class="page-view hidden">
-            <div class="wallet-ui">
-                <div class="method-box">
-                    <h4>Withdraw Funds</h4>
-                    <select id="w-method" style="width: 100%; padding: 10px; border-radius: 5px; background: #333; color: white;">
-                        <option value="Bkash">bKash</option>
-                        <option value="Nagad">Nagad</option>
-                        <option value="Rocket">Rocket</option>
-                    </select>
-                    <input type="number" id="w-amount" placeholder="Enter Amount">
-                    <input type="text" id="w-number" placeholder="Account Number">
-                    <button class="main-btn" id="withdraw-btn">Submit Request</button>
-                </div>
+            <div class="method-box" style="margin: 20px; padding: 20px; background:#121214; border-radius:15px; border:1px solid #333;">
+                <h4>Withdraw Money</h4>
+                <select id="w-method" style="width: 100%; padding: 10px; margin-bottom: 10px; background:#1e1e22; color:white; border:1px solid #444;">
+                    <option value="Bkash">bKash</option>
+                    <option value="Nagad">Nagad</option>
+                </select>
+                <input type="number" id="w-amount" placeholder="Amount (Min ৳20)">
+                <input type="text" id="w-number" placeholder="Account Number">
+                <button class="main-btn" id="withdraw-submit">Submit Request</button>
             </div>
         </div>
 
         <nav class="bottom-nav">
-            <div class="nav-item active" id="btn-home"><i class="fas fa-home"></i>Home</div>
-            <div class="nav-item" id="btn-task"><i class="fas fa-tasks"></i>Task</div>
-            <div class="nav-item" id="btn-wallet"><i class="fas fa-wallet"></i>Wallet</div>
-            <div class="nav-item" id="btn-logout"><i class="fas fa-sign-out-alt"></i>Logout</div>
+            <div class="nav-item active" id="home-icon"><i class="fas fa-home"></i>Home</div>
+            <div class="nav-item" id="task-icon"><i class="fas fa-tasks"></i>Task</div>
+            <div class="nav-item" id="wallet-icon"><i class="fas fa-wallet"></i>Wallet</div>
+            <div class="nav-item" id="logout-btn"><i class="fas fa-sign-out-alt"></i>Logout</div>
         </nav>
     </div>
 
