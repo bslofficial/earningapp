@@ -44,17 +44,19 @@
             </div>
 
             <div class="grid-container" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:15px">
-                <div class="task-card" id="btn-daily" style="background:#121214; padding:20px; border-radius:15px; text-align:center; border:1px solid #222">
+                <div class="task-card" id="btn-daily" style="background:#121214; padding:20px; border-radius:15px; text-align:center; border:1px solid #222; cursor:pointer">
                     <i class="fas fa-calendar-alt" style="color:#8A2BE2; font-size:24px"></i><br>Daily Bonus
                 </div>
-                <div class="task-card" onclick="changeView('task')" style="background:#121214; padding:20px; border-radius:15px; text-align:center; border:1px solid #222">
+                <div class="task-card" onclick="changeView('task')" style="background:#121214; padding:20px; border-radius:15px; text-align:center; border:1px solid #222; cursor:pointer">
                     <i class="fas fa-play-circle" style="color:#8A2BE2; font-size:24px"></i><br>Watch Ads
                 </div>
             </div>
         </div>
 
         <div id="view-task" class="page-view hidden" style="padding:20px">
-            <div class="task-card" id="btn-reward" style="background:#121214; padding:20px; border-radius:15px; text-align:center; border:1px solid #8A2BE2; margin-bottom:20px">
+            <h3 style="margin-bottom:20px; color:#FFD700">Available Tasks</h3>
+            <div class="task-card" id="btn-direct-task" style="background:#121214; padding:20px; border-radius:15px; text-align:center; border:1px solid #8A2BE2; margin-bottom:20px; cursor:pointer">
+                <i class="fas fa-video" style="color:#8A2BE2; margin-bottom:10px"></i><br>
                 Video Task #1 (৳5)
             </div>
             <button class="main-btn" onclick="changeView('home')">Back to Home</button>
@@ -79,7 +81,7 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // Global Navigation
+        // Navigation logic
         window.toggleAuth = (isReg) => {
             document.getElementById('login-box').classList.toggle('hidden', isReg);
             document.getElementById('reg-box').classList.toggle('hidden', !isReg);
@@ -90,35 +92,27 @@
             document.getElementById('view-' + v).classList.remove('hidden');
         };
 
-        // Login Logic
+        // Event Listeners
         document.getElementById('btn-login').addEventListener('click', () => {
-            const email = document.getElementById('login-email').value;
+            const email = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-pass').value;
-            if(!email || !pass) return alert("Email & Password required!");
-            
-            signInWithEmailAndPassword(auth, email, pass)
-                .then(() => { alert("Login Successful!"); })
-                .catch(e => { alert("Login Failed: " + e.message); });
+            if(!email || !pass) return alert("ইমেইল এবং পাসওয়ার্ড দিন");
+            signInWithEmailAndPassword(auth, email, pass).catch(e => alert("Error: " + e.message));
         });
 
-        // Register Logic
         document.getElementById('btn-reg').addEventListener('click', () => {
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const pass = document.getElementById('reg-pass').value;
-            
             createUserWithEmailAndPassword(auth, email, pass).then(res => {
                 set(ref(db, 'users/' + res.user.uid), { name, email, balance: 0 });
-                alert("Account Created!");
             }).catch(e => alert(e.message));
         });
 
-        // Auth State
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-container').classList.add('hidden');
                 document.getElementById('app-content').classList.remove('hidden');
-                
                 onValue(ref(db, 'users/' + user.uid), (snap) => {
                     if(snap.exists()) {
                         document.getElementById('u-balance').innerText = (snap.val().balance || 0).toFixed(2);
@@ -130,16 +124,24 @@
         // Reward Logic
         document.getElementById('btn-daily').onclick = async () => {
             const user = auth.currentUser;
+            if(!user) return;
             const snap = await get(ref(db, `users/${user.uid}`));
-            update(ref(db, `users/${user.uid}`), { balance: (snap.val().balance || 0) + 2 });
-            alert("৳2 Bonus Added!");
+            await update(ref(db, `users/${user.uid}`), { balance: (snap.val().balance || 0) + 2 });
+            alert("৳২ ডেইলি বোনাস যোগ করা হয়েছে!");
         };
 
-        document.getElementById('btn-reward').onclick = async () => {
+        // Adsterra Direct Link Logic
+        document.getElementById('btn-direct-task').onclick = async () => {
             const user = auth.currentUser;
+            if(!user) return;
+
+            // ওপেন ডাইরেক্ট লিঙ্ক
+            window.open("https://glamourpicklessteward.com/uy4hgpbq7?key=4367993c6e478e8144fda5a6e5969fbb", "_blank");
+
+            // রিওয়ার্ড যোগ করা
             const snap = await get(ref(db, `users/${user.uid}`));
-            update(ref(db, `users/${user.uid}`), { balance: (snap.val().balance || 0) + 5 });
-            alert("৳5 Reward Added!");
+            await update(ref(db, `users/${user.uid}`), { balance: (snap.val().balance || 0) + 5 });
+            alert("টাস্ক সফল! ৳৫ যোগ করা হয়েছে।");
         };
     </script>
 </body>
