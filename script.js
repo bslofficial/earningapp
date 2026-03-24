@@ -2,6 +2,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebas
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { getDatabase, ref, set, get, update, push, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
+// Earning App Script
+console.log("Site Loaded Successfully!");
+
+// ভবিষ্যতে কোনো বাটন ক্লিক বা এলার্ট দিতে চাইলে এখানে কোড লিখুন
+
 // Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyDvbee_sFG5mIhFPEPO8ggizDByB0byTAM",
