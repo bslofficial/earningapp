@@ -7,7 +7,7 @@
 <!-- Google Site Verification -->
 <meta name="6a97888e-site-verification" content="1c0b73a101d68618ffbec0c9e9d3b482">
 
-<title>BSL Official Earning App</title>
+<title>💰 BSL Official Earning App</title>
 
 <style>
 body {background:#0b0b0d;color:#fff;font-family:Poppins;text-align:center;padding:10px;}
@@ -20,8 +20,192 @@ button{background:#8A2BE2;color:#fff;border:none;}
 
 <h2>💰 BSL Official Earning App</h2>
 
-<p>Google site verification meta tag is now static in the head.</p>
-<p>✅ You can push this file to GitHub Pages root and click "Verify Now".</p>
+<!-- AUTH -->
+<div id="auth">
+<input id="email" placeholder="Email">
+<input id="pass" type="password" placeholder="Password">
+<input id="ref" placeholder="Referral Code (optional)">
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+<h3>Balance: ৳ <span id="bal">0</span></h3>
+
+<button onclick="watchAd()">📺 Watch Ad & Earn</button>
+<button onclick="dailyBonus()">🎁 Daily Bonus</button>
+<button onclick="spinWheel()">🎡 Lucky Spin</button>
+
+<h4>Withdraw</h4>
+<input id="amount" placeholder="Amount">
+<input id="number" placeholder="Bkash/Nagad/Rocket">
+<button onclick="withdraw()">Withdraw</button>
+
+<p>Your Ref Code: <span id="myref"></span></p>
+
+<button onclick="logout()">Logout</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+
+<script>
+// ================= Firebase Config =================
+var firebaseConfig = {
+    apiKey: "AIzaSyDvbee_sFG5mIhFPEPO8ggizDByB0byTAM",
+    authDomain: "earning-web-app-d515c.firebaseapp.com",
+    projectId: "earning-web-app-d515c",
+    storageBucket: "earning-web-app-d515c.firebasestorage.app",
+    messagingSenderId: "940476940339",
+    appId: "1:940476940339:web:eb81b99117e9294fc86346",
+    measurementId: "G-74LH2RTK1B"
+};
+firebase.initializeApp(firebaseConfig);
+
+var auth = firebase.auth();
+var db = firebase.database();
+
+// ================= DOM Elements =================
+var emailEl = document.getElementById("email");
+var passEl = document.getElementById("pass");
+var refEl = document.getElementById("ref");
+var amountEl = document.getElementById("amount");
+var numberEl = document.getElementById("number");
+var authDiv = document.getElementById("auth");
+var appDiv = document.getElementById("app");
+var bal = document.getElementById("bal");
+var myref = document.getElementById("myref");
+
+// ================= AD LINK =================
+var AD_LINK = "https://glamourpicklessteward.com/uy4hgpbq7?key=4367993c6e478e8144fda5a6e5969fbb";
+var lastAd = 0;
+var dailyAds = 0;
+
+// ================= Register =================
+function register(){
+  var email = emailEl.value;
+  var pass = passEl.value;
+  var refCode = refEl.value;
+
+  if(!email || !pass){ alert("Fill all fields"); return; }
+
+  auth.createUserWithEmailAndPassword(email, pass)
+  .then(res=>{
+    var uid = res.user.uid;
+    var myRef = uid.slice(0,6);
+
+    db.ref('users/'+uid).set({
+      email: email,
+      balance: 0,
+      refCode: myRef,
+      referredBy: refCode || null,
+      lastBonus: "",
+      adsToday: 0
+    });
+
+    // Referral Bonus
+    if(refCode){
+      db.ref('users').once('value').then(snapshot=>{
+        snapshot.forEach(u=>{
+          if(u.val().refCode === refCode){
+            db.ref('users/'+u.key).update({balance:(u.val().balance||0)+5});
+          }
+        });
+      });
+    }
+
+    alert("✅ Account Created");
+  })
+  .catch(err=>alert(err.message));
+}
+
+// ================= Login =================
+function login(){
+  auth.signInWithEmailAndPassword(emailEl.value, passEl.value)
+  .then(res=>{
+    authDiv.classList.add("hidden");
+    appDiv.classList.remove("hidden");
+  })
+  .catch(err=>alert(err.message));
+}
+
+// ================= Auth State =================
+auth.onAuthStateChanged(user=>{
+  if(user){
+    authDiv.classList.add("hidden");
+    appDiv.classList.remove("hidden");
+
+    db.ref('users/'+user.uid).on('value',snap=>{
+      bal.innerText = snap.val().balance;
+      myref.innerText = snap.val().refCode;
+    });
+  }
+});
+
+// ================= Logout =================
+function logout(){ auth.signOut(); authDiv.classList.remove("hidden"); appDiv.classList.add("hidden"); }
+
+// ================= Watch Ad =================
+function watchAd(){
+  var now = Date.now();
+  if(now - lastAd < 30000){ alert("⏳ Wait 30 sec"); return; }
+  if(dailyAds >= 20){ alert("⚠️ Daily limit reached"); return; }
+
+  lastAd = now;
+  dailyAds++;
+  window.open(AD_LINK,"_blank");
+
+  var user = auth.currentUser;
+  db.ref('users/'+user.uid).once('value').then(snap=>{
+    db.ref('users/'+user.uid).update({balance:(snap.val().balance||0)+1});
+  });
+}
+
+// ================= Daily Bonus =================
+function dailyBonus(){
+  var user = auth.currentUser;
+  var today = new Date().toDateString();
+
+  db.ref('users/'+user.uid).once('value').then(snap=>{
+    if(snap.val().lastBonus === today){ alert("🎁 Already claimed"); return; }
+    db.ref('users/'+user.uid).update({
+      balance:(snap.val().balance||0)+2,
+      lastBonus: today
+    });
+    alert("🎁 Daily Bonus Added");
+  });
+}
+
+// ================= Withdraw =================
+function withdraw(){
+  var amount = parseInt(amountEl.value);
+  if(amount < 100){ alert("Min ৳100"); return; }
+
+  var user = auth.currentUser;
+  db.ref('users/'+user.uid).once('value').then(snap=>{
+    if(snap.val().balance < amount){ alert("Low balance"); return; }
+
+    var newReq = db.ref('withdrawals').push();
+    newReq.set({
+      uid: user.uid,
+      amount: amount,
+      number: numberEl.value,
+      status: "pending"
+    });
+
+    db.ref('users/'+user.uid).update({balance: snap.val().balance - amount});
+    alert("✅ Withdraw Request Sent");
+  });
+}
+
+// ================= Lucky Spin =================
+function spinWheel(){
+  alert("🎡 Spin feature coming soon!");
+}
+
+</script>
 
 </body>
 </html>
