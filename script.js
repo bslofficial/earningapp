@@ -12,13 +12,12 @@ const firebaseConfig = {
     measurementId: "G-74LH2RTK1B"
 };
 
-// Initialize Firebase
+// Initialize
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// --- Start.io Ads Initialization ---
-// আপনার অ্যাড একাউন্ট আইডি দিয়ে ইনশিয়েলাইজ করা হয়েছে
+// --- StartApp Ads Initialization ---
 const startApp = new StartApp("202682403");
 
 // --- Functions ---
@@ -46,22 +45,18 @@ window.register = async () => {
 window.login = async () => {
     const email = document.getElementById('login-email').value;
     const pass = document.getElementById('login-pass').value;
-    try { 
-        await signInWithEmailAndPassword(auth, email, pass); 
-    } 
+    try { await signInWithEmailAndPassword(auth, email, pass); } 
     catch (e) { alert("Login failed!"); }
 };
 
 window.changeView = (viewId, el) => {
     document.querySelectorAll('.page-view').forEach(v => v.classList.add('hidden'));
     document.getElementById('view-' + viewId).classList.remove('hidden');
-    
     if(el) {
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
     }
-
-    // পেজ পরিবর্তন করার সময় ইন্টারস্টিশিয়াল বিজ্ঞাপন দেখানো
+    // পেজ পরিবর্তনের সময় বিজ্ঞাপন
     startApp.showInterstitial();
 };
 
@@ -72,8 +67,8 @@ window.dailyCheck = async () => {
     const data = snap.val();
 
     if(data.dailyDate === today) return alert("Come back tomorrow!");
-
-    // ডেইলি বোনাস নেওয়ার আগে একটি বিজ্ঞাপন দেখানো
+    
+    // বোনাস পাওয়ার আগে ইন্টারস্টিশিয়াল বিজ্ঞাপন
     startApp.showInterstitial();
 
     await update(ref(db, `users/${user.uid}`), {
@@ -84,17 +79,16 @@ window.dailyCheck = async () => {
 };
 
 window.completeTask = async (amt) => {
-    // রিওয়ার্ডেড ভিডিও বিজ্ঞাপন দেখানো
+    // রিওয়ার্ডেড ভিডিও বিজ্ঞাপন
     startApp.showRewarded({
         onVideoFinished: async () => {
-            // ভিডিও শেষ হলে ব্যালেন্স আপডেট হবে
             const user = auth.currentUser;
             const snap = await get(ref(db, `users/${user.uid}`));
             await update(ref(db, `users/${user.uid}`), { balance: snap.val().balance + amt });
             alert("Reward Added!");
         },
         onVideoClosed: () => {
-            alert("ভিডিওটি শেষ না করলে রিওয়ার্ড পাবেন না!");
+            alert("Reward পেতে ভিডিওটি শেষ পর্যন্ত দেখুন!");
         }
     });
 };
@@ -126,9 +120,8 @@ onAuthStateChanged(auth, (user) => {
         document.getElementById('auth-container').classList.add('hidden');
         document.getElementById('app-content').classList.remove('hidden');
 
-        // ইউজার লগইন থাকলে ব্যানার বিজ্ঞাপন লোড করা
-        // আপনার HTML-এ একটি আইডি থাকতে হবে (যেমন: <div id="banner-ad"></div>)
-        startApp.loadBanner("banner-ad");
+        // ইউজার লগইন হওয়ার পর ব্যানার বিজ্ঞাপন লোড হবে
+        startApp.loadBanner("banner-ad-container");
 
         onValue(ref(db, 'users/' + user.uid), (s) => {
             const d = s.val();
