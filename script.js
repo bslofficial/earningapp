@@ -26,7 +26,9 @@ window.toggleAuth = (isReg) => {
 document.getElementById('btn-login').onclick = () => {
     const email = document.getElementById('login-email').value;
     const pass = document.getElementById('login-pass').value;
-    signInWithEmailAndPassword(auth, email, pass).catch(e => alert("ভুল ইমেইল বা পাসওয়ার্ড!"));
+    if(email && pass) {
+        signInWithEmailAndPassword(auth, email, pass).catch(e => alert("ভুল ইমেইল বা পাসওয়ার্ড!"));
+    } else { alert("সব তথ্য দিন!"); }
 };
 
 document.getElementById('btn-reg').onclick = () => {
@@ -36,7 +38,7 @@ document.getElementById('btn-reg').onclick = () => {
     if(name && email && pass.length >= 6) {
         createUserWithEmailAndPassword(auth, email, pass).then(res => {
             const referCode = res.user.uid.substring(0, 6).toUpperCase();
-            set(ref(db, 'users/' + res.user.uid), { name, email, balance: 0, referCode });
+            set(ref(db, 'users/' + res.user.uid), { name, email, balance: 0, referCode: referCode });
         }).catch(e => alert(e.message));
-    } else { alert("সঠিক তথ্য দিন!"); }
+    } else { alert("সঠিক তথ্য দিন (পাসওয়ার্ড কমপক্ষে ৬ সংখ্যা)!"); }
 };
