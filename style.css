@@ -1,59 +1,79 @@
 :root {
-    --bg: #0b0b0d;
-    --card: #1a1a1d;
-    --gold: #ffcc00;
-    --violet: #8a2be2;
+    --bg: #050505;
+    --card: #121214;
+    --gold: #FFD700;
+    --violet: #8A2BE2;
     --text: #ffffff;
+    --gray: #b3b3b3;
 }
 
 body {
     background-color: var(--bg);
     color: var(--text);
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0; padding: 0;
+    font-family: 'Poppins', sans-serif;
+    margin: 0; padding-bottom: 70px;
 }
 
 .hidden { display: none !important; }
 
-/* Auth Styling */
-.auth-card {
-    max-width: 350px; margin: 100px auto;
-    background: var(--card); padding: 20px;
-    border-radius: 15px; border: 1px solid var(--gold);
-    text-align: center;
+#auth-container {
+    display: flex; justify-content: center; align-items: center; height: 100vh;
 }
+
+.auth-card {
+    background: var(--card); padding: 30px; width: 85%; max-width: 400px;
+    border-radius: 20px; border: 1px solid var(--violet); text-align: center;
+}
+
+.auth-card h2 { color: var(--gold); margin-bottom: 20px; }
 
 input {
-    width: 90%; padding: 10px; margin: 10px 0;
-    background: #333; border: none; color: white; border-radius: 5px;
+    width: 100%; padding: 12px; margin: 10px 0; box-sizing: border-box;
+    background: #1e1e22; border: 1px solid #333; color: white; border-radius: 8px;
 }
 
-button {
-    background: linear-gradient(45deg, var(--violet), var(--gold));
-    border: none; padding: 10px 20px; color: black; font-weight: bold;
-    border-radius: 5px; cursor: pointer; width: 95%;
+.main-btn {
+    background: linear-gradient(45deg, var(--violet), #4b0082);
+    color: white; border: none; padding: 12px; width: 100%;
+    border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;
 }
 
-/* App Header & Nav */
 header {
-    background: var(--card); padding: 15px;
-    border-bottom: 2px solid var(--violet);
+    background: var(--card); padding: 15px; display: flex;
+    justify-content: space-between; align-items: center;
+    border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 100;
 }
 
-.balance { color: var(--gold); font-size: 1.2rem; float: right; }
+.balance-badge {
+    background: rgba(138, 43, 226, 0.2); padding: 5px 15px;
+    border-radius: 20px; border: 1px solid var(--violet); color: var(--gold);
+}
+
+.notice { background: #1a1a1d; color: var(--gold); padding: 8px; font-size: 13px; }
+
+.slider {
+    height: 120px; margin: 15px; background: linear-gradient(90deg, #121214, #1e1e22);
+    border-radius: 15px; display: flex; align-items: center; justify-content: center;
+    border: 1px dashed var(--gray);
+}
+
+.grid-container {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px;
+}
+
+.task-card {
+    background: var(--card); padding: 20px; border-radius: 15px;
+    text-align: center; border: 1px solid #222;
+}
+
+.task-card i { font-size: 24px; color: var(--violet); margin-bottom: 10px; }
 
 .bottom-nav {
-    position: fixed; bottom: 0; width: 100%;
-    background: var(--card); display: flex;
-    justify-content: space-around; padding: 10px 0;
-    border-top: 1px solid var(--gold);
+    position: fixed; bottom: 0; width: 100%; background: #0c0c0e;
+    display: flex; justify-content: space-around; padding: 12px 0;
+    border-top: 1px solid #222;
 }
 
-.bottom-nav div { text-align: center; font-size: 0.8rem; cursor: pointer; }
-.bottom-nav i { display: block; font-size: 1.2rem; color: var(--gold); }
-
-/* Task Items */
-.task-item {
-    background: var(--card); margin: 10px; padding: 15px;
-    border-radius: 10px; display: flex; justify-content: space-between;
-}
+.nav-item { color: var(--gray); text-align: center; font-size: 12px; cursor: pointer; }
+.nav-item.active { color: var(--gold); }
+.nav-item i { font-size: 20px; display: block; }
