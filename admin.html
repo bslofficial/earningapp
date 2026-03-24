@@ -1,33 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin - Manage Withdraws</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body style="padding: 20px;">
-    <h2>Pending Withdraw Requests</h2>
-    <div id="withdraw-list">Loading...</div>
+<h2>Admin Login</h2>
+<input id="admin-email" placeholder="Email">
+<input id="admin-pass" placeholder="Password">
+<button onclick="adminLogin()">Login</button>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+<div id="panel" style="display:none;">
+    <h3>Withdraw Requests</h3>
+    <div id="requests"></div>
+</div>
 
-        const firebaseConfig = { /* আপনার প্যানেল থেকে কনফিগ এখানে দিন */ };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        onValue(ref(db, 'withdrawals'), (snapshot) => {
-            const list = document.getElementById('withdraw-list');
-            list.innerHTML = "";
-            snapshot.forEach((child) => {
-                const data = child.val();
-                list.innerHTML += `
-                    <div class="item-card">
-                        <p>User: ${data.email} | Amount: ${data.amt} | Number: ${data.num}</p>
-                        <button onclick="confirmPay('${child.key}')">Done/Paid</button>
-                    </div>`;
-            });
-        });
-    </script>
-</body>
-</html>
+<script type="module" src="js/admin.js"></script>
