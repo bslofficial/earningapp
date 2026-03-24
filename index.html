@@ -133,28 +133,33 @@
         </div>
 
         <div id="view-home" class="page-view">
-            <div class="slider">
-                <span><i class="fas fa-ads"></i> Banner Ads Slot</span>
-            </div>
-            <div class="grid-container">
-                <div class="task-card" onclick="app.dailyCheck()">
-                    <i class="fas fa-calendar-check"></i>
-                    <div>Daily Bonus</div>
-                </div>
-                <div class="task-card" onclick="app.changeView('task')">
-                    <i class="fas fa-play-circle"></i>
-                    <div>Watch Ads</div>
-                </div>
-                <div class="task-card">
-                    <i class="fas fa-dice"></i>
-                    <div>Lucky Spin</div>
-                </div>
-                <div class="task-card" onclick="app.changeView('wallet')">
-                    <i class="fas fa-money-check-alt"></i>
-                    <div>Withdraw</div>
-                </div>
-            </div>
+    <div class="slider" id="start-banner-ad">
+        <span><i class="fas fa-ads"></i> Loading Ads...</span>
+    </div>
+    
+    <div class="grid-container">
+        <div class="task-card" onclick="app.dailyCheck()">
+            <i class="fas fa-calendar-check"></i>
+            <div>Daily Bonus</div>
         </div>
+
+        <div class="task-card" onclick="app.changeView('task')">
+            <i class="fas fa-play-circle"></i>
+            <div>Watch Ads</div>
+        </div>
+
+        <div class="task-card">
+            <i class="fas fa-dice"></i>
+            <div>Lucky Spin</div>
+        </div>
+        
+        <div class="task-card" onclick="app.changeView('wallet')">
+            <i class="fas fa-money-check-alt"></i>
+            <div>Withdraw</div>
+        </div>
+    </div>
+</div>
+
 
         <div id="view-task" class="page-view hidden">
             <h3 style="padding: 15px;">Available Tasks</h3>
