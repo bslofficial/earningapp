@@ -1,15 +1,24 @@
-:root { --bg: #050505; --card: #121214; --gold: #FFD700; --violet: #8A2BE2; --text: #ffffff; --gray: #b3b3b3; }
-body { background-color: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; margin: 0; padding-bottom: 70px; }
-.hidden { display: none !important; }
-#auth-container { display: flex; justify-content: center; align-items: center; height: 100vh; }
-.auth-card { background: var(--card); padding: 30px; width: 85%; max-width: 400px; border-radius: 20px; border: 1px solid var(--violet); text-align: center; }
-input { width: 100%; padding: 12px; margin: 10px 0; box-sizing: border-box; background: #1e1e22; border: 1px solid #333; color: white; border-radius: 8px; }
-.main-btn { background: linear-gradient(45deg, var(--violet), #4b0082); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-header { background: var(--card); padding: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #222; }
-.balance-badge { background: rgba(138, 43, 226, 0.2); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--violet); color: var(--gold); }
-.slider { height: 100px; margin: 15px; background: #121214; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; border-radius: 15px; }
-.grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
-.task-card { background: var(--card); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #222; }
-.bottom-nav { position: fixed; bottom: 0; width: 100%; background: #0c0c0e; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #222; }
-.nav-item { color: var(--gray); text-align: center; font-size: 12px; }
-.nav-item.active { color: var(--gold); }
+body {
+    background:#0b0b0d;
+    color:#fff;
+    font-family:Poppins,sans-serif;
+    text-align:center;
+    margin:0;
+    padding:0;
+}
+
+input,button {
+    padding:10px;
+    margin:5px;
+    width:90%;
+    border-radius:5px;
+    border:none;
+}
+
+button {
+    background:#8A2BE2;
+    color:#fff;
+    cursor:pointer;
+}
+
+.hidden { display:none; }
