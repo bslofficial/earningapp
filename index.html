@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProEarn</title>
+    <title>ProEarn - Digital Earning</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://www.startappjs.com/v1/startapp.js"></script>
+    
+    <script src="https://glamourpicklessteward.com/6d/b2/36/6db2366de43d3dfa9ae8be0cd1702de6.js"></script>
 </head>
 <body>
     <div id="auth-container">
@@ -33,8 +34,13 @@
             <div style="font-weight:bold">ProEarn</div>
             <div class="balance-badge">৳ <span id="u-balance">0.00</span></div>
         </header>
+
         <div id="view-home" class="page-view">
-            <div class="slider" id="start-banner-ad">Ad Loading...</div>
+            <div class="slider" style="height: auto; min-height: 100px; padding: 10px;">
+                <div id="container-dbf6f2ec476c869e3e4b1aca55ca5248"></div>
+                <script async="async" data-cfasync="false" src="https://glamourpicklessteward.com/dbf6f2ec476c869e3e4b1aca55ca5248/invoke.js"></script>
+            </div>
+
             <div class="grid-container">
                 <div class="task-card" onclick="handleDaily()">Daily Bonus</div>
                 <div class="task-card" onclick="changeView('task')">Watch Ads</div>
@@ -42,7 +48,28 @@
                 <div class="task-card" onclick="changeView('profile')">Profile</div>
             </div>
         </div>
+
+        <div id="view-task" class="page-view hidden">
+            <div class="task-card" style="margin:20px" onclick="handleTaskReward()">Video Task (৳5)</div>
+            <button class="main-btn" onclick="changeView('home')">Back</button>
         </div>
+
+        <div id="view-wallet" class="page-view hidden">
+            <div style="padding:20px">
+                <input type="number" id="w-amount" placeholder="Amount">
+                <input type="text" id="w-number" placeholder="Number">
+                <button class="main-btn" onclick="alert('Request Sent!')">Withdraw</button>
+                <button class="main-btn" onclick="changeView('home')" style="background:#444">Back</button>
+            </div>
+        </div>
+
+        <div id="view-profile" class="page-view hidden">
+            <div style="text-align:center; padding:50px">
+                <h3 id="u-name-display">User</h3>
+                <button class="main-btn" onclick="location.reload()">Logout</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
@@ -61,9 +88,7 @@
         const fApp = initializeApp(firebaseConfig);
         const auth = getAuth(fApp);
         const db = getDatabase(fApp);
-        const startApp = new StartApp("202682403");
 
-        // ফাংশনগুলো গ্লোবাল উইন্ডোতে এক্সপোর্ট করা
         window.toggleAuth = (isReg) => {
             document.getElementById('login-box').classList.toggle('hidden', isReg);
             document.getElementById('reg-box').classList.toggle('hidden', !isReg);
@@ -72,27 +97,35 @@
         window.handleLogin = () => {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
-            signInWithEmailAndPassword(auth, email, pass)
-                .then(() => alert("Logging in..."))
-                .catch(e => alert("Error: " + e.message));
+            signInWithEmailAndPassword(auth, email, pass).catch(e => alert("Error: " + e.message));
         };
 
         window.handleRegister = () => {
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const pass = document.getElementById('reg-pass').value;
-            createUserWithEmailAndPassword(auth, email, pass)
-                .then(res => {
-                    set(ref(db, 'users/' + res.user.uid), { name, email, balance: 0 });
-                    alert("Registration Successful!");
-                })
-                .catch(e => alert(e.message));
+            createUserWithEmailAndPassword(auth, email, pass).then(res => {
+                set(ref(db, 'users/' + res.user.uid), { name, email, balance: 0 });
+            }).catch(e => alert(e.message));
         };
 
         window.changeView = (v) => {
             document.querySelectorAll('.page-view').forEach(p => p.classList.add('hidden'));
             document.getElementById('view-' + v).classList.remove('hidden');
-            startApp.showInterstitial();
+        };
+
+        window.handleDaily = async () => {
+            const user = auth.currentUser;
+            const snap = await get(ref(db, `users/${user.uid}`));
+            update(ref(db, `users/${user.uid}`), { balance: (snap.val().balance || 0) + 2 });
+            alert("৳2 Bonus Added!");
+        };
+
+        window.handleTaskReward = async () => {
+            const user = auth.currentUser;
+            const snap = await get(ref(db, `users/${user.uid}`));
+            update(ref(db, `users/${user.uid}`), { balance: (snap.val().balance || 0) + 5 });
+            alert("৳5 Task Reward Added!");
         };
 
         onAuthStateChanged(auth, (user) => {
@@ -100,8 +133,9 @@
                 document.getElementById('auth-container').classList.add('hidden');
                 document.getElementById('app-content').classList.remove('hidden');
                 onValue(ref(db, 'users/' + user.uid), (snap) => {
-                    if(snap.exists()) {
-                        document.getElementById('u-balance').innerText = snap.val().balance;
+                    if(snap.exists()){
+                        document.getElementById('u-balance').innerText = snap.val().balance.toFixed(2);
+                        document.getElementById('u-name-display').innerText = snap.val().name;
                     }
                 });
             }
