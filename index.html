@@ -3,38 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earning App - BSL Official</title>
+    <title>Earning App - Login</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://www.gstatic.com/startapp/startapp-v1.js"></script>
 </head>
 <body>
     <div class="main-wrapper">
         <header>
-            <div class="logo">BSL<span>Official</span></div>
+            <div class="logo">Earning <span>App</span></div>
             <p>২০২৬ সালের সেরা ইনকাম অ্যাপ</p>
         </header>
-
         <div class="container">
             <div id="auth-container">
                 <div id="login-box" class="auth-box">
                     <h2>লগইন করুন</h2>
-                    <input type="email" id="login-email" placeholder="ইমেইল">
+                    <input type="email" id="login-email" placeholder="আপনার ইমেইল">
                     <input type="password" id="login-pass" placeholder="পাসওয়ার্ড">
                     <button id="btn-login" class="btn-sm">Login</button>
-                    <p>একাউন্ট নেই? <span onclick="toggleAuth(true)">রেজিস্ট্রেশন করুন</span></p>
+                    <p>একাউন্ট নেই? <span onclick="toggleAuth(true)" style="color:#1a237e; cursor:pointer; font-weight:bold;">রেজিস্ট্রেশন করুন</span></p>
                 </div>
                 <div id="reg-box" class="auth-box hidden">
                     <h2>নতুন একাউন্ট</h2>
-                    <input type="text" id="reg-name" placeholder="আপনার নাম">
+                    <input type="text" id="reg-name" placeholder="আপনার পুরো নাম">
                     <input type="email" id="reg-email" placeholder="ইমেইল">
-                    <input type="password" id="reg-pass" placeholder="পাসওয়ার্ড (৬ সংখ্যা)">
+                    <input type="password" id="reg-pass" placeholder="পাসওয়ার্ড (কমপক্ষে ৬ সংখ্যা)">
                     <button id="btn-reg" class="btn-sm">Register</button>
-                    <p>একাউন্ট আছে? <span onclick="toggleAuth(false)">লগইন করুন</span></p>
+                    <p>একাউন্ট আছে? <span onclick="toggleAuth(false)" style="color:#1a237e; cursor:pointer; font-weight:bold;">লগইন করুন</span></p>
                 </div>
             </div>
         </div>
     </div>
-    <footer><p>&copy; 2026 Earning App | BSL Official</p></footer>
+    <footer><p>&copy; 2026 Earning App | All Rights Reserved</p></footer>
     <script type="module" src="script.js"></script>
 </body>
 </html>
