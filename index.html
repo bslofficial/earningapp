@@ -1,215 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ProEarn</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-
-<style>
-body {background:#0b0b0d;color:#fff;font-family:Poppins;text-align:center;}
-input,button{padding:10px;margin:5px;width:90%;}
-button{background:#8A2BE2;color:#fff;border:none;}
-.hidden{display:none;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earning App - অনলাইন আয় শুরু করুন</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+        }
+        header {
+            background-color: #1a73e8;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .container {
+            padding: 50px 20px;
+        }
+        h1 { margin-bottom: 10px; }
+        p { font-size: 1.1em; color: #555; }
+        .btn {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .features {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            width: 250px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
 </head>
 <body>
 
-<h2>💰 ProEarn Real App</h2>
+    <header>
+        <h1>Earning App</h1>
+        <p>আপনার স্মার্টফোন দিয়েই আয় শুরু করুন</p>
+    </header>
 
-<!-- AUTH -->
-<div id="auth">
-<input id="email" placeholder="Email">
-<input id="pass" type="password" placeholder="Password">
-<input id="ref" placeholder="Referral Code (optional)">
-<button onclick="register()">Register</button>
-<button onclick="login()">Login</button>
-</div>
+    <div class="container">
+        <h2>সেরা অনলাইন আর্নিং প্ল্যাটফর্ম</h2>
+        <p>সহজ টাস্ক পূরণ করুন এবং প্রতিদিন ক্যাশ রিওয়ার্ড জিতুন।</p>
+        
+        <div class="features">
+            <div class="card">
+                <h3>সহজ কাজ</h3>
+                <p>ভিডিও দেখে বা সার্ভে করে আয় করুন।</p>
+            </div>
+            <div class="card">
+                <h3>দ্রুত পেমেন্ট</h3>
+                <p>বিকাশ, নগদ বা রকেটে পেমেন্ট নিন।</p>
+            </div>
+            <div class="card">
+                <h3>রেফার বোনাস</h3>
+                <p>বন্ধুদের ইনভাইট করে আয় বাড়ান।</p>
+            </div>
+        </div>
 
-<!-- APP -->
-<div id="app" class="hidden">
-<h3>Balance: ৳ <span id="bal">0</span></h3>
+        <a href="#" class="btn">এখনই অ্যাপ ডাউনলোড করুন</a>
+    </div>
 
-<button onclick="watchAd()">📺 Watch Ad & Earn</button>
-<button onclick="dailyBonus()">🎁 Daily Bonus</button>
-
-<h4>Withdraw</h4>
-<input id="amount" placeholder="Amount">
-<input id="number" placeholder="Bkash/Nagad">
-<button onclick="withdraw()">Withdraw</button>
-
-<p>Your Ref Code: <span id="myref"></span></p>
-
-<button onclick="logout()">Logout</button>
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-import { getDatabase, ref, set, get, update, push, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
-
-const firebaseConfig = {
- apiKey: "YOUR_KEY",
- authDomain: "YOUR_DOMAIN",
- databaseURL: "YOUR_DB",
- projectId: "YOUR_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
-
-// 🔥 SETTINGS
-const AD_LINK = "YOUR_ADSTERRA_LINK";
-let lastAd = 0;
-let dailyAds = 0;
-
-// REGISTER
-window.register = async ()=>{
- const email = emailEl.value;
- const pass = passEl.value;
- const refCode = refEl.value;
-
- const res = await createUserWithEmailAndPassword(auth,email,pass);
-
- const myRef = res.user.uid.slice(0,6);
-
- await set(ref(db,'users/'+res.user.uid),{
-  email,
-  balance:0,
-  refCode: myRef,
-  referredBy: refCode || null,
-  lastBonus:"",
-  ads:0
- });
-
- // referral bonus
- if(refCode){
-  const snap = await get(ref(db,'users'));
-  snap.forEach(u=>{
-   if(u.val().refCode === refCode){
-    update(ref(db,'users/'+u.key),{
-     balance:(u.val().balance||0)+5
-    });
-   }
-  });
- }
-
- alert("Account Created");
-};
-
-// LOGIN
-window.login = async ()=>{
- await signInWithEmailAndPassword(auth,emailEl.value,passEl.value);
-};
-
-// WATCH AD
-window.watchAd = async ()=>{
- const now = Date.now();
-
- if(now - lastAd < 30000){
-  alert("Wait 30 sec");
-  return;
- }
-
- if(dailyAds >= 20){
-  alert("Daily limit reached");
-  return;
- }
-
- lastAd = now;
- dailyAds++;
-
- window.open(AD_LINK,"_blank");
-
- const user = auth.currentUser;
- const snap = await get(ref(db,'users/'+user.uid));
-
- await update(ref(db,'users/'+user.uid),{
-  balance:(snap.val().balance||0)+1
- });
-};
-
-// DAILY BONUS
-window.dailyBonus = async ()=>{
- const user = auth.currentUser;
- const today = new Date().toDateString();
-
- const snap = await get(ref(db,'users/'+user.uid));
-
- if(snap.val().lastBonus === today){
-  alert("Already claimed");
-  return;
- }
-
- await update(ref(db,'users/'+user.uid),{
-  balance:(snap.val().balance||0)+2,
-  lastBonus:today
- });
-};
-
-// WITHDRAW
-window.withdraw = async ()=>{
- const amount = parseInt(amountEl.value);
-
- if(amount < 100){
-  alert("Min ৳100");
-  return;
- }
-
- const user = auth.currentUser;
- const snap = await get(ref(db,'users/'+user.uid));
-
- if(snap.val().balance < amount){
-  alert("Low balance");
-  return;
- }
-
- const newReq = push(ref(db,'withdrawals'));
-
- await set(newReq,{
-  uid:user.uid,
-  amount,
-  number:numberEl.value,
-  status:"pending"
- });
-
- await update(ref(db,'users/'+user.uid),{
-  balance:snap.val().balance - amount
- });
-
- alert("Request Sent");
-};
-
-// AUTH STATE
-onAuthStateChanged(auth,user=>{
- if(user){
-  authDiv.classList.add("hidden");
-  appDiv.classList.remove("hidden");
-
-  onValue(ref(db,'users/'+user.uid),snap=>{
-   bal.innerText = snap.val().balance;
-   myref.innerText = snap.val().refCode;
-  });
- }
-});
-
-// LOGOUT
-window.logout = ()=> signOut(auth);
-
-// ELEMENTS
-const emailEl = document.getElementById("email");
-const passEl = document.getElementById("pass");
-const refEl = document.getElementById("ref");
-const amountEl = document.getElementById("amount");
-const numberEl = document.getElementById("number");
-const authDiv = document.getElementById("auth");
-const appDiv = document.getElementById("app");
-const bal = document.getElementById("bal");
-const myref = document.getElementById("myref");
-
-</script>
+    <footer>
+        &copy; 2024 Earning App | All Rights Reserved.
+    </footer>
 
 </body>
 </html>
