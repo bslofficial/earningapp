@@ -1,148 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProEarn - Digital Earning</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <script src="https://glamourpicklessteward.com/6d/b2/36/6db2366de43d3dfa9ae8be0cd1702de6.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProEarn</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+<style>
+body {background:#0b0b0d;color:#fff;font-family:Poppins;text-align:center;}
+input,button{padding:10px;margin:5px;width:90%;}
+button{background:#8A2BE2;color:#fff;border:none;}
+.hidden{display:none;}
+</style>
 </head>
 <body>
-    <div id="auth-container">
-        <div class="auth-card" id="login-box">
-            <h2 style="color:#FFD700"><i class="fas fa-lock"></i> Login</h2>
-            <input type="email" id="login-email" placeholder="Email Address">
-            <input type="password" id="login-pass" placeholder="Password">
-            <button class="main-btn" id="btn-login">Login Now</button>
-            <p onclick="toggleAuth(true)" style="margin-top:15px; cursor:pointer">Don't have an account? <span style="color:#FFD700">Register</span></p>
-        </div>
-        
-        <div class="auth-card hidden" id="reg-box">
-            <h2 style="color:#FFD700"><i class="fas fa-user-plus"></i> Register</h2>
-            <input type="text" id="reg-name" placeholder="Full Name">
-            <input type="email" id="reg-email" placeholder="Email">
-            <input type="password" id="reg-pass" placeholder="Password (6+ chars)">
-            <button class="main-btn" id="btn-reg">Create Account</button>
-            <p onclick="toggleAuth(false)" style="margin-top:15px; cursor:pointer">Back to Login</p>
-        </div>
-    </div>
 
-    <div id="app-content" class="hidden">
-        <header style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#121214; border-bottom:1px solid #333">
-            <div style="font-weight:bold">ProEarn</div>
-            <div style="background:rgba(138,43,226,0.2); padding:5px 15px; border-radius:20px; border:1px solid #8A2BE2; color:#FFD700">
-                ৳ <span id="u-balance">0.00</span>
-            </div>
-        </header>
+<h2>💰 ProEarn Real App</h2>
 
-        <div id="view-home" class="page-view">
-            <div style="margin:15px; text-align:center; min-height:100px; background:#1e1e22; border-radius:10px; padding:10px">
-                <div id="container-dbf6f2ec476c869e3e4b1aca55ca5248"></div>
-                <script async="async" data-cfasync="false" src="https://glamourpicklessteward.com/dbf6f2ec476c869e3e4b1aca55ca5248/invoke.js"></script>
-            </div>
+<!-- AUTH -->
+<div id="auth">
+<input id="email" placeholder="Email">
+<input id="pass" type="password" placeholder="Password">
+<input id="ref" placeholder="Referral Code (optional)">
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+</div>
 
-            <div class="grid-container" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:15px">
-                <div class="task-card" id="btn-daily" style="background:#121214; padding:20px; border-radius:15px; text-align:center; border:1px solid #222; cursor:pointer">
-                    <i class="fas fa-calendar-alt" style="color:#8A2BE2; font-size:24px"></i><br>Daily Bonus
-                </div>
-                <div class="task-card" onclick="changeView('task')" style="background:#121214; padding:20px; border-radius:15px; text-align:center; border:1px solid #222; cursor:pointer">
-                    <i class="fas fa-play-circle" style="color:#8A2BE2; font-size:24px"></i><br>Watch Ads
-                </div>
-            </div>
-        </div>
+<!-- APP -->
+<div id="app" class="hidden">
+<h3>Balance: ৳ <span id="bal">0</span></h3>
 
-        <div id="view-task" class="page-view hidden" style="padding:20px">
-            <h3 style="margin-bottom:20px; color:#FFD700">Available Tasks</h3>
-            <div class="task-card" id="btn-direct-task" style="background:#121214; padding:20px; border-radius:15px; text-align:center; border:1px solid #8A2BE2; margin-bottom:20px; cursor:pointer">
-                <i class="fas fa-video" style="color:#8A2BE2; margin-bottom:10px"></i><br>
-                Video Task #1 (৳5)
-            </div>
-            <button class="main-btn" onclick="changeView('home')">Back to Home</button>
-        </div>
-    </div>
+<button onclick="watchAd()">📺 Watch Ad & Earn</button>
+<button onclick="dailyBonus()">🎁 Daily Bonus</button>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-        import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+<h4>Withdraw</h4>
+<input id="amount" placeholder="Amount">
+<input id="number" placeholder="Bkash/Nagad">
+<button onclick="withdraw()">Withdraw</button>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDvbee_sFG5mIhFPEPO8ggizDByB0byTAM",
-            authDomain: "earning-web-app-d515c.firebaseapp.com",
-            projectId: "earning-web-app-d515c",
-            storageBucket: "earning-web-app-d515c.firebasestorage.app",
-            messagingSenderId: "940476940339",
-            appId: "1:940476940339:web:eb81b99117e9294fc86346"
-        };
+<p>Your Ref Code: <span id="myref"></span></p>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
+<button onclick="logout()">Logout</button>
+</div>
 
-        // Navigation logic
-        window.toggleAuth = (isReg) => {
-            document.getElementById('login-box').classList.toggle('hidden', isReg);
-            document.getElementById('reg-box').classList.toggle('hidden', !isReg);
-        };
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { getDatabase, ref, set, get, update, push, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
-        window.changeView = (v) => {
-            document.querySelectorAll('.page-view').forEach(p => p.classList.add('hidden'));
-            document.getElementById('view-' + v).classList.remove('hidden');
-        };
+const firebaseConfig = {
+ apiKey: "YOUR_KEY",
+ authDomain: "YOUR_DOMAIN",
+ databaseURL: "YOUR_DB",
+ projectId: "YOUR_ID"
+};
 
-        // Event Listeners
-        document.getElementById('btn-login').addEventListener('click', () => {
-            const email = document.getElementById('login-email').value.trim();
-            const pass = document.getElementById('login-pass').value;
-            if(!email || !pass) return alert("ইমেইল এবং পাসওয়ার্ড দিন");
-            signInWithEmailAndPassword(auth, email, pass).catch(e => alert("Error: " + e.message));
-        });
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-        document.getElementById('btn-reg').addEventListener('click', () => {
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const pass = document.getElementById('reg-pass').value;
-            createUserWithEmailAndPassword(auth, email, pass).then(res => {
-                set(ref(db, 'users/' + res.user.uid), { name, email, balance: 0 });
-            }).catch(e => alert(e.message));
-        });
+// 🔥 SETTINGS
+const AD_LINK = "YOUR_ADSTERRA_LINK";
+let lastAd = 0;
+let dailyAds = 0;
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('auth-container').classList.add('hidden');
-                document.getElementById('app-content').classList.remove('hidden');
-                onValue(ref(db, 'users/' + user.uid), (snap) => {
-                    if(snap.exists()) {
-                        document.getElementById('u-balance').innerText = (snap.val().balance || 0).toFixed(2);
-                    }
-                });
-            }
-        });
+// REGISTER
+window.register = async ()=>{
+ const email = emailEl.value;
+ const pass = passEl.value;
+ const refCode = refEl.value;
 
-        // Reward Logic
-        document.getElementById('btn-daily').onclick = async () => {
-            const user = auth.currentUser;
-            if(!user) return;
-            const snap = await get(ref(db, `users/${user.uid}`));
-            await update(ref(db, `users/${user.uid}`), { balance: (snap.val().balance || 0) + 2 });
-            alert("৳২ ডেইলি বোনাস যোগ করা হয়েছে!");
-        };
+ const res = await createUserWithEmailAndPassword(auth,email,pass);
 
-        // Adsterra Direct Link Logic
-        document.getElementById('btn-direct-task').onclick = async () => {
-            const user = auth.currentUser;
-            if(!user) return;
+ const myRef = res.user.uid.slice(0,6);
 
-            // ওপেন ডাইরেক্ট লিঙ্ক
-            window.open("https://glamourpicklessteward.com/uy4hgpbq7?key=4367993c6e478e8144fda5a6e5969fbb", "_blank");
+ await set(ref(db,'users/'+res.user.uid),{
+  email,
+  balance:0,
+  refCode: myRef,
+  referredBy: refCode || null,
+  lastBonus:"",
+  ads:0
+ });
 
-            // রিওয়ার্ড যোগ করা
-            const snap = await get(ref(db, `users/${user.uid}`));
-            await update(ref(db, `users/${user.uid}`), { balance: (snap.val().balance || 0) + 5 });
-            alert("টাস্ক সফল! ৳৫ যোগ করা হয়েছে।");
-        };
-    </script>
+ // referral bonus
+ if(refCode){
+  const snap = await get(ref(db,'users'));
+  snap.forEach(u=>{
+   if(u.val().refCode === refCode){
+    update(ref(db,'users/'+u.key),{
+     balance:(u.val().balance||0)+5
+    });
+   }
+  });
+ }
+
+ alert("Account Created");
+};
+
+// LOGIN
+window.login = async ()=>{
+ await signInWithEmailAndPassword(auth,emailEl.value,passEl.value);
+};
+
+// WATCH AD
+window.watchAd = async ()=>{
+ const now = Date.now();
+
+ if(now - lastAd < 30000){
+  alert("Wait 30 sec");
+  return;
+ }
+
+ if(dailyAds >= 20){
+  alert("Daily limit reached");
+  return;
+ }
+
+ lastAd = now;
+ dailyAds++;
+
+ window.open(AD_LINK,"_blank");
+
+ const user = auth.currentUser;
+ const snap = await get(ref(db,'users/'+user.uid));
+
+ await update(ref(db,'users/'+user.uid),{
+  balance:(snap.val().balance||0)+1
+ });
+};
+
+// DAILY BONUS
+window.dailyBonus = async ()=>{
+ const user = auth.currentUser;
+ const today = new Date().toDateString();
+
+ const snap = await get(ref(db,'users/'+user.uid));
+
+ if(snap.val().lastBonus === today){
+  alert("Already claimed");
+  return;
+ }
+
+ await update(ref(db,'users/'+user.uid),{
+  balance:(snap.val().balance||0)+2,
+  lastBonus:today
+ });
+};
+
+// WITHDRAW
+window.withdraw = async ()=>{
+ const amount = parseInt(amountEl.value);
+
+ if(amount < 100){
+  alert("Min ৳100");
+  return;
+ }
+
+ const user = auth.currentUser;
+ const snap = await get(ref(db,'users/'+user.uid));
+
+ if(snap.val().balance < amount){
+  alert("Low balance");
+  return;
+ }
+
+ const newReq = push(ref(db,'withdrawals'));
+
+ await set(newReq,{
+  uid:user.uid,
+  amount,
+  number:numberEl.value,
+  status:"pending"
+ });
+
+ await update(ref(db,'users/'+user.uid),{
+  balance:snap.val().balance - amount
+ });
+
+ alert("Request Sent");
+};
+
+// AUTH STATE
+onAuthStateChanged(auth,user=>{
+ if(user){
+  authDiv.classList.add("hidden");
+  appDiv.classList.remove("hidden");
+
+  onValue(ref(db,'users/'+user.uid),snap=>{
+   bal.innerText = snap.val().balance;
+   myref.innerText = snap.val().refCode;
+  });
+ }
+});
+
+// LOGOUT
+window.logout = ()=> signOut(auth);
+
+// ELEMENTS
+const emailEl = document.getElementById("email");
+const passEl = document.getElementById("pass");
+const refEl = document.getElementById("ref");
+const amountEl = document.getElementById("amount");
+const numberEl = document.getElementById("number");
+const authDiv = document.getElementById("auth");
+const appDiv = document.getElementById("app");
+const bal = document.getElementById("bal");
+const myref = document.getElementById("myref");
+
+</script>
+
 </body>
 </html>
