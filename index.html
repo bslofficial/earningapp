@@ -9,9 +9,6 @@
     
     <script src="https://www.startappjs.com/v1/startapp.js"></script>
 
-<div id="banner-ad-container" style="width: 100%; min-height: 50px; background: #222; text-align: center; margin-top: 10px;">
-    </div>
-
     <style>
         /* Modern Dark Theme CSS */
         :root {
@@ -68,11 +65,11 @@
             background: #1a1a1d; color: var(--gold); padding: 8px; font-size: 13px;
         }
 
-        /* Slider Placeholder */
+        /* Slider / Banner Ad Slot */
         .slider {
-            height: 150px; margin: 15px; background: linear-gradient(90deg, #121214, #1e1e22);
+            height: 100px; margin: 15px; background: linear-gradient(90deg, #121214, #1e1e22);
             border-radius: 15px; display: flex; align-items: center; justify-content: center;
-            border: 1px dashed var(--gray);
+            border: 1px dashed var(--gray); overflow: hidden;
         }
 
         /* Task Cards */
@@ -134,33 +131,32 @@
         </div>
 
         <div id="view-home" class="page-view">
-    <div class="slider" id="start-banner-ad">
-        <span><i class="fas fa-ads"></i> Loading Ads...</span>
-    </div>
-    
-    <div class="grid-container">
-        <div class="task-card" onclick="app.dailyCheck()">
-            <i class="fas fa-calendar-check"></i>
-            <div>Daily Bonus</div>
-        </div>
+            <div class="slider" id="start-banner-ad">
+                <span><i class="fas fa-ads"></i> Advertisement</span>
+            </div>
+            
+            <div class="grid-container">
+                <div class="task-card" onclick="app.dailyCheck()">
+                    <i class="fas fa-calendar-check"></i>
+                    <div>Daily Bonus</div>
+                </div>
 
-        <div class="task-card" onclick="app.changeView('task')">
-            <i class="fas fa-play-circle"></i>
-            <div>Watch Ads</div>
-        </div>
+                <div class="task-card" onclick="app.changeView('task')">
+                    <i class="fas fa-play-circle"></i>
+                    <div>Watch Ads</div>
+                </div>
 
-        <div class="task-card">
-            <i class="fas fa-dice"></i>
-            <div>Lucky Spin</div>
+                <div class="task-card">
+                    <i class="fas fa-dice"></i>
+                    <div>Lucky Spin</div>
+                </div>
+                
+                <div class="task-card" onclick="app.changeView('wallet')">
+                    <i class="fas fa-money-check-alt"></i>
+                    <div>Withdraw</div>
+                </div>
+            </div>
         </div>
-        
-        <div class="task-card" onclick="app.changeView('wallet')">
-            <i class="fas fa-money-check-alt"></i>
-            <div>Withdraw</div>
-        </div>
-    </div>
-</div>
-
 
         <div id="view-task" class="page-view hidden">
             <h3 style="padding: 15px;">Available Tasks</h3>
@@ -225,7 +221,9 @@
         const auth = getAuth(fApp);
         const db = getDatabase(fApp);
 
-        // App Logic Object
+        // Start.io Ads Initialization
+        const startApp = new StartApp("202682403");
+
         const app = {
             toggleAuth: (isReg) => {
                 document.getElementById('login-box').classList.toggle('hidden', isReg);
@@ -237,7 +235,6 @@
                 const email = document.getElementById('reg-email').value;
                 const pass = document.getElementById('reg-pass').value;
                 if(!name || !email || pass.length < 6) return alert("Fill all fields correctly!");
-
                 try {
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
                     await set(ref(db, 'users/' + res.user.uid), {
@@ -250,9 +247,7 @@
             login: async () => {
                 const email = document.getElementById('login-email').value;
                 const pass = document.getElementById('login-pass').value;
-                try {
-                    await signInWithEmailAndPassword(auth, email, pass);
-                } catch (e) { alert("Invalid login!"); }
+                try { await signInWithEmailAndPassword(auth, email, pass); } catch (e) { alert("Invalid login!"); }
             },
 
             changeView: (viewId, el) => {
@@ -262,6 +257,8 @@
                     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                     el.classList.add('active');
                 }
+                // Show Interstitial Ad on page change
+                startApp.showInterstitial();
             },
 
             dailyCheck: async () => {
@@ -269,10 +266,11 @@
                 const today = new Date().toDateString();
                 const snapshot = await get(ref(db, `users/${user.uid}`));
                 const data = snapshot.val();
-
                 if(data.dailyDate === today) {
                     alert("Already collected today!");
                 } else {
+                    // Show Ad before giving bonus
+                    startApp.showInterstitial();
                     await update(ref(db, `users/${user.uid}`), {
                         balance: data.balance + 2,
                         dailyDate: today
@@ -281,13 +279,24 @@
                 }
             },
 
+            // Fixed Complete Task with Video Ad
             completeTask: async (amount) => {
-                const user = auth.currentUser;
-                const snapshot = await get(ref(db, `users/${user.uid}`));
-                await update(ref(db, `users/${user.uid}`), {
-                    balance: snapshot.val().balance + amount
+                startApp.showRewarded({
+                    onVideoFinished: async () => {
+                        const user = auth.currentUser;
+                        const snapshot = await get(ref(db, `users/${user.uid}`));
+                        await update(ref(db, `users/${user.uid}`), {
+                            balance: snapshot.val().balance + amount
+                        });
+                        alert("Task Reward ৳" + amount + " added!");
+                    },
+                    onVideoClosed: () => {
+                        alert("পুরো ভিডিওটি না দেখলে রিওয়ার্ড পাবেন না!");
+                    },
+                    onVideoFailed: () => {
+                        alert("দুঃখিত, এই মুহূর্তে বিজ্ঞাপন লোড হচ্ছে না।");
+                    }
                 });
-                alert("Task Reward ৳" + amount + " added!");
             },
 
             requestWithdraw: async () => {
@@ -295,31 +304,31 @@
                 const method = document.getElementById('w-method').value;
                 const number = document.getElementById('w-number').value;
                 const user = auth.currentUser;
-
                 if(amount < 20) return alert("Minimum withdraw ৳20");
-                
                 const snapshot = await get(ref(db, `users/${user.uid}`));
                 if(snapshot.val().balance < amount) return alert("Insufficient Balance!");
-
                 const newReq = push(ref(db, 'withdrawals'));
-                await set(newReq, {
-                    uid: user.uid, amount, method, number, status: 'pending', email: user.email
-                });
+                await set(newReq, { uid: user.uid, amount, method, number, status: 'pending', email: user.email });
                 await update(ref(db, `users/${user.uid}`), { balance: snapshot.val().balance - amount });
                 alert("Withdraw Request Sent!");
             }
         };
 
-        // Listen for Auth Changes
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-container').classList.add('hidden');
                 document.getElementById('app-content').classList.remove('hidden');
+                
+                // Load Banner Ad inside slider area
+                startApp.loadBanner("start-banner-ad");
+
                 onValue(ref(db, 'users/' + user.uid), (snap) => {
                     const d = snap.val();
-                    document.getElementById('u-balance').innerText = d.balance.toFixed(2);
-                    document.getElementById('u-name').innerText = d.name;
-                    document.getElementById('u-email').innerText = d.email;
+                    if(d) {
+                        document.getElementById('u-balance').innerText = d.balance.toFixed(2);
+                        document.getElementById('u-name').innerText = d.name;
+                        document.getElementById('u-email').innerText = d.email;
+                    }
                 });
             }
         });
