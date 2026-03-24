@@ -6,6 +6,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyDvbee_sFG5mIhFPEPO8ggizDByB0byTAM",
     authDomain: "earning-web-app-d515c.firebaseapp.com",
     projectId: "earning-web-app-d515c",
+    databaseURL: "https://earning-web-app-d515c-default-rtdb.firebaseio.com",
     storageBucket: "earning-web-app-d515c.firebasestorage.app",
     messagingSenderId: "940476940339",
     appId: "1:940476940339:web:eb81b99117e9294fc86346"
@@ -15,9 +16,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-onAuthStateChanged(auth, (user) => {
-    if (user) window.location.href = "dashboard.html";
-});
+onAuthStateChanged(auth, (user) => { if (user) window.location.href = "dashboard.html"; });
 
 window.toggleAuth = (isReg) => {
     document.getElementById('login-box').classList.toggle('hidden', isReg);
@@ -36,7 +35,8 @@ document.getElementById('btn-reg').onclick = () => {
     const pass = document.getElementById('reg-pass').value;
     if(name && email && pass.length >= 6) {
         createUserWithEmailAndPassword(auth, email, pass).then(res => {
-            set(ref(db, 'users/' + res.user.uid), { name, email, balance: 0 });
+            const referCode = res.user.uid.substring(0, 6).toUpperCase();
+            set(ref(db, 'users/' + res.user.uid), { name, email, balance: 0, referCode });
         }).catch(e => alert(e.message));
     } else { alert("সঠিক তথ্য দিন!"); }
 };
