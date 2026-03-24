@@ -10,191 +10,149 @@
     <script src="https://www.startappjs.com/v1/startapp.js"></script>
 
     <style>
-        /* Modern Dark Theme CSS */
+        /* আপনার দেওয়া CSS কোড (অপরিবর্তিত) */
         :root {
-            --bg: #050505;
-            --card: #121214;
-            --gold: #FFD700;
-            --violet: #8A2BE2;
+            --bg: #0b0b0d;
+            --card: #1a1a1d;
+            --gold: #ffcc00;
+            --violet: #8a2be2;
             --text: #ffffff;
-            --gray: #b3b3b3;
         }
 
         body {
             background-color: var(--bg);
             color: var(--text);
-            font-family: 'Poppins', sans-serif;
-            margin: 0; padding-bottom: 70px;
-            overflow-x: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0; padding: 0;
+            padding-bottom: 70px; /* Nav bar এর জন্য জায়গা */
         }
 
         .hidden { display: none !important; }
 
-        /* Auth UI */
-        #auth-container {
-            display: flex; justify-content: center; align-items: center; height: 100vh;
-        }
+        /* Auth Styling */
         .auth-card {
-            background: var(--card); padding: 30px; width: 85%; max-width: 400px;
-            border-radius: 20px; border: 1px solid var(--violet); text-align: center;
+            max-width: 350px; margin: 100px auto;
+            background: var(--card); padding: 20px;
+            border-radius: 15px; border: 1px solid var(--gold);
+            text-align: center;
         }
-        .auth-card h2 { color: var(--gold); margin-bottom: 20px; }
+
         input {
-            width: 100%; padding: 12px; margin: 10px 0; box-sizing: border-box;
-            background: #1e1e22; border: 1px solid #333; color: white; border-radius: 8px;
-        }
-        .main-btn {
-            background: linear-gradient(45deg, var(--violet), #4b0082);
-            color: white; border: none; padding: 12px; width: 100%;
-            border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;
+            width: 90%; padding: 10px; margin: 10px 0;
+            background: #333; border: none; color: white; border-radius: 5px;
+            box-sizing: border-box;
         }
 
-        /* Top Bar */
+        button {
+            background: linear-gradient(45deg, var(--violet), var(--gold));
+            border: none; padding: 10px 20px; color: black; font-weight: bold;
+            border-radius: 5px; cursor: pointer; width: 95%;
+        }
+
+        /* App Header & Nav */
         header {
-            background: var(--card); padding: 15px; display: flex;
-            justify-content: space-between; align-items: center;
-            border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 100;
-        }
-        .balance-badge {
-            background: rgba(138, 43, 226, 0.2); padding: 5px 15px;
-            border-radius: 20px; border: 1px solid var(--violet); color: var(--gold);
+            background: var(--card); padding: 15px;
+            border-bottom: 2px solid var(--violet);
+            overflow: hidden;
         }
 
-        /* Notice Bar */
-        .notice {
-            background: #1a1a1d; color: var(--gold); padding: 8px; font-size: 13px;
-        }
+        .balance { color: var(--gold); font-size: 1.2rem; float: right; }
 
-        /* Slider Placeholder / Banner Ad Container */
-        .slider {
-            height: 100px; margin: 15px; background: linear-gradient(90deg, #121214, #1e1e22);
-            border-radius: 15px; display: flex; align-items: center; justify-content: center;
-            border: 1px dashed var(--gray); overflow: hidden;
-        }
-
-        /* Task Cards */
-        .grid-container {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px;
-        }
-        .task-card {
-            background: var(--card); padding: 20px; border-radius: 15px;
-            text-align: center; border: 1px solid #222; transition: 0.3s;
-        }
-        .task-card i { font-size: 24px; color: var(--violet); margin-bottom: 10px; }
-
-        /* Wallet Section */
-        .wallet-ui { padding: 20px; }
-        .method-box {
-            background: #1e1e22; padding: 15px; border-radius: 10px; margin-bottom: 15px;
-        }
-
-        /* Bottom Nav */
         .bottom-nav {
-            position: fixed; bottom: 0; width: 100%; background: #0c0c0e;
-            display: flex; justify-content: space-around; padding: 12px 0;
-            border-top: 1px solid #222;
+            position: fixed; bottom: 0; width: 100%;
+            background: var(--card); display: flex;
+            justify-content: space-around; padding: 10px 0;
+            border-top: 1px solid var(--gold);
+            z-index: 1000;
         }
-        .nav-item { color: var(--gray); text-align: center; font-size: 12px; cursor: pointer; }
-        .nav-item.active { color: var(--gold); }
-        .nav-item i { font-size: 20px; display: block; }
+
+        .bottom-nav div { text-align: center; font-size: 0.8rem; cursor: pointer; color: var(--text); }
+        .bottom-nav i { display: block; font-size: 1.2rem; color: var(--gold); }
+
+        /* Task Items */
+        .task-item {
+            background: var(--card); margin: 10px; padding: 15px;
+            border-radius: 10px; display: flex; justify-content: space-between;
+            align-items: center;
+        }
+
+        /* বিজ্ঞাপনের জন্য অতিরিক্ত স্টাইল */
+        #banner-ad-box {
+            margin: 10px;
+            height: 60px;
+            background: #222;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #555;
+        }
     </style>
 </head>
 <body>
 
     <div id="auth-container">
         <div class="auth-card" id="login-box">
-            <h2><i class="fas fa-unlock-alt"></i> Login</h2>
+            <h2>Login</h2>
             <input type="email" id="login-email" placeholder="Email Address">
             <input type="password" id="login-pass" placeholder="Password">
-            <button class="main-btn" onclick="app.login()">Login Now</button>
-            <p style="font-size: 12px; margin-top: 15px;" onclick="app.toggleAuth(true)">Don't have an account? <span style="color:var(--gold)">Register</span></p>
+            <button onclick="app.login()">Login Now</button>
+            <p style="font-size: 12px; margin-top: 15px;" onclick="app.toggleAuth(true)">Register New Account</p>
         </div>
         <div class="auth-card hidden" id="reg-box">
-            <h2><i class="fas fa-user-plus"></i> Register</h2>
+            <h2>Register</h2>
             <input type="text" id="reg-name" placeholder="Full Name">
             <input type="email" id="reg-email" placeholder="Email Address">
-            <input type="password" id="reg-pass" placeholder="Password (6+ chars)">
-            <input type="text" id="reg-ref" placeholder="Refer Code (Optional)">
-            <button class="main-btn" onclick="app.register()">Create Account</button>
-            <p style="font-size: 12px; margin-top: 15px;" onclick="app.toggleAuth(false)">Already have an account? <span style="color:var(--gold)">Login</span></p>
+            <input type="password" id="reg-pass" placeholder="Password">
+            <button onclick="app.register()">Create Account</button>
+            <p style="font-size: 12px; margin-top: 15px;" onclick="app.toggleAuth(false)">Back to Login</p>
         </div>
     </div>
 
     <div id="app-content" class="hidden">
         <header>
-            <div style="font-weight: 600;">Pro<span style="color:var(--violet)">Earn</span></div>
-            <div class="balance-badge">৳ <span id="u-balance">0.00</span></div>
+            <span style="font-weight: bold; color: var(--violet);">Daily Earning</span>
+            <span class="balance">৳ <span id="u-balance">0.00</span></span>
         </header>
 
-        <div class="notice">
-            <marquee id="msg-scroll">Loading official notice from admin...</marquee>
+        <div id="banner-ad-box">
+            <span>Loading Banner Ads...</span>
         </div>
 
         <div id="view-home" class="page-view">
-            <div id="start-banner-ad" class="slider">
-                <span><i class="fas fa-ads"></i> Loading Banner Ads...</span>
+            <div class="task-item" onclick="app.dailyCheck()">
+                <span>Daily Bonus</span>
+                <i class="fas fa-gift" style="color: var(--gold);"></i>
             </div>
-            <div class="grid-container">
-                <div class="task-card" onclick="app.dailyCheck()">
-                    <i class="fas fa-calendar-check"></i>
-                    <div>Daily Bonus</div>
-                </div>
-                <div class="task-card" onclick="app.changeView('task')">
-                    <i class="fas fa-play-circle"></i>
-                    <div>Watch Ads</div>
-                </div>
-                <div class="task-card">
-                    <i class="fas fa-dice"></i>
-                    <div>Lucky Spin</div>
-                </div>
-                <div class="task-card" onclick="app.changeView('wallet')">
-                    <i class="fas fa-money-check-alt"></i>
-                    <div>Withdraw</div>
-                </div>
+            <div class="task-item" onclick="app.changeView('task')">
+                <span>Watch Video Ads</span>
+                <i class="fas fa-play-circle" style="color: var(--violet);"></i>
             </div>
         </div>
 
         <div id="view-task" class="page-view hidden">
-            <h3 style="padding: 15px;">Available Tasks</h3>
-            <div style="padding: 0 15px;">
-                <div class="task-card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span>Video Task #1</span>
-                    <button class="main-btn" style="width: 80px; margin: 0;" onclick="app.completeTask(5)">Start</button>
-                </div>
+            <div class="task-item">
+                <span>Task #1 (Watch Ad)</span>
+                <button style="width: 70px;" onclick="app.completeTask(5)">Start</button>
             </div>
         </div>
 
         <div id="view-wallet" class="page-view hidden">
-            <div class="wallet-ui">
-                <div class="method-box">
-                    <h4>Withdraw Funds</h4>
-                    <select id="w-method" style="width: 100%; padding: 10px; border-radius: 5px; background: #333; color: white;">
-                        <option value="Bkash">bKash</option>
-                        <option value="Nagad">Nagad</option>
-                        <option value="Rocket">Rocket</option>
-                    </select>
-                    <input type="number" id="w-amount" placeholder="Enter Amount">
-                    <input type="text" id="w-number" placeholder="Account Number">
-                    <button class="main-btn" onclick="app.requestWithdraw()">Submit Request</button>
-                </div>
+            <div class="auth-card" style="margin-top: 20px;">
+                <h3>Withdraw</h3>
+                <input type="number" id="w-amount" placeholder="Amount">
+                <input type="text" id="w-number" placeholder="Number">
+                <button onclick="app.requestWithdraw()">Withdraw Now</button>
             </div>
         </div>
 
-        <div id="view-profile" class="page-view hidden">
-            <div style="padding: 20px; text-align: center;">
-                <i class="fas fa-user-circle" style="font-size: 60px; color: var(--violet);"></i>
-                <h3 id="u-name">User Name</h3>
-                <p id="u-email" style="color: var(--gray);"></p>
-                <button class="main-btn" style="background: #ff4444;" onclick="location.reload()">Logout</button>
-            </div>
+        <div class="bottom-nav">
+            <div onclick="app.changeView('home')"><i class="fas fa-home"></i>Home</div>
+            <div onclick="app.changeView('task')"><i class="fas fa-tasks"></i>Task</div>
+            <div onclick="app.changeView('wallet')"><i class="fas fa-wallet"></i>Wallet</div>
+            <div onclick="location.reload()"><i class="fas fa-sign-out-alt"></i>Logout</div>
         </div>
-
-        <nav class="bottom-nav">
-            <div class="nav-item active" onclick="app.changeView('home', this)"><i class="fas fa-home"></i>Home</div>
-            <div class="nav-item" onclick="app.changeView('task', this)"><i class="fas fa-tasks"></i>Task</div>
-            <div class="nav-item" onclick="app.changeView('wallet', this)"><i class="fas fa-wallet"></i>Wallet</div>
-            <div class="nav-item" onclick="app.changeView('profile', this)"><i class="fas fa-user"></i>Profile</div>
-        </nav>
     </div>
 
     <script type="module">
@@ -202,15 +160,14 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getDatabase, ref, set, get, update, push, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
-        // Your Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDvbee_sFG5mIhFPEPO8ggizDByB0byTAM",
             authDomain: "earning-web-app-d515c.firebaseapp.com",
             projectId: "earning-web-app-d515c",
-            storageBucket: "earning-web-app-d515c.firebasestorage.app",
+            databaseURL: "https://earning-web-app-d515c-default-rtdb.firebaseio.com",
+            storageBucket: "earning-web-app-d515c.appspot.com",
             messagingSenderId: "940476940339",
-            appId: "1:940476940339:web:eb81b99117e9294fc86346",
-            measurementId: "G-74LH2RTK1B"
+            appId: "1:940476940339:web:eb81b99117e9294fc86346"
         };
 
         const fApp = initializeApp(firebaseConfig);
@@ -220,7 +177,6 @@
         // --- Start.io Ads Initialization ---
         const startApp = new StartApp("202682403");
 
-        // App Logic Object
         const app = {
             toggleAuth: (isReg) => {
                 document.getElementById('login-box').classList.toggle('hidden', isReg);
@@ -231,108 +187,67 @@
                 const name = document.getElementById('reg-name').value;
                 const email = document.getElementById('reg-email').value;
                 const pass = document.getElementById('reg-pass').value;
-                if(!name || !email || pass.length < 6) return alert("Fill all fields correctly!");
-
                 try {
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    await set(ref(db, 'users/' + res.user.uid), {
-                        name: name, email: email, balance: 0, role: 'user', dailyDate: ''
-                    });
-                    alert("Account Created!");
+                    await set(ref(db, 'users/' + res.user.uid), { name, email, balance: 0 });
+                    alert("Registered!");
                 } catch (e) { alert(e.message); }
             },
 
             login: async () => {
                 const email = document.getElementById('login-email').value;
                 const pass = document.getElementById('login-pass').value;
-                try {
-                    await signInWithEmailAndPassword(auth, email, pass);
-                } catch (e) { alert("Invalid login!"); }
+                try { await signInWithEmailAndPassword(auth, email, pass); } catch (e) { alert("Login failed!"); }
             },
 
-            changeView: (viewId, el) => {
+            changeView: (viewId) => {
                 document.querySelectorAll('.page-view').forEach(v => v.classList.add('hidden'));
                 document.getElementById('view-' + viewId).classList.remove('hidden');
-                if(el) {
-                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                    el.classList.add('active');
-                }
-                // Show Interstitial Ad when switching pages
+                // ইন্টারস্টিশিয়াল অ্যাড দেখানো
                 startApp.showInterstitial();
             },
 
             dailyCheck: async () => {
+                startApp.showInterstitial();
                 const user = auth.currentUser;
-                const today = new Date().toDateString();
-                const snapshot = await get(ref(db, `users/${user.uid}`));
-                const data = snapshot.val();
-
-                if(data.dailyDate === today) {
-                    alert("Already collected today!");
-                } else {
-                    // Show Interstitial Ad before giving bonus
-                    startApp.showInterstitial();
-                    await update(ref(db, `users/${user.uid}`), {
-                        balance: data.balance + 2,
-                        dailyDate: today
-                    });
-                    alert("Success! ৳2 added.");
-                }
+                const snap = await get(ref(db, `users/${user.uid}`));
+                await update(ref(db, `users/${user.uid}`), { balance: snap.val().balance + 2 });
+                alert("Daily Bonus ৳2 added!");
             },
 
             completeTask: async (amount) => {
-                // Show Rewarded Video Ad
+                // রিওয়ার্ডেড ভিডিও অ্যাড
                 startApp.showRewarded({
                     onVideoFinished: async () => {
                         const user = auth.currentUser;
-                        const snapshot = await get(ref(db, `users/${user.uid}`));
-                        await update(ref(db, `users/${user.uid}`), {
-                            balance: snapshot.val().balance + amount
-                        });
+                        const snap = await get(ref(db, `users/${user.uid}`));
+                        await update(ref(db, `users/${user.uid}`), { balance: snap.val().balance + amount });
                         alert("Task Reward ৳" + amount + " added!");
-                    },
-                    onVideoClosed: () => {
-                        alert("You must finish the video to get reward!");
                     }
                 });
             },
 
             requestWithdraw: async () => {
                 const amount = document.getElementById('w-amount').value;
-                const method = document.getElementById('w-method').value;
                 const number = document.getElementById('w-number').value;
                 const user = auth.currentUser;
-
-                if(amount < 20) return alert("Minimum withdraw ৳20");
-                
-                const snapshot = await get(ref(db, `users/${user.uid}`));
-                if(snapshot.val().balance < amount) return alert("Insufficient Balance!");
-
+                const snap = await get(ref(db, `users/${user.uid}`));
+                if(snap.val().balance < amount) return alert("Insufficient Balance!");
                 const newReq = push(ref(db, 'withdrawals'));
-                await set(newReq, {
-                    uid: user.uid, amount, method, number, status: 'pending', email: user.email
-                });
-                await update(ref(db, `users/${user.uid}`), { balance: snapshot.val().balance - amount });
-                alert("Withdraw Request Sent!");
+                await set(newReq, { uid: user.uid, amount, number, status: 'pending' });
+                await update(ref(db, `users/${user.uid}`), { balance: snap.val().balance - amount });
+                alert("Withdraw Requested!");
             }
         };
 
-        // Listen for Auth Changes
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-container').classList.add('hidden');
                 document.getElementById('app-content').classList.remove('hidden');
-                
-                // Load Banner Ad when user is logged in
-                startApp.loadBanner("start-banner-ad");
-
+                // ব্যানার অ্যাড লোড করা
+                startApp.loadBanner("banner-ad-box");
                 onValue(ref(db, 'users/' + user.uid), (snap) => {
-                    const d = snap.val();
-                    if(d) {
-                        document.getElementById('u-balance').innerText = d.balance.toFixed(2);
-                        document.getElementById('u-name').innerText = d.name;
-                        document.getElementById('u-email').innerText = d.email;
-                    }
+                    document.getElementById('u-balance').innerText = snap.val().balance.toFixed(2);
                 });
             }
         });
