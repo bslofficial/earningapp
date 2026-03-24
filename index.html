@@ -3,90 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BSL Official - Best Earning Apps 2026</title>
+    <title>Earning App - BSL Official</title>
     <link rel="stylesheet" href="style.css">
-    
-    <script async type="application/javascript" src="https://a.magsrv.com/ad-provider.js"></script>
-
-    <script type="application/javascript">
-    (function() {
-        var adConfig = {
-            "ads_host": "a.pemsrv.com",
-            "syndication_host": "s.pemsrv.com",
-            "idzone": 5881374,
-            "frequency_period": 60,
-            "frequency_count": 1,
-            "trigger_method": 3,
-            "capping_enabled": true
-        };
-        // Popunder logic here... (আপনার দেওয়া বড় কোডটি ব্যাকগ্রাউন্ডে কাজ করবে)
-    })();
-    </script>
+    <script src="https://www.gstatic.com/startapp/startapp-v1.js"></script>
 </head>
 <body>
+    <div class="main-wrapper">
+        <header>
+            <div class="logo">BSL<span>Official</span></div>
+            <p>২০২৬ সালের সেরা ইনকাম অ্যাপ</p>
+        </header>
 
-    <header>
-        <nav><div class="logo">BSL<span>Official</span></div></nav>
-        <div class="hero">
-            <h1>সেরা ইনকাম অ্যাপের তালিকা</h1>
-            <p>প্রতিদিন কাজ করুন এবং সরাসরি পেমেন্ট বুঝে নিন।</p>
+        <div class="container">
+            <div id="auth-container">
+                <div id="login-box" class="auth-box">
+                    <h2>লগইন করুন</h2>
+                    <input type="email" id="login-email" placeholder="ইমেইল">
+                    <input type="password" id="login-pass" placeholder="পাসওয়ার্ড">
+                    <button id="btn-login" class="btn-sm">Login</button>
+                    <p>একাউন্ট নেই? <span onclick="toggleAuth(true)">রেজিস্ট্রেশন করুন</span></p>
+                </div>
+                <div id="reg-box" class="auth-box hidden">
+                    <h2>নতুন একাউন্ট</h2>
+                    <input type="text" id="reg-name" placeholder="আপনার নাম">
+                    <input type="email" id="reg-email" placeholder="ইমেইল">
+                    <input type="password" id="reg-pass" placeholder="পাসওয়ার্ড (৬ সংখ্যা)">
+                    <button id="btn-reg" class="btn-sm">Register</button>
+                    <p>একাউন্ট আছে? <span onclick="toggleAuth(false)">লগইন করুন</span></p>
+                </div>
+            </div>
         </div>
-    </header>
-
-    <div id="ad-top" style="text-align: center; margin: 20px 0;">
-        <ins class="eas6a97888e2" data-zoneid="5881350"></ins>
-        <script>(AdProvider = window.AdProvider || []).push({"serve": {}});</script>
     </div>
-
-    <section class="container" style="background: #fff9e6; border: 2px dashed #ffcc00; padding: 20px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
-        <h2 style="color: #d4a017;">বন্ধুদের রেফার করে আয় করুন! 🎁</h2>
-        <p>আপনার বন্ধুদের এই ওয়েবসাইটটি শেয়ার করুন। প্রতি সফল জয়েনিংয়ে বোনাস পয়েন্ট পান।</p>
-        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-            <input type="text" value="https://bslofficial.github.io/earningapp/" id="referLink" readonly style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; width: 60%;">
-            <button onclick="copyLink()" class="btn-sm" style="background: #ffcc00; color: #000; border: none;">Copy</button>
-        </div>
-    </section>
-
-    <section id="apps" class="container">
-        <h2 style="text-align: center; margin-bottom: 20px;">উপলব্ধ অ্যাপসমূহ</h2>
-        <div class="card-grid">
-            <div class="card">
-                <h3>Cash Reward Pro</h3>
-                <p>ভিডিও দেখে এবং টাস্ক পূরণ করে আয় করুন।</p>
-                <a href="https://bslofficial.github.io/earningapp/" class="btn-sm">Install Now</a>
-            </div>
-
-            <div class="card">
-                <h3>Quick Earn BD</h3>
-                <p>কুইজ খেলে প্রতিদিন পেমেন্ট নিন।</p>
-                <a href="https://bslofficial.github.io/earningapp/" class="btn-sm">Install Now</a>
-            </div>
-            
-            <div class="card">
-                <h3>Smart Tasker</h3>
-                <p>সহজ সব কাজে ভালো ইনকাম।</p>
-                <a href="https://bslofficial.github.io/earningapp/" class="btn-sm">Install Now</a>
-            </div>
-        </div>
-    </section>
-
-    <div id="recom-widget" style="padding: 20px; background: #f4f4f4; margin-top: 30px;">
-        <h3 style="text-align: center; margin-bottom: 15px;">আপনার জন্য আরও অফার:</h3>
-        <ins class="eas6a97888e20" data-zoneid="5881358"></ins>
-        <script>(AdProvider = window.AdProvider || []).push({"serve": {}});</script>
-    </div>
-
-    <footer><p>&copy; 2026 BSL Official | Trusted Online Income</p></footer>
-
-    <script>
-    function copyLink() {
-        var copyText = document.getElementById("referLink");
-        copyText.select();
-        copyText.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(copyText.value);
-        alert("লিঙ্কটি কপি হয়েছে: " + copyText.value);
-    }
-    </script>
-
+    <footer><p>&copy; 2026 Earning App | BSL Official</p></footer>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
