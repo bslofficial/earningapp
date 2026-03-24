@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earning App - Dashboard</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header><div class="logo">Earning <span>App</span></div></header>
-    
     <div class="container">
         <div id="view-home" class="page-view">
             <div class="user-card">
                 <h3>স্বাগতম, <span id="u-name-display">...</span></h3>
-                <div style="background:#1a237e; color:#ffca28; padding:15px; border-radius:10px; margin-top:10px;">
+                <div style="background:#1a237e; color:#ffca28; padding:20px; border-radius:15px; margin-top:10px;">
                     <p>আপনার ব্যালেন্স</p>
                     <h2>৳ <span id="u-balance">0.00</span></h2>
                 </div>
@@ -24,20 +23,30 @@
                 <div class="task-card" id="btn-video">🎬 ভিডিও টাস্ক</div>
                 <div class="task-card" id="btn-withdraw-ui">💸 উইথড্র</div>
             </div>
+            <div class="extra-btn-container">
+                <div class="extra-card" onclick="changeTab('history')">🕒 হিস্ট্রি</div>
+                <div class="extra-card" onclick="changeTab('team')">👥 রেফার টিম</div>
+            </div>
+            
             <div id="withdraw-section" class="auth-box hidden" style="margin-top:20px;">
-                <h3>টাকা উত্তোলন</h3>
-                <select id="method"><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select>
                 <input type="number" id="w-amount" placeholder="পরিমাণ (মিন: ৫০)">
-                <input type="text" id="w-number" placeholder="নাম্বার">
-                <button id="btn-withdraw-submit" class="btn-sm">Request Withdraw</button>
+                <input type="text" id="w-number" placeholder="বিকাশ/নগদ নাম্বার">
+                <button id="btn-withdraw-submit" class="btn-sm">Request</button>
+            </div>
+        </div>
+
+        <div id="view-team" class="page-view hidden">
+            <div class="user-card">
+                <h2>আমার রেফার টিম 👥</h2>
+                <div id="team-list" style="margin-top:15px; text-align: left;"></div>
             </div>
         </div>
 
         <div id="view-refer" class="page-view hidden">
             <div class="user-card">
-                <h2>রেফার অ্যান্ড আর্ন</h2>
-                <div id="my-refer-code" style="color:#1a237e; border:2px dashed #ffca28; padding:15px; margin:20px 0; font-size:24px; font-weight:bold;">...</div>
-                <p>আপনার বন্ধুদের এই কোড দিয়ে জয়েন করালে প্রতি রেফারে পাবেন ৳৫ বোনাস!</p>
+                <h2>আপনার রেফার কোড</h2>
+                <h1 id="my-refer-code" style="color:#1a237e; border:2px dashed #ffca28; padding:15px; margin:20px 0;">...</h1>
+                <p>প্রতি রেফারে পাবেন ৳৫ বোনাস!</p>
             </div>
         </div>
 
@@ -48,10 +57,18 @@
             </div>
         </div>
 
+        <div id="view-profile" class="page-view hidden">
+            <div class="user-card">
+                <h2>আমার প্রোফাইল 👤</h2>
+                <div id="profile-info" style="text-align: left; margin-top:15px;"></div>
+                <button onclick="logout()" class="btn-sm" style="background:red; color:white; margin-top:20px;">লগআউট</button>
+            </div>
+        </div>
+
         <div id="view-history" class="page-view hidden">
             <div class="user-card">
                 <h2>পেমেন্ট হিস্ট্রি 📜</h2>
-                <div id="history-data" style="margin-top:15px; text-align: left;"></div>
+                <div id="history-data"></div>
             </div>
         </div>
     </div>
@@ -60,7 +77,7 @@
         <div class="nav-item active" id="nav-home" onclick="changeTab('home')"><span class="nav-icon">🏠</span>হোম</div>
         <div class="nav-item" id="nav-refer" onclick="changeTab('refer')"><span class="nav-icon">👥</span>রেফার</div>
         <div class="nav-item" id="nav-leader" onclick="changeTab('leader')"><span class="nav-icon">🏆</span>সেরা</div>
-        <div class="nav-item" id="nav-history" onclick="changeTab('history')"><span class="nav-icon">🕒</span>হিস্ট্রি</div>
+        <div class="nav-item" id="nav-profile" onclick="changeTab('profile')"><span class="nav-icon">👤</span>প্রোফাইল</div>
     </nav>
 
     <script type="module" src="dashboard.js"></script>
