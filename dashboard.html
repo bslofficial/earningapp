@@ -1,42 +1,39 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Earning App</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/startapp/startapp-v1.js"></script>
+</head>
+<body>
+    <div class="main-wrapper">
+        <header><div class="logo">BSL<span>Dashboard</span></div></header>
+        <div class="container">
+            <div class="user-card">
+                <h3>স্বাগতম, <span id="u-name-display">...</span></h3>
+                <div class="balance-box">
+                    <p>আপনার ব্যালেন্স</p>
+                    <h1>৳ <span id="u-balance">0.00</span></h1>
+                </div>
+            </div>
+            <div class="task-grid">
+                <div class="task-card" id="btn-daily">🎁 ডেইলি বোনাস</div>
+                <div class="task-card" onclick="window.location.href='spin.html'">🎡 স্পিন করুন</div>
+                <div class="task-card" id="btn-video">🎬 ভিডিও টাস্ক</div>
+                <div class="task-card" id="btn-withdraw-ui">💸 উইথড্র</div>
+            </div>
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDvbee_sFG5mIhFPEPO8ggizDByB0byTAM",
-    authDomain: "earning-web-app-d515c.firebaseapp.com",
-    projectId: "earning-web-app-d515c",
-    storageBucket: "earning-web-app-d515c.firebasestorage.app",
-    messagingSenderId: "940476940339",
-    appId: "1:940476940339:web:eb81b99117e9294fc86346"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
-
-onAuthStateChanged(auth, (user) => {
-    if (user) window.location.href = "dashboard.html";
-});
-
-window.toggleAuth = (isReg) => {
-    document.getElementById('login-box').classList.toggle('hidden', isReg);
-    document.getElementById('reg-box').classList.toggle('hidden', !isReg);
-};
-
-document.getElementById('btn-login').onclick = () => {
-    const email = document.getElementById('login-email').value;
-    const pass = document.getElementById('login-pass').value;
-    signInWithEmailAndPassword(auth, email, pass).catch(e => alert("ভুল ইমেইল বা পাসওয়ার্ড!"));
-};
-
-document.getElementById('btn-reg').onclick = () => {
-    const name = document.getElementById('reg-name').value;
-    const email = document.getElementById('reg-email').value;
-    const pass = document.getElementById('reg-pass').value;
-    if(name && email && pass.length >= 6) {
-        createUserWithEmailAndPassword(auth, email, pass).then(res => {
-            set(ref(db, 'users/' + res.user.uid), { name, email, balance: 0 });
-        }).catch(e => alert(e.message));
-    } else { alert("সঠিক তথ্য দিন!"); }
-};
+            <div id="withdraw-section" class="auth-box hidden" style="margin-top:20px;">
+                <h3>টাকা উত্তোলন</h3>
+                <select id="method"><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select>
+                <input type="number" id="w-amount" placeholder="পরিমাণ (মিন: ৫০)">
+                <input type="text" id="w-number" placeholder="নাম্বার">
+                <button id="btn-withdraw-submit" class="btn-sm">Request</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="dashboard.js"></script>
+</body>
+</html>
