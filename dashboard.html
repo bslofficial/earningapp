@@ -5,35 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Earning App</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://www.gstatic.com/startapp/startapp-v1.js"></script>
 </head>
 <body>
     <div class="main-wrapper">
-        <header><div class="logo">BSL<span>Dashboard</span></div></header>
+        <header><div class="logo">Earning <span>App</span></div></header>
+        
         <div class="container">
-            <div class="user-card">
-                <h3>স্বাগতম, <span id="u-name-display">...</span></h3>
-                <div class="balance-box">
-                    <p>আপনার ব্যালেন্স</p>
-                    <h1>৳ <span id="u-balance">0.00</span></h1>
+            <div id="view-home" class="page-view">
+                <div class="user-card">
+                    <h3>স্বাগতম, <span id="u-name-display">...</span></h3>
+                    <div class="balance-box" style="background:#1a237e; color:#ffca28; padding:15px; border-radius:10px; margin-top:10px;">
+                        <p>ব্যালেন্স: ৳ <span id="u-balance">0.00</span></p>
+                    </div>
+                </div>
+                <div class="task-grid">
+                    <div class="task-card" id="btn-daily">🎁 ডেইলি বোনাস</div>
+                    <div class="task-card" id="btn-spin">🎡 স্পিন করুন</div>
+                    <div class="task-card" id="btn-video">🎬 ভিডিও টাস্ক</div>
+                    <div class="task-card" id="btn-withdraw-ui">💸 উইথড্র</div>
                 </div>
             </div>
-            <div class="task-grid">
-                <div class="task-card" id="btn-daily">🎁 ডেইলি বোনাস</div>
-                <div class="task-card" onclick="window.location.href='spin.html'">🎡 স্পিন করুন</div>
-                <div class="task-card" id="btn-video">🎬 ভিডিও টাস্ক</div>
-                <div class="task-card" id="btn-withdraw-ui">💸 উইথড্র</div>
+
+            <div id="view-refer" class="page-view hidden">
+                <div class="user-card">
+                    <h2>রেফার করুন</h2>
+                    <p style="margin:10px 0;">আপনার রেফার কোড:</p>
+                    <h1 id="my-refer-code" style="color:#1a237e; border:2px dashed #ffca28; padding:10px; border-radius:10px;">...</h1>
+                    <p style="font-size:12px; margin-top:10px;">প্রতি রেফারে পাবেন ৳৫ বোনাস!</p>
+                </div>
             </div>
 
-            <div id="withdraw-section" class="auth-box hidden" style="margin-top:20px;">
-                <h3>টাকা উত্তোলন</h3>
-                <select id="method"><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select>
-                <input type="number" id="w-amount" placeholder="পরিমাণ (মিন: ৫০)">
-                <input type="text" id="w-number" placeholder="নাম্বার">
-                <button id="btn-withdraw-submit" class="btn-sm">Request</button>
+            <div id="view-leader" class="page-view hidden">
+                <div class="list-card">
+                    <h2>লিডারবোর্ড 🏆</h2>
+                    <table class="lb-table">
+                        <tbody id="lb-data"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="changeTab('home')"><span class="nav-icon">🏠</span>হোম</div>
+        <div class="nav-item" onclick="changeTab('refer')"><span class="nav-icon">👥</span>রেফার</div>
+        <div class="nav-item" onclick="changeTab('leader')"><span class="nav-icon">🏆</span>সেরা</div>
+    </nav>
+
     <script type="module" src="dashboard.js"></script>
 </body>
 </html>
