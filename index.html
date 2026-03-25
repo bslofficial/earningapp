@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Earning App - BSL Official</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div id="app">
@@ -18,14 +17,15 @@
                 <div id="reg-inputs" class="hidden">
                     <input type="text" id="name" placeholder="আপনার পুরো নাম">
                 </div>
-                <button id="auth-btn" class="btn-sm">Login</button>
-                <p id="toggle-text" style="margin-top:15px; cursor:pointer;">একাউন্ট নেই? <span onclick="window.toggleAuth()" style="color:#1a237e; font-weight:bold;">রেজিস্ট্রেশন করুন</span></p>
+                <button id="auth-btn" class="btn-sm">প্রবেশ করুন</button>
+                <p style="margin-top:15px; cursor:pointer;">একাউন্ট নেই? <span onclick="window.toggleAuth()" style="color:#1a237e; font-weight:bold;">রেজিস্ট্রেশন করুন</span></p>
             </div>
         </div>
 
         <div id="main-page" class="hidden">
             <header><div class="logo">Earning <span>App</span></div></header>
             <div class="container main-content">
+                
                 <div id="view-home" class="page-view">
                     <div class="user-card">
                         <h3>স্বাগতম, <span id="u-name-display">...</span></h3>
@@ -39,6 +39,17 @@
                         <div class="task-card" onclick="window.changeTab('spin')">🎡 স্পিন করুন</div>
                         <div class="task-card" onclick="window.runTask(5)">🎬 ভিডিও টাস্ক</div>
                         <div class="task-card" onclick="window.changeTab('withdraw')">💸 উইথড্র</div>
+                    </div>
+                </div>
+
+                <div id="view-spin" class="page-view hidden">
+                    <div class="user-card">
+                        <h2>লাকি স্পিন 🎡</h2>
+                        <div class="wheel-container">
+                            <div id="wheel" class="wheel">🎡</div>
+                        </div>
+                        <p id="spin-status">আপনার ভাগ্য পরীক্ষা করুন!</p>
+                        <button id="spin-btn" onclick="window.startSpin()" class="btn-sm">স্পিন করুন</button>
                     </div>
                 </div>
 
@@ -70,9 +81,9 @@
             </div>
 
             <nav class="bottom-nav">
-                <div class="nav-item active" id="nav-home" onclick="window.changeTab('home')"><span class="nav-icon">🏠</span>হোম</div>
-                <div class="nav-item" id="nav-leader" onclick="window.changeTab('leader')"><span class="nav-icon">🏆</span>সেরা</div>
-                <div class="nav-item" id="nav-profile" onclick="window.changeTab('profile')"><span class="nav-icon">👤</span>প্রোফাইল</div>
+                <div class="nav-item active" id="nav-home" onclick="window.changeTab('home')">🏠 হোম</div>
+                <div class="nav-item" id="nav-leader" onclick="window.changeTab('leader')">🏆 সেরা</div>
+                <div class="nav-item" id="nav-profile" onclick="window.changeTab('profile')">👤 প্রোফাইল</div>
             </nav>
         </div>
     </div>
