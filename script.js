@@ -11,132 +11,77 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
-
-// আপনার অ্যাডস্টার ডাইরেক্ট লিংক
 const AD_LINK = "https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb";
 
-// ১. ট্যাব ম্যানেজমেন্ট ও লিডারবোর্ড লোড
-window.changeTab = function(name) {
+// ট্যাব পরিবর্তন ও লিডারবোর্ড লোড
+window.changeTab = (name) => {
     document.querySelectorAll('.page-view').forEach(v => v.classList.add('hidden'));
-    const target = document.getElementById('view-' + name);
-    if(target) target.classList.remove('hidden');
-
+    document.getElementById('view-' + name).classList.remove('hidden');
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    const navBtn = document.getElementById('nav-' + name);
-    if(navBtn) navBtn.classList.add('active');
-
-    // সেরা ১০ জনের লিস্ট লোড করা
-    if(name === 'leader') {
-        loadLeaderboard();
-    }
+    document.getElementById('nav-' + name)?.classList.add('active');
+    if(name === 'leader') loadLeaderboard();
 };
 
 function loadLeaderboard() {
-    const userQuery = query(ref(db, 'users'), orderByChild('balance'), limitToLast(10));
-    onValue(userQuery, snap => {
+    const q = query(ref(db, 'users'), orderByChild('balance'), limitToLast(10));
+    onValue(q, snap => {
         let html = '';
         let users = [];
-        snap.forEach(child => { users.push(child.val()); });
+        snap.forEach(c => users.push(c.val()));
         users.reverse().forEach((u, i) => {
-            html += `<div class="lb-item"><span class="lb-name">${i+1}. ${u.name}</span><span class="lb-balance">৳${(u.balance || 0).toFixed(2)}</span></div>`;
+            html += `<div class="lb-item"><span>${i+1}. ${u.name}</span><b>৳${(u.balance || 0).toFixed(2)}</b></div>`;
         });
-        document.getElementById('lb-list').innerHTML = html || "কোনো ডাটা নেই";
+        document.getElementById('lb-list').innerHTML = html;
     });
 }
 
-// ২. বিজ্ঞাপন টাস্ক (Adsterra Direct Link)
-window.runTask = async function(reward) {
-    alert("বিজ্ঞাপন ওপেন হচ্ছে। ১০ সেকেন্ড দেখুন এবং ব্যাক করুন।");
+// বিজ্ঞাপন টাস্ক
+window.runTask = (reward) => {
+    alert("বিজ্ঞাপনটি ১০ সেকেন্ড দেখুন।");
     window.open(AD_LINK, '_blank');
-    
     setTimeout(async () => {
         const user = auth.currentUser;
         if(user) {
             const userRef = ref(db, 'users/' + user.uid);
             const snap = await get(userRef);
-            const newBal = (snap.val().balance || 0) + reward;
-            await update(userRef, { balance: newBal });
-            alert(`অভিনন্দন! আপনার ব্যালেন্সে ৳${reward} যোগ হয়েছে।`);
+            await update(userRef, { balance: (snap.val().balance || 0) + reward });
+            alert(`৳${reward} যোগ হয়েছে!`);
         }
     }, 10000);
 };
 
-// ৩. উইথড্র সিস্টেম (বিকাশ/নগদ)
-window.submitWithdraw = async function() {
-    const amount = parseFloat(document.getElementById('w-amount').value);
-    const number = document.getElementById('w-number').value;
-    const method = document.getElementById('method').value;
-    const user = auth.currentUser;
-
-    if(!amount || amount < 50) return alert("সর্বনিম্ন ৫০ টাকা উত্তোলন করা যাবে।");
-    if(!number || number.length < 11) return alert("সঠিক মোবাইল নাম্বার দিন।");
-
-    const userRef = ref(db, 'users/' + user.uid);
-    const snap = await get(userRef);
-    const currentBal = snap.val().balance || 0;
-
-    if(currentBal < amount) return alert("আপনার ব্যালেন্স পর্যাপ্ত নয়!");
-
-    // ব্যালেন্স কাটা এবং রিকোয়েস্ট ডাটাবেসে পাঠানো
-    await update(userRef, { balance: currentBal - amount });
-    const requestRef = ref(db, 'withdraw_requests');
-    await push(requestRef, {
-        uid: user.uid,
-        name: snap.val().name,
-        amount: amount,
-        number: number,
-        method: method,
-        status: "Pending",
-        time: new Date().toLocaleString()
-    });
-    alert("আপনার উইথড্র রিকোয়েস্ট সফল হয়েছে। ২৪ ঘণ্টার মধ্যে পেমেন্ট পাবেন।");
-};
-
-// ৪. স্পিন লজিক
-let isSpinning = false;
-window.startSpin = function() {
-    if (isSpinning) return;
-    isSpinning = true;
+// স্পিন লজিক
+window.startSpin = () => {
     const wheel = document.getElementById('wheel');
-    const randomDeg = Math.floor(Math.random() * 360) + 3600;
-    wheel.style.transform = `rotate(${randomDeg}deg)`;
+    wheel.style.transform = `rotate(${Math.floor(Math.random() * 360) + 1440}deg)`;
+    document.getElementById('spin-btn').disabled = true;
     
     setTimeout(async () => {
-        isSpinning = false;
-        const actualDeg = randomDeg % 360;
-        let reward = 1; 
-        if (actualDeg < 60) reward = 3;
-        else if (actualDeg < 120) reward = 0;
-        else if (actualDeg < 180) reward = 10;
-        else if (actualDeg < 240) reward = 2;
-        else if (actualDeg < 300) reward = 5;
-
+        const reward = Math.floor(Math.random() * 5);
         const user = auth.currentUser;
-        if (user) {
+        if(user) {
             const userRef = ref(db, 'users/' + user.uid);
             const snap = await get(userRef);
-            const newBal = (snap.val().balance || 0) + reward;
-            await update(userRef, { balance: newBal });
-            alert(`অভিনন্দন! আপনি ৳${reward} জিতেছেন।`);
+            await update(userRef, { balance: (snap.val().balance || 0) + reward });
+            alert(`আপনি ৳${reward} জিতেছেন!`);
+            document.getElementById('spin-btn').disabled = false;
         }
     }, 4000);
 };
 
-// ৫. অথেন্টিকেশন ও প্রোফাইল রিয়েল-টাইম আপডেট
+// অথেন্টিকেশন চেক
 onAuthStateChanged(auth, (user) => {
     if(user) {
         document.getElementById('auth-page').classList.add('hidden');
         document.getElementById('main-page').classList.remove('hidden');
-        
         onValue(ref(db, 'users/' + user.uid), snap => {
-            const data = snap.val();
-            if(data) {
-                const bal = (data.balance || 0).toFixed(2);
-                document.getElementById('u-balance').innerText = bal;
-                document.getElementById('u-name-display').innerText = data.name;
-                document.getElementById('p-name').innerText = data.name;
+            const d = snap.val();
+            if(d) {
+                document.getElementById('u-balance').innerText = d.balance.toFixed(2);
+                document.getElementById('u-name-display').innerText = d.name;
+                document.getElementById('p-name').innerText = d.name;
                 document.getElementById('p-email').innerText = user.email;
-                document.getElementById('p-balance').innerText = bal;
+                document.getElementById('p-balance').innerText = d.balance.toFixed(2);
             }
         });
     } else {
@@ -145,31 +90,23 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-window.logout = () => signOut(auth).then(() => window.location.reload());
-
-// ৬. লগইন ও রেজিস্ট্রেশন সিস্টেম
+// লগইন/রেজিস্ট্রেশন
 let isReg = false;
 window.toggleAuth = () => {
     isReg = !isReg;
-    document.getElementById('login-inputs').classList.toggle('hidden', isReg);
     document.getElementById('reg-inputs').classList.toggle('hidden', !isReg);
-    document.getElementById('auth-title').innerText = isReg ? "নতুন একাউন্ট" : "লগইন করুন";
-    document.getElementById('auth-btn').innerText = isReg ? "Register" : "Login";
+    document.getElementById('auth-title').innerText = isReg ? "একাউন্ট তৈরি" : "লগইন";
 };
 
 document.getElementById('auth-btn').onclick = () => {
-    const email = document.getElementById('email').value.trim();
-    const pass = document.getElementById('pass').value;
-    
-    if(!email || !pass) return alert("ইমেইল এবং পাসওয়ার্ড দিন!");
-
+    const e = document.getElementById('email').value;
+    const p = document.getElementById('pass').value;
     if(isReg) {
-        const name = document.getElementById('name').value.trim();
-        if(!name) return alert("আপনার নাম লিখুন!");
-        createUserWithEmailAndPassword(auth, email, pass).then(res => {
-            set(ref(db, 'users/' + res.user.uid), { name, email, balance: 0 });
-        }).catch(e => alert("ভুল তথ্য অথবা ইমেইলটি আগে ব্যবহার করা হয়েছে!"));
+        const n = document.getElementById('name').value;
+        createUserWithEmailAndPassword(auth, e, p).then(r => set(ref(db, 'users/' + r.user.uid), { name: n, email: e, balance: 0 }));
     } else {
-        signInWithEmailAndPassword(auth, email, pass).catch(e => alert("লগইন হয়নি! ইমেইল বা পাসওয়ার্ড ভুল।"));
+        signInWithEmailAndPassword(auth, e, p).catch(() => alert("ভুল তথ্য!"));
     }
 };
+
+window.logout = () => signOut(auth);
