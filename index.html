@@ -55,45 +55,36 @@
                     </div>
                 </div>
 
-                <div id="view-spin" class="page-view hidden">
+                <div id="view-profile" class="page-view hidden">
                     <div class="user-card">
-                        <h2>লাকি স্পিন 🎡</h2>
-                        <div class="wheel-container">
-                            <div id="wheel" class="wheel">
-                                <div class="segment" style="--i:1;--c:#1a237e;"><span>৳১</span></div>
-                                <div class="segment" style="--i:2;--c:#ffca28;"><span>৳৫</span></div>
-                                <div class="segment" style="--i:3;--c:#1a237e;"><span>৳২</span></div>
-                                <div class="segment" style="--i:4;--c:#ffca28;"><span>৳১০</span></div>
-                                <div class="segment" style="--i:5;--c:#1a237e;"><span>৳০</span></div>
-                                <div class="segment" style="--i:6;--c:#ffca28;"><span>৳৩</span></div>
-                            </div>
-                            <div class="pointer">▼</div>
+                        <h2>আমার প্রোফাইল 👤</h2>
+                        <div class="profile-info">
+                            <p><strong>নাম:</strong> <span id="p-name">...</span></p>
+                            <p><strong>ইমেইল:</strong> <span id="p-email">...</span></p>
+                            <p><strong>মোট আয়:</strong> ৳ <span id="p-balance">0.00</span></p>
                         </div>
-                        <button onclick="window.startSpin()" class="btn-sm">স্পিন করুন</button>
+                        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+                        <button onclick="window.logout()" class="btn-sm" style="background: #ff5252; color: white;">লগআউট করুন</button>
                     </div>
                 </div>
 
+                <div id="view-spin" class="page-view hidden">
+                    <div class="user-card"><h2>লাকি স্পিন 🎡</h2><button onclick="window.startSpin()" class="btn-sm">স্পিন করুন</button></div>
+                </div>
                 <div id="view-withdraw" class="page-view hidden">
-                    <div class="auth-box">
-                        <h3>টাকা উত্তোলন</h3>
-                        <select id="method"><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select>
-                        <input type="number" id="w-amount" placeholder="পরিমাণ (মিন: ৫০)">
-                        <input type="text" id="w-number" placeholder="নাম্বার">
-                        <button onclick="window.submitWithdraw()" class="btn-sm">Request Withdraw</button>
-                    </div>
+                    <div class="auth-box"><h3>টাকা উত্তোলন</h3><input type="number" id="w-amount" placeholder="পরিমাণ"><button onclick="window.submitWithdraw()" class="btn-sm">Request</button></div>
                 </div>
-
-                <div id="view-leader" class="page-view hidden"><div class="user-card"><h2>সেরা ১০ জন 🏆</h2><table class="lb-table"><tbody id="lb-data"></tbody></table></div></div>
-                <div id="view-history" class="page-view hidden"><div class="user-card"><h2>পেমেন্ট হিস্ট্রি 📜</h2><div id="history-data"></div></div></div>
-                <div id="view-team" class="page-view hidden"><div class="user-card"><h2>রেফার টিম 👥</h2><div id="team-data"></div></div></div>
-                <div id="view-refer" class="page-view hidden"><div class="user-card"><h2>রেফার করুন 👥</h2><p>আপনার রেফার কোড বন্ধুদের শেয়ার করুন।</p></div></div>
+                <div id="view-leader" class="page-view hidden"><div class="user-card"><h2>সেরা ১০ জন 🏆</h2><div id="lb-data"></div></div></div>
+                <div id="view-history" class="page-view hidden"><div class="user-card"><h2>হিস্ট্রি 📜</h2><div id="history-data"></div></div></div>
+                <div id="view-team" class="page-view hidden"><div class="user-card"><h2>টিম 👥</h2><div id="team-data"></div></div></div>
+                <div id="view-refer" class="page-view hidden"><div class="user-card"><h2>রেফার করুন 👥</h2><p>রেফার কোড শেয়ার করুন।</p></div></div>
             </div>
 
             <nav class="bottom-nav">
                 <div class="nav-item active" id="nav-home" onclick="window.changeTab('home')"><span class="nav-icon">🏠</span>হোম</div>
                 <div class="nav-item" id="nav-refer" onclick="window.changeTab('refer')"><span class="nav-icon">👥</span>রেফার</div>
                 <div class="nav-item" id="nav-leader" onclick="window.changeTab('leader')"><span class="nav-icon">🏆</span>সেরা</div>
-                <div class="nav-item" onclick="window.logout()"><span class="nav-icon">👤</span>লগআউট</div>
+                <div class="nav-item" id="nav-profile" onclick="window.changeTab('profile')"><span class="nav-icon">👤</span>প্রোফাইল</div>
             </nav>
         </div>
     </div>
