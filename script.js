@@ -16,22 +16,26 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
+// লগইন থাকলে ড্যাশবোর্ডে পাঠিয়ে দাও
 onAuthStateChanged(auth, (user) => { if (user) window.location.href = "dashboard.html"; });
 
+// HTML এর জন্য ফাংশন এক্সপোজ করা
 window.toggleAuth = (isReg) => {
     document.getElementById('login-box').classList.toggle('hidden', isReg);
     document.getElementById('reg-box').classList.toggle('hidden', !isReg);
 };
 
-document.getElementById('btn-login').onclick = () => {
+// লগইন বাটন ইভেন্ট
+document.getElementById('btn-login').addEventListener('click', () => {
     const email = document.getElementById('login-email').value;
     const pass = document.getElementById('login-pass').value;
     if(email && pass) {
         signInWithEmailAndPassword(auth, email, pass).catch(e => alert("ভুল ইমেইল বা পাসওয়ার্ড!"));
     } else { alert("সব তথ্য দিন!"); }
-};
+});
 
-document.getElementById('btn-reg').onclick = () => {
+// রেজিস্ট্রেশন বাটন ইভেন্ট
+document.getElementById('btn-reg').addEventListener('click', () => {
     const name = document.getElementById('reg-name').value;
     const email = document.getElementById('reg-email').value;
     const pass = document.getElementById('reg-pass').value;
@@ -40,5 +44,5 @@ document.getElementById('btn-reg').onclick = () => {
             const referCode = res.user.uid.substring(0, 6).toUpperCase();
             set(ref(db, 'users/' + res.user.uid), { name, email, balance: 0, referCode: referCode });
         }).catch(e => alert(e.message));
-    } else { alert("সঠিক তথ্য দিন!"); }
-};
+    } else { alert("সঠিক তথ্য দিন (পাসওয়ার্ড কমপক্ষে ৬ সংখ্যা)!"); }
+});
