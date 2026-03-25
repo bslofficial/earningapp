@@ -13,48 +13,67 @@ const db = getDatabase(app);
 
 const AD_LINK = "https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb";
 
-// ১. বিজ্ঞাপন ফাংশন (Global করা হয়েছে যাতে HTML থেকে কল করা যায়)
+// ১. বিজ্ঞাপন ফাংশন
 window.runTask = async function(reward) {
     alert("বিজ্ঞাপন ওপেন হচ্ছে। ১০ সেকেন্ড দেখুন।");
-    window.open(AD_LINK, '_blank');
+    const adWindow = window.open(AD_LINK, '_blank');
+    
+    if (!adWindow) {
+        alert("Pop-up ব্লক করা! দয়া করে ব্রাউজার সেটিং থেকে Pop-up allow করুন।");
+        return;
+    }
     
     setTimeout(async () => {
         const user = auth.currentUser;
         if(user) {
-            const snap = await get(ref(db, 'users/' + user.uid));
+            const userRef = ref(db, 'users/' + user.uid);
+            const snap = await get(userRef);
             const currentBal = snap.val().balance || 0;
-            await update(ref(db, 'users/' + user.uid), { balance: currentBal + reward });
+            await update(userRef, { balance: currentBal + reward });
             alert(`৳${reward} আপনার ব্যালেন্সে যোগ হয়েছে!`);
         }
-    }, 10000); // ১০ সেকেন্ড পর ব্যালেন্স যোগ হবে
+    }, 10000); 
 };
 
 // ২. ট্যাব পরিবর্তন
 window.changeTab = (name) => {
-    document.querySelectorAll('.page-view').forEach(v => v.classList.add('hidden'));
-    document.getElementById('view-' + name).classList.remove('hidden');
+    const views = document.querySelectorAll('.page-view');
+    views.forEach(v => v.classList.add('hidden'));
+    
+    const targetView = document.getElementById('view-' + name);
+    if(targetView) targetView.classList.remove('hidden');
+
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    if(document.getElementById('nav-' + name)) document.getElementById('nav-' + name).classList.add('active');
+    const navItem = document.getElementById('nav-' + name);
+    if(navItem) navItem.classList.add('active');
 };
 
-// ৩. উইথড্র টগল (Dashboard এ বাটনটি আইডি দিয়ে ধরা হয়েছে)
+// ৩. ইভেন্ট লিসেনার এবং উইথড্র টগল
 document.addEventListener('DOMContentLoaded', () => {
     const wdBtn = document.getElementById('btn-withdraw-ui');
     if(wdBtn) {
-        wdBtn.onclick = () => document.getElementById('withdraw-section').classList.toggle('hidden');
+        wdBtn.onclick = () => {
+            const section = document.getElementById('withdraw-section');
+            if(section) section.classList.toggle('hidden');
+        };
     }
 });
 
 // ব্যালেন্স আপডেট লাইভ
 onAuthStateChanged(auth, (user) => {
-    if (!user) window.location.href = "index.html";
-    onValue(ref(db, 'users/' + user.uid), snap => {
-        const data = snap.val();
-        if(data) {
-            document.getElementById('u-balance').innerText = (data.balance || 0).toFixed(2);
-            document.getElementById('u-name-display').innerText = data.name;
-        }
-    });
+    if (!user) {
+        window.location.href = "index.html";
+    } else {
+        onValue(ref(db, 'users/' + user.uid), snap => {
+            const data = snap.val();
+            if(data) {
+                const balEl = document.getElementById('u-balance');
+                const nameEl = document.getElementById('u-name-display');
+                if(balEl) balEl.innerText = (data.balance || 0).toFixed(2);
+                if(nameEl) nameEl.innerText = data.name;
+            }
+        });
+    }
 });
 
 window.logout = () => signOut(auth).then(() => window.location.href="index.html");
