@@ -42,3 +42,14 @@ input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 
 .segment { position: absolute; width: 50%; height: 50%; background: var(--c); transform-origin: 100% 100%; transform: rotate(calc(60deg * var(--i))) skewY(-30deg); display: flex; align-items: center; justify-content: center; }
 .segment span { transform: skewY(30deg) rotate(-30deg); color: white; font-weight: bold; margin-left: 35px; }
 .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 25px; color: red; z-index: 10; }
+.lb-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    background: #f9f9f9;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border-left: 4px solid #ffca28;
+}
+.lb-name { font-weight: bold; color: #1a237e; }
+.lb-balance { color: #2e7d32; font-weight: bold; }
