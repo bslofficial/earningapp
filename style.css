@@ -1,37 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Hind Siliguri', sans-serif; background: #f4f7f6; overflow-x: hidden; }
+body { font-family: 'Hind Siliguri', sans-serif; background: #f4f7f6; }
 
 header { background: #1a237e; color: white; padding: 25px; text-align: center; border-bottom: 4px solid #ffca28; }
 .logo { font-size: 24px; font-weight: bold; }
 .logo span { color: #ffca28; }
 
 .container { max-width: 500px; margin: 0 auto; padding: 15px; }
-.main-content { padding-bottom: 90px; }
+.main-content { padding-bottom: 90px; } /* যাতে বটম মেনু কন্টেন্টকে না ঢাকে */
 
 .auth-box, .user-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; margin-bottom: 15px; }
 .hidden { display: none !important; }
 
 .balance-card { background: #1a237e; color: white; padding: 25px; border-radius: 15px; margin-top: 15px; }
-.balance-card h2 { color: #ffca28; font-size: 30px; margin-top: 5px; }
+.balance-card h2 { color: #ffca28; font-size: 32px; margin-top: 5px; }
 
 input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; }
 .btn-sm { width: 100%; background: #ffca28; padding: 12px; border: none; font-weight: bold; cursor: pointer; border-radius: 8px; font-size: 16px; transition: 0.3s; }
+.btn-sm:active { transform: scale(0.95); }
 
-/* Bottom Nav */
-.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: white; display: flex; align-items: center; border-top: 1px solid #eee; z-index: 1000; }
+/* Bottom Navigation */
+.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: white; display: flex; align-items: center; border-top: 1px solid #eee; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
 .nav-item { flex: 1; text-align: center; color: #888; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; flex-direction: column; align-items: center; }
 .nav-item.active { color: #1a237e; }
 .nav-icon { font-size: 22px; margin-bottom: 2px; }
-
-/* Profile View Styling */
-.profile-info { text-align: left; margin-top: 15px; }
-.profile-info p { font-size: 16px; margin-bottom: 10px; color: #333; padding: 12px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
-.profile-info strong { color: #1a237e; }
 
 /* Grid Tasks */
 .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
 .task-card { background: white; padding: 20px; border-radius: 12px; text-align: center; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 .extra-btn-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
 .extra-card { background: white; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; }
+
+/* Profile View Styling */
+.profile-info { text-align: left; margin-top: 15px; }
+.profile-info p { font-size: 16px; margin-bottom: 10px; color: #333; padding: 12px; background: #f9f9f9; border-radius: 8px; border-left: 4px solid #1a237e; }
+
+/* Spin Wheel */
+.wheel-container { position: relative; width: 220px; height: 220px; margin: 15px auto; }
+.wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #1a237e; position: relative; overflow: hidden; transition: 4s cubic-bezier(0.1, 0, 0.2, 1); }
+.segment { position: absolute; width: 50%; height: 50%; background: var(--c); transform-origin: 100% 100%; transform: rotate(calc(60deg * var(--i))) skewY(-30deg); display: flex; align-items: center; justify-content: center; }
+.segment span { transform: skewY(30deg) rotate(-30deg); color: white; font-weight: bold; margin-left: 35px; }
+.pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 25px; color: red; z-index: 10; }
