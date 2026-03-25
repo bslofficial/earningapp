@@ -12,9 +12,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-const AD_LINK = "https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb";
-
-// ১. ট্যাব ফাংশন
+// ট্যাব সিস্টেম
 window.changeTab = function(name) {
     document.querySelectorAll('.page-view').forEach(v => v.classList.add('hidden'));
     const target = document.getElementById('view-' + name);
@@ -25,59 +23,25 @@ window.changeTab = function(name) {
     if(navBtn) navBtn.classList.add('active');
 };
 
-// ২. বিজ্ঞাপন টাস্ক
-window.runTask = async function(reward) {
-    alert("বিজ্ঞাপন ওপেন হচ্ছে। ১০ সেকেন্ড দেখুন।");
-    window.open(AD_LINK, '_blank');
-    setTimeout(async () => {
-        const user = auth.currentUser;
-        if(user) {
-            const userRef = ref(db, 'users/' + user.uid);
-            const snap = await get(userRef);
-            const newBal = (snap.val().balance || 0) + reward;
-            await update(userRef, { balance: newBal });
-            alert(`৳${reward} যোগ হয়েছে!`);
-        }
-    }, 10000);
-};
-
-// ৩. স্পিন লজিক
-let isSpinning = false;
-window.startSpin = function() {
-    if (isSpinning) return;
-    isSpinning = true;
-    const wheel = document.getElementById('wheel');
-    const randomDeg = Math.floor(Math.random() * 360) + 3600;
-    wheel.style.transform = `rotate(${randomDeg}deg)`;
-    
-    setTimeout(async () => {
-        isSpinning = false;
-        const actualDeg = randomDeg % 360;
-        let reward = 1; // ডিফল্ট
-        if (actualDeg < 60) reward = 3;
-        else if (actualDeg < 120) reward = 0;
-        else if (actualDeg < 180) reward = 10;
-
-        const user = auth.currentUser;
-        if (user) {
-            const userRef = ref(db, 'users/' + user.uid);
-            const snap = await get(userRef);
-            const newBal = (snap.val().balance || 0) + reward;
-            await update(userRef, { balance: newBal });
-            alert(`অভিনন্দন! আপনি ৳${reward} জিতেছেন।`);
-        }
-    }, 4000);
-};
-
-// ৪. অথেন্টিকেশন
+// অথেন্টিকেশন লজিক
 onAuthStateChanged(auth, (user) => {
     if(user) {
         document.getElementById('auth-page').classList.add('hidden');
         document.getElementById('main-page').classList.remove('hidden');
+        
         onValue(ref(db, 'users/' + user.uid), snap => {
             const data = snap.val();
-            document.getElementById('u-balance').innerText = (data.balance || 0).toFixed(2);
-            document.getElementById('u-name-display').innerText = data.name;
+            if(data) {
+                // ডাটা ডিসপ্লে আপডেট
+                const balance = (data.balance || 0).toFixed(2);
+                document.getElementById('u-balance').innerText = balance;
+                document.getElementById('u-name-display').innerText = data.name;
+
+                // প্রোফাইল পেজ আপডেট
+                document.getElementById('p-name').innerText = data.name;
+                document.getElementById('p-email').innerText = user.email;
+                document.getElementById('p-balance').innerText = balance;
+            }
         });
     } else {
         document.getElementById('auth-page').classList.remove('hidden');
@@ -87,6 +51,7 @@ onAuthStateChanged(auth, (user) => {
 
 window.logout = () => signOut(auth);
 
+// লগইন/রেজিস্ট্রেশন টগল ও সাবমিট
 let isReg = false;
 window.toggleAuth = () => {
     isReg = !isReg;
@@ -105,5 +70,17 @@ document.getElementById('auth-btn').onclick = () => {
         }).catch(e => alert(e.message));
     } else {
         signInWithEmailAndPassword(auth, email, pass).catch(e => alert("ভুল তথ্য!"));
+    }
+};
+
+// টাস্ক ফাংশন (উদাহরণ)
+window.runTask = async function(reward) {
+    const user = auth.currentUser;
+    if(user) {
+        const userRef = ref(db, 'users/' + user.uid);
+        const snap = await get(userRef);
+        const newBal = (snap.val().balance || 0) + reward;
+        await update(userRef, { balance: newBal });
+        alert(`৳${reward} বোনাস পেয়েছেন!`);
     }
 };
