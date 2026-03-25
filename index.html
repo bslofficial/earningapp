@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earning App</title>
+    <title>Earning App - BSL Official</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div id="app">
@@ -15,20 +16,27 @@
             </header>
             <div class="auth-box">
                 <h2 id="auth-title">লগইন করুন</h2>
+                
                 <div id="login-inputs">
-                    <input type="email" id="email" placeholder="ইমেইল">
+                    <input type="email" id="email" placeholder="আপনার ইমেইল">
                     <input type="password" id="pass" placeholder="পাসওয়ার্ড">
                 </div>
+                
                 <div id="reg-inputs" class="hidden">
-                    <input type="text" id="name" placeholder="আপনার নাম">
+                    <input type="text" id="name" placeholder="আপনার পুরো নাম">
+                    <input type="email" id="reg-email" placeholder="ইমেইল">
+                    <input type="password" id="reg-pass" placeholder="পাসওয়ার্ড (কমপক্ষে ৬ সংখ্যা)">
+                    <input type="text" id="reg-ref" placeholder="রেফার কোড (যদি থাকে)">
                 </div>
+                
                 <button id="auth-btn" class="btn-sm">Login</button>
-                <p id="toggle-text">একাউন্ট নেই? <span onclick="window.toggleAuth()">রেজিস্ট্রেশন করুন</span></p>
+                <p id="toggle-text">একাউন্ট নেই? <span onclick="window.toggleAuth()" style="color:#1a237e; cursor:pointer; font-weight:bold;">রেজিস্ট্রেশন করুন</span></p>
             </div>
         </div>
 
         <div id="main-page" class="hidden">
             <header><div class="logo">Earning <span>App</span></div></header>
+            
             <div class="container">
                 <div class="user-card">
                     <h3>স্বাগতম, <span id="u-name-display">...</span></h3>
@@ -39,24 +47,58 @@
                 </div>
 
                 <div class="task-grid">
-                    <div class="task-card" onclick="window.runTask(2)">🎁 ডেইলি বোনাস</div>
-                    <div class="task-card" onclick="window.runTask(5)">🎬 ভিডিও টাস্ক</div>
-                    <div class="task-card" id="btn-withdraw-ui">💸 উইথড্র</div>
+                    <div class="task-card" onclick="window.runTask(2)">
+                        <span class="task-icon">🎁</span>
+                        ডেইলি বোনাস
+                    </div>
+                    <div class="task-card" onclick="window.location.href='spin.html'">
+                        <span class="task-icon">🎡</span>
+                        স্পিন করুন
+                    </div>
+                    <div class="task-card" onclick="window.runTask(5)">
+                        <span class="task-icon">🎬</span>
+                        ভিডিও টাস্ক
+                    </div>
+                    <div class="task-card" id="btn-withdraw-ui">
+                        <span class="task-icon">💸</span>
+                        উইথড্র
+                    </div>
+                </div>
+
+                <div class="extra-btn-container">
+                    <div class="extra-card" onclick="changeTab('history')">
+                        <span class="nav-icon">🕒</span> হিস্ট্রি
+                    </div>
+                    <div class="extra-card" onclick="changeTab('team')">
+                        <span class="nav-icon">👥</span> রেফার টিম
+                    </div>
                 </div>
 
                 <div id="withdraw-section" class="auth-box hidden">
                     <h3>টাকা উত্তোলন</h3>
+                    <select id="w-method">
+                        <option value="bKash">bKash</option>
+                        <option value="Nagad">Nagad</option>
+                    </select>
                     <input type="number" id="w-amount" placeholder="পরিমাণ (মিন: ৫০)">
-                    <input type="text" id="w-number" placeholder="বিকাশ/নগদ নাম্বার">
+                    <input type="text" id="w-number" placeholder="নাম্বার">
                     <button onclick="window.submitWithdraw()" class="btn-sm">Request Withdraw</button>
                 </div>
+
+                <div id="view-leader" class="page-view hidden"><div class="user-card"><h2>লিডারবোর্ড 🏆</h2><table class="lb-table"><tbody id="lb-data"></tbody></table></div></div>
+                <div id="view-history" class="page-view hidden"><div class="user-card"><h2>হিস্ট্রি 📜</h2><div id="history-data"></div></div></div>
+                <div id="view-team" class="page-view hidden"><div class="user-card"><h2>রেফার টিম 👥</h2><div id="team-data"></div></div></div>
             </div>
 
             <nav class="bottom-nav">
-                <div class="nav-item active" onclick="window.logout()">👤 লগআউট</div>
+                <div class="nav-item active" id="nav-home" onclick="changeTab('home')"><span class="nav-icon">🏠</span>হোম</div>
+                <div class="nav-item" id="nav-refer" onclick="changeTab('refer')"><span class="nav-icon">👥</span>রেফার</div>
+                <div class="nav-item" id="nav-leader" onclick="changeTab('leader')"><span class="nav-icon">🏆</span>সেরা</div>
+                <div class="nav-item" onclick="window.logout()"><span class="nav-icon">👤</span>লগআউট</div>
             </nav>
         </div>
     </div>
+    
     <script type="module" src="script.js"></script>
 </body>
 </html>
