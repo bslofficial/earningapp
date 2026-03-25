@@ -44,14 +44,32 @@
 
                     <div class="task-grid">
                         <div class="task-card" onclick="window.runTask(2)">🎁 ডেইলি বোনাস</div>
-                        <div class="task-card" onclick="window.location.href='spin.html'">🎡 স্পিন করুন</div>
+                        <div class="task-card" onclick="window.changeTab('spin')">🎡 স্পিন করুন</div>
                         <div class="task-card" onclick="window.runTask(5)">🎬 ভিডিও টাস্ক</div>
-                        <div class="task-card" onclick="changeTab('withdraw')">💸 উইথড্র</div>
+                        <div class="task-card" onclick="window.changeTab('withdraw')">💸 উইথড্র</div>
                     </div>
 
                     <div class="extra-btn-container">
-                        <div class="extra-card" onclick="changeTab('history')">🕒 হিস্ট্রি</div>
-                        <div class="extra-card" onclick="changeTab('team')">👥 রেফার টিম</div>
+                        <div class="extra-card" onclick="window.changeTab('history')">🕒 হিস্ট্রি</div>
+                        <div class="extra-card" onclick="window.changeTab('team')">👥 রেফার টিম</div>
+                    </div>
+                </div>
+
+                <div id="view-spin" class="page-view hidden">
+                    <div class="user-card">
+                        <h2>লাকি স্পিন 🎡</h2>
+                        <div class="wheel-container">
+                            <div id="wheel" class="wheel">
+                                <div class="segment" style="--i:1;--c:#1a237e;"><span>৳১</span></div>
+                                <div class="segment" style="--i:2;--c:#ffca28;"><span>৳৫</span></div>
+                                <div class="segment" style="--i:3;--c:#1a237e;"><span>৳২</span></div>
+                                <div class="segment" style="--i:4;--c:#ffca28;"><span>৳১০</span></div>
+                                <div class="segment" style="--i:5;--c:#1a237e;"><span>৳০</span></div>
+                                <div class="segment" style="--i:6;--c:#ffca28;"><span>৳৩</span></div>
+                            </div>
+                            <div class="pointer">▼</div>
+                        </div>
+                        <button onclick="window.startSpin()" class="btn-sm">স্পিন করুন</button>
                     </div>
                 </div>
 
@@ -68,12 +86,13 @@
                 <div id="view-leader" class="page-view hidden"><div class="user-card"><h2>সেরা ১০ জন 🏆</h2><table class="lb-table"><tbody id="lb-data"></tbody></table></div></div>
                 <div id="view-history" class="page-view hidden"><div class="user-card"><h2>পেমেন্ট হিস্ট্রি 📜</h2><div id="history-data"></div></div></div>
                 <div id="view-team" class="page-view hidden"><div class="user-card"><h2>রেফার টিম 👥</h2><div id="team-data"></div></div></div>
+                <div id="view-refer" class="page-view hidden"><div class="user-card"><h2>রেফার করুন 👥</h2><p>আপনার রেফার কোড বন্ধুদের শেয়ার করুন।</p></div></div>
             </div>
 
             <nav class="bottom-nav">
-                <div class="nav-item active" id="nav-home" onclick="changeTab('home')"><span class="nav-icon">🏠</span>হোম</div>
-                <div class="nav-item" id="nav-refer" onclick="changeTab('refer')"><span class="nav-icon">👥</span>রেফার</div>
-                <div class="nav-item" id="nav-leader" onclick="changeTab('leader')"><span class="nav-icon">🏆</span>সেরা</div>
+                <div class="nav-item active" id="nav-home" onclick="window.changeTab('home')"><span class="nav-icon">🏠</span>হোম</div>
+                <div class="nav-item" id="nav-refer" onclick="window.changeTab('refer')"><span class="nav-icon">👥</span>রেফার</div>
+                <div class="nav-item" id="nav-leader" onclick="window.changeTab('leader')"><span class="nav-icon">🏆</span>সেরা</div>
                 <div class="nav-item" onclick="window.logout()"><span class="nav-icon">👤</span>লগআউট</div>
             </nav>
         </div>
