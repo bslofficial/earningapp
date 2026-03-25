@@ -13,22 +13,19 @@
             <header><div class="logo">Earning <span>App</span></div></header>
             <div class="auth-box">
                 <h2 id="auth-title">লগইন করুন</h2>
-                <div id="login-inputs">
-                    <input type="email" id="email" placeholder="ইমেইল">
-                    <input type="password" id="pass" placeholder="পাসওয়ার্ড">
-                </div>
+                <input type="email" id="email" placeholder="ইমেইল">
+                <input type="password" id="pass" placeholder="পাসওয়ার্ড">
                 <div id="reg-inputs" class="hidden">
-                    <input type="text" id="name" placeholder="পুরো নাম">
+                    <input type="text" id="name" placeholder="আপনার পুরো নাম">
                 </div>
                 <button id="auth-btn" class="btn-sm">Login</button>
-                <p onclick="window.toggleAuth()" style="margin-top:10px; cursor:pointer; font-weight:bold; color:#1a237e;">একাউন্ট তৈরি করুন</p>
+                <p id="toggle-text" style="margin-top:15px; cursor:pointer;">একাউন্ট নেই? <span onclick="window.toggleAuth()" style="color:#1a237e; font-weight:bold;">রেজিস্ট্রেশন করুন</span></p>
             </div>
         </div>
 
         <div id="main-page" class="hidden">
             <header><div class="logo">Earning <span>App</span></div></header>
             <div class="container main-content">
-                
                 <div id="view-home" class="page-view">
                     <div class="user-card">
                         <h3>স্বাগতম, <span id="u-name-display">...</span></h3>
@@ -45,24 +42,8 @@
                     </div>
                 </div>
 
-                <div id="view-withdraw" class="page-view hidden">
-                    <div class="auth-box">
-                        <h3>টাকা উত্তোলন করুন</h3>
-                        <select id="method">
-                            <option value="bKash">বিকাশ (bKash)</option>
-                            <option value="Nagad">নগদ (Nagad)</option>
-                        </select>
-                        <input type="number" id="w-amount" placeholder="পরিমাণ (মিন: ৫০)">
-                        <input type="text" id="w-number" placeholder="মোবাইল নাম্বার">
-                        <button onclick="window.submitWithdraw()" class="btn-sm">রিকোয়েস্ট পাঠান</button>
-                    </div>
-                </div>
-
                 <div id="view-leader" class="page-view hidden">
-                    <div class="user-card">
-                        <h2>সেরা ১০ জন 🏆</h2>
-                        <div id="lb-list" style="margin-top:15px;">লোড হচ্ছে...</div>
-                    </div>
+                    <div class="user-card"><h2>সেরা ১০ জন 🏆</h2><div id="lb-list">লোড হচ্ছে...</div></div>
                 </div>
 
                 <div id="view-profile" class="page-view hidden">
@@ -76,12 +57,14 @@
                         <button onclick="window.logout()" class="btn-sm" style="background:#ff5252; color:white; margin-top:15px;">লগআউট</button>
                     </div>
                 </div>
-
-                <div id="view-spin" class="page-view hidden">
-                    <div class="user-card">
-                        <h2>লাকি স্পিন 🎡</h2>
-                        <div class="wheel-container"><div id="wheel" class="wheel"></div><div class="pointer">▼</div></div>
-                        <button onclick="window.startSpin()" class="btn-sm">স্পিন</button>
+                
+                <div id="view-withdraw" class="page-view hidden">
+                    <div class="auth-box">
+                        <h3>উইথড্র রিকোয়েস্ট</h3>
+                        <select id="method"><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select>
+                        <input type="number" id="w-amount" placeholder="পরিমাণ (মিন: ৫০)">
+                        <input type="text" id="w-number" placeholder="নাম্বার">
+                        <button onclick="window.submitWithdraw()" class="btn-sm">Submit</button>
                     </div>
                 </div>
             </div>
