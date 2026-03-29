@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebas
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { getDatabase, ref, onValue, update, get, set, push, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
+// ফায়ারবেস কনফিগারেশন
 const firebaseConfig = { 
     apiKey: "AIzaSyDvbee_sFG5mIhFPEPO8ggizDByB0byTAM", 
     projectId: "earning-web-app-d515c", 
@@ -13,7 +14,7 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 const AD_LINK = "https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb";
 
-// ১. ট্যাব পরিবর্তন ও লিডারবোর্ড লোড
+// ১. ট্যাব পরিবর্তন ফাংশন
 window.changeTab = (name) => {
     document.querySelectorAll('.page-view').forEach(v => v.classList.add('hidden'));
     const target = document.getElementById('view-' + name);
@@ -26,7 +27,7 @@ window.changeTab = (name) => {
     if(name === 'leader') loadLeaderboard();
 };
 
-// ২. লিডারবোর্ড ফাংশন (৩ জন ইউজারই দেখাবে)
+// ২. লিডারবোর্ড লোড (৩ জন ইউজারই দেখাবে)
 function loadLeaderboard() {
     const q = query(ref(db, 'users'), orderByChild('balance'), limitToLast(10));
     onValue(q, snap => {
@@ -34,12 +35,10 @@ function loadLeaderboard() {
         let users = [];
         snap.forEach(c => {
             let userData = c.val();
-            // ব্যালেন্স না থাকলে ০ ধরে নেওয়া হবে যাতে সবাইকে দেখায়
             if(userData.balance === undefined) userData.balance = 0; 
             users.push(userData);
         });
         
-        // বড় থেকে ছোট ব্যালেন্স অনুযায়ী সাজানো
         users.sort((a, b) => b.balance - a.balance);
         
         users.forEach((u, i) => {
@@ -49,11 +48,15 @@ function loadLeaderboard() {
     });
 }
 
-// ৩. উইথড্র সিস্টেম
+// ৩. উইথড্র সাবমিট (অ্যাডমিন প্যানেলে ডাটা পাঠানোর জন্য আপডেট করা হয়েছে)
 window.submitWithdraw = async function() {
-    const amount = parseFloat(document.getElementById('w-amount').value);
-    const number = document.getElementById('w-number').value;
-    const method = document.getElementById('method').value;
+    const amountInput = document.getElementById('w-amount');
+    const numberInput = document.getElementById('w-number');
+    const methodInput = document.getElementById('method');
+    
+    const amount = parseFloat(amountInput.value);
+    const number = numberInput.value.trim();
+    const method = methodInput.value;
     const user = auth.currentUser;
 
     if(!amount || amount < 50) return alert("সর্বনিম্ন ৫০ টাকা উত্তোলন করা যাবে।");
@@ -61,25 +64,35 @@ window.submitWithdraw = async function() {
 
     const userRef = ref(db, 'users/' + user.uid);
     const snap = await get(userRef);
-    const currentBal = snap.val().balance || 0;
+    const userData = snap.val();
+    const currentBal = userData.balance || 0;
 
     if(currentBal < amount) return alert("আপনার ব্যালেন্স পর্যাপ্ত নয়!");
 
-    // ব্যালেন্স কাটা এবং রিকোয়েস্ট পাঠানো
-    await update(userRef, { balance: currentBal - amount });
-    await push(ref(db, 'withdraw_requests'), {
-        uid: user.uid,
-        name: snap.val().name,
-        amount: amount,
-        number: number,
-        method: method,
-        status: "Pending",
-        time: new Date().toLocaleString()
-    });
-    alert("উইথড্র রিকোয়েস্ট সফল হয়েছে!");
+    try {
+        // ব্যালেন্স কাটা
+        await update(userRef, { balance: currentBal - amount });
+        
+        // অ্যাডমিন প্যানেলের জন্য 'withdraw_requests' পাথে ডাটা পাঠানো
+        const requestRef = ref(db, 'withdraw_requests');
+        await push(requestRef, {
+            uid: user.uid,
+            name: userData.name,
+            amount: amount,
+            number: number,
+            method: method,
+            time: new Date().toLocaleString()
+        });
+
+        alert("উইথড্র রিকোয়েস্ট সফল হয়েছে!");
+        amountInput.value = "";
+        numberInput.value = "";
+    } catch (error) {
+        alert("সমস্যা হয়েছে: " + error.message);
+    }
 };
 
-// ৪. বিজ্ঞাপন টাস্ক
+// ৪. বিজ্ঞাপন ও ডেইলি বোনাস
 window.runTask = (reward) => {
     alert("বিজ্ঞাপন ওপেন হচ্ছে। ১০ সেকেন্ড দেখুন এবং ব্যাক করুন।");
     window.open(AD_LINK, '_blank');
@@ -97,10 +110,11 @@ window.runTask = (reward) => {
 // ৫. স্পিন লজিক
 window.startSpin = () => {
     const wheel = document.getElementById('wheel');
-    if(!wheel) return alert("স্পিন হুইল পাওয়া যায়নি!");
+    const btn = document.getElementById('spin-btn');
+    if(!wheel) return;
     
+    btn.disabled = true;
     wheel.style.transform = `rotate(${Math.floor(Math.random() * 360) + 1440}deg)`;
-    document.getElementById('spin-btn').disabled = true;
     
     setTimeout(async () => {
         const reward = Math.floor(Math.random() * 5);
@@ -110,12 +124,12 @@ window.startSpin = () => {
             const snap = await get(userRef);
             await update(userRef, { balance: (snap.val().balance || 0) + reward });
             alert(`আপনি জিতেছেন ৳${reward}!`);
-            document.getElementById('spin-btn').disabled = false;
+            btn.disabled = false;
         }
     }, 4000);
 };
 
-// ৬. অথেন্টিকেশন ও প্রোফাইল রিয়েল-টাইম আপডেট
+// ৬. অথেন্টিকেশন ও প্রোফাইল ডাটা
 onAuthStateChanged(auth, (user) => {
     if(user) {
         document.getElementById('auth-page').classList.add('hidden');
@@ -130,7 +144,7 @@ onAuthStateChanged(auth, (user) => {
                 
                 if(document.getElementById('p-name')) document.getElementById('p-name').innerText = d.name;
                 if(document.getElementById('p-email')) document.getElementById('p-email').innerText = user.email;
-                if(document.getElementById('p-balance')) document.getElementById('p-balance').innerText = bal;
+                if(document.getElementById('p-balance')) document.getElementById('p-balance').innerText = "৳ " + bal;
             }
         });
     } else {
@@ -145,7 +159,6 @@ window.toggleAuth = () => {
     isReg = !isReg;
     document.getElementById('reg-inputs').classList.toggle('hidden', !isReg);
     document.getElementById('auth-title').innerText = isReg ? "একাউন্ট তৈরি" : "লগইন";
-    document.getElementById('auth-btn').innerText = isReg ? "Register" : "Login";
 };
 
 document.getElementById('auth-btn').onclick = () => {
@@ -157,15 +170,12 @@ document.getElementById('auth-btn').onclick = () => {
         if(!name || !email || pass.length < 6) return alert("সঠিক তথ্য দিন!");
         createUserWithEmailAndPassword(auth, email, pass).then(res => {
             set(ref(db, 'users/' + res.user.uid), { 
-                name: name, 
-                email: email, 
-                balance: 0, 
-                role: "user"
+                name: name, email: email, balance: 0, role: "user" 
             });
-        }).catch(e => alert(e.message));
+        }).catch(e => alert("রেজিস্ট্রেশন ব্যর্থ!"));
     } else {
         signInWithEmailAndPassword(auth, email, pass).catch(e => alert("ভুল ইমেইল বা পাসওয়ার্ড!"));
     }
 };
 
-window.logout = () => signOut(auth).then(() => window.location.reload());
+window.logout = () => signOut(auth).then(() => location.reload());
