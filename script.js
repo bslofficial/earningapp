@@ -14,7 +14,7 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 const AD_LINK = "https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb";
 
-// ১. ট্যাব পরিবর্তন ফাংশন
+// ১. ট্যাব পরিবর্তন ও লিডারবোর্ড লোড
 window.changeTab = (name) => {
     document.querySelectorAll('.page-view').forEach(v => v.classList.add('hidden'));
     const target = document.getElementById('view-' + name);
@@ -27,7 +27,7 @@ window.changeTab = (name) => {
     if(name === 'leader') loadLeaderboard();
 };
 
-// ২. লিডারবোর্ড লোড (৩ জন ইউজারই দেখাবে)
+// ২. লিডারবোর্ড ফাংশন (সব ইউজারকে দেখানোর জন্য আপডেট করা হয়েছে)
 function loadLeaderboard() {
     const q = query(ref(db, 'users'), orderByChild('balance'), limitToLast(10));
     onValue(q, snap => {
@@ -39,6 +39,7 @@ function loadLeaderboard() {
             users.push(userData);
         });
         
+        // ব্যালেন্স অনুযায়ী বড় থেকে ছোট সাজানো
         users.sort((a, b) => b.balance - a.balance);
         
         users.forEach((u, i) => {
@@ -48,7 +49,7 @@ function loadLeaderboard() {
     });
 }
 
-// ৩. উইথড্র সাবমিট (অ্যাডমিন প্যানেলে ডাটা পাঠানোর জন্য আপডেট করা হয়েছে)
+// ৩. উইথড্র সাবমিট (অ্যাডমিন প্যানেলে রিকোয়েস্ট পাঠানোর জন্য)
 window.submitWithdraw = async function() {
     const amountInput = document.getElementById('w-amount');
     const numberInput = document.getElementById('w-number');
@@ -70,12 +71,11 @@ window.submitWithdraw = async function() {
     if(currentBal < amount) return alert("আপনার ব্যালেন্স পর্যাপ্ত নয়!");
 
     try {
-        // ব্যালেন্স কাটা
+        // ইউজারের ব্যালেন্স থেকে টাকা কেটে নেওয়া
         await update(userRef, { balance: currentBal - amount });
         
-        // অ্যাডমিন প্যানেলের জন্য 'withdraw_requests' পাথে ডাটা পাঠানো
-        const requestRef = ref(db, 'withdraw_requests');
-        await push(requestRef, {
+        // ডাটাবেসের 'withdraw_requests' ফোল্ডারে রিকোয়েস্ট পাঠানো
+        await push(ref(db, 'withdraw_requests'), {
             uid: user.uid,
             name: userData.name,
             amount: amount,
@@ -92,7 +92,7 @@ window.submitWithdraw = async function() {
     }
 };
 
-// ৪. বিজ্ঞাপন ও ডেইলি বোনাস
+// ৪. বিজ্ঞাপন টাস্ক
 window.runTask = (reward) => {
     alert("বিজ্ঞাপন ওপেন হচ্ছে। ১০ সেকেন্ড দেখুন এবং ব্যাক করুন।");
     window.open(AD_LINK, '_blank');
@@ -129,7 +129,7 @@ window.startSpin = () => {
     }, 4000);
 };
 
-// ৬. অথেন্টিকেশন ও প্রোফাইল ডাটা
+// ৬. অথেন্টিকেশন ও প্রোফাইল ডাটা আপডেট
 onAuthStateChanged(auth, (user) => {
     if(user) {
         document.getElementById('auth-page').classList.add('hidden');
