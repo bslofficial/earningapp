@@ -2,17 +2,143 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BSL Official - Admin Panel</title>
+    <style>
+        /* CSS অংশ */
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Hind Siliguri', sans-serif; }
+        body { background: #f0f2f5; padding: 20px; }
+        header { background: #1a237e; color: white; padding: 15px; text-align: center; border-radius: 10px; margin-bottom: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        /* লগইন বক্স */
+        .login-box { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 400px; margin: 100px auto; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .btn { width: 100%; padding: 12px; background: #1a237e; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        
+        /* টেবিল ডিজাইন */
+        .admin-content { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; color: #1a237e; }
+        .hidden { display: none !important; }
+        
+        /* বাটন কালার */
+        .approve-btn { background: #4caf50; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
+        .reject-btn { background: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; margin-left: 5px; }
+    </style>
 </head>
 <body>
-    <header><div class="logo">Admin <span>Panel</span></div></header>
-    <div class="container" style="max-width: 800px;">
-        <table>
-            <thead><tr><th>নাম</th><th>নাম্বার</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
-            <tbody id="admin-list"></tbody>
-        </table>
+
+    <div class="container">
+        <div id="admin-login" class="login-box">
+            <h2>অ্যাডমিন লগইন</h2>
+            <input type="password" id="admin-pass" placeholder="সিক্রেট পাসওয়ার্ড দিন">
+            <button class="btn" onclick="checkLogin()">প্রবেশ করুন</button>
+        </div>
+
+        <div id="admin-panel" class="hidden">
+            <header>
+                <h1>Admin <span>Panel</span></h1>
+                <p>উইথড্র রিকোয়েস্ট ম্যানেজমেন্ট</p>
+            </header>
+
+            <div class="admin-content">
+                <h3>পেন্ডিং রিকোয়েস্ট লিস্ট</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>নাম</th>
+                            <th>পদ্ধতি ও নাম্বার</th>
+                            <th>পরিমাণ</th>
+                            <th>অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-list">
+                        </tbody>
+                </table>
+            </div>
+            <button onclick="location.reload()" class="btn" style="margin-top:20px; background:#666;">লগআউট</button>
+        </div>
     </div>
-    <script type="module" src="admin.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getDatabase, ref, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyDvbee_sFG5mIhFPEPO8ggizDByB0byTAM", 
+            projectId: "earning-web-app-d515c", 
+            databaseURL: "https://earning-web-app-d515c-default-rtdb.firebaseio.com" 
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // --- পাসওয়ার্ড চেক ফাংশন ---
+        window.checkLogin = function() {
+            const pass = document.getElementById('admin-pass').value;
+            // এখানে আপনার পছন্দের পাসওয়ার্ড সেট করুন
+            if(pass === "123456") { 
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                loadRequests(); // সঠিক পাসওয়ার্ড হলে ডাটা লোড হবে
+            } else {
+                alert("ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।");
+            }
+        };
+
+        // --- রিকোয়েস্ট লোড ফাংশন ---
+        function loadRequests() {
+            onValue(ref(db, 'withdraw_requests'), (snapshot) => {
+                const adminList = document.getElementById('admin-list');
+                adminList.innerHTML = "";
+                
+                if (snapshot.exists()) {
+                    snapshot.forEach((child) => {
+                        const id = child.key;
+                        const d = child.val();
+                        const row = `
+                            <tr>
+                                <td>${d.name}</td>
+                                <td><b>${d.method}</b>: ${d.number}</td>
+                                <td>৳${d.amount}</td>
+                                <td>
+                                    <button class="approve-btn" onclick="approve('${id}')">Approve</button>
+                                    <button class="reject-btn" onclick="reject('${id}', '${d.uid}', ${d.amount})">Reject</button>
+                                </td>
+                            </tr>
+                        `;
+                        adminList.innerHTML += row;
+                    });
+                } else {
+                    adminList.innerHTML = "<tr><td colspan='4' style='text-align:center;'>কোনো রিকোয়েস্ট নেই।</td></tr>";
+                }
+            });
+        }
+
+        // --- এপ্রুভ ও রিজেক্ট ফাংশন ---
+        window.approve = (id) => {
+            if(confirm("আপনি কি টাকা পাঠিয়েছেন?")) {
+                remove(ref(db, 'withdraw_requests/' + id));
+                alert("এপ্রুভ করা হয়েছে!");
+            }
+        };
+
+        window.reject = async (id, uid, amount) => {
+            if(confirm("রিজেক্ট করলে টাকা ইউজারের ব্যালেন্সে ফেরত যাবে। নিশ্চিত?")) {
+                const userRef = ref(db, 'users/' + uid);
+                const userSnap = await get(userRef);
+                if(userSnap.exists()){
+                    const currentBal = userSnap.val().balance || 0;
+                    await update(userRef, { balance: currentBal + amount });
+                    await remove(ref(db, 'withdraw_requests/' + id));
+                    alert("রিজেক্ট করা হয়েছে।");
+                }
+            }
+        };
+    </script>
 </body>
 </html>
