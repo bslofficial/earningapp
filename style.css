@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Hind Siliguri', sans-serif; background: #f4f7f6; color: #333; }
+body { font-family: 'Hind Siliguri', sans-serif; background: #f4f7f6; }
 header { background: #1a237e; color: white; padding: 20px; text-align: center; border-bottom: 4px solid #ffca28; }
 .logo span { color: #ffca28; font-weight: bold; }
 .container { max-width: 500px; margin: 0 auto; padding: 15px; }
@@ -8,18 +8,16 @@ header { background: #1a237e; color: white; padding: 20px; text-align: center; b
 .auth-box, .user-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; margin-bottom: 15px; }
 .hidden { display: none !important; }
 .balance-card { background: #1a237e; color: white; padding: 25px; border-radius: 15px; margin-top: 15px; }
-.balance-card h2 { color: #ffca28; font-size: 32px; margin-top: 5px; }
+.balance-card h2 { color: #ffca28; font-size: 32px; }
 input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; }
-.btn-sm { width: 100%; background: #ffca28; color: #1a237e; padding: 12px; border: none; font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.3s; }
-.btn-sm:active { transform: scale(0.98); }
-.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: white; display: flex; align-items: center; border-top: 1px solid #eee; z-index: 1000; }
-.nav-item { flex: 1; text-align: center; color: #888; cursor: pointer; font-size: 14px; }
-.nav-item i { font-size: 20px; margin-bottom: 3px; }
+.btn-sm { width: 100%; background: #ffca28; color: #1a237e; padding: 12px; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: white; display: flex; align-items: center; border-top: 1px solid #eee; }
+.nav-item { flex: 1; text-align: center; color: #888; font-size: 14px; }
 .nav-item.active { color: #1a237e; font-weight: bold; }
 .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-.task-card { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); font-weight: bold; cursor: pointer; }
+.task-card { background: white; padding: 20px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 .wheel-wrapper { display: flex; justify-content: center; margin: 20px 0; position: relative; }
 .wheel-wrapper::before { content: "▼"; position: absolute; top: -10px; font-size: 25px; color: #1a237e; z-index: 5; }
 #wheel { width: 240px; height: 240px; border-radius: 50%; border: 5px solid #1a237e; background: conic-gradient(#f44336 0 60deg, #ffeb3b 60deg 120deg, #4caf50 120deg 180deg, #2196f3 180deg 240deg, #ff9800 240deg 300deg, #9c27b0 300deg 360deg); transition: transform 3s ease-out; }
 .lb-item, .history-item { display: flex; justify-content: space-between; padding: 12px; background: #f9f9f9; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid #ffca28; }
-.status-p { color: #ff9800; font-weight: bold; font-size: 12px; }
+.status-p { color: orange; font-weight: bold; font-size: 12px; }
