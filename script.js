@@ -20,83 +20,40 @@ window.changeTab = (name) => {
     document.getElementById('view-' + name).classList.remove('hidden');
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     document.getElementById('nav-' + (['spin', 'withdraw'].includes(name) ? 'home' : name))?.classList.add('active');
-    
     if(name === 'leader') loadLeaderboard();
     if(name === 'withdraw') loadHistory();
 };
 
-// ২. রেফার ও শেয়ার ফিক্স
+// ২. শেয়ার ফাংশন (ফিক্সড)
 window.shareApp = () => {
     const code = document.getElementById('u-refer-code').innerText;
-    if(code === "লোড হচ্ছে..." || code === "কোড নেই") return alert("দয়া করে অপেক্ষা করুন...");
-    
+    if(code === "লোড হচ্ছে..." || code === "কোড নেই") return alert("অপেক্ষা করুন...");
     const text = `BSL Official অ্যাপে কাজ করে আয় করুন! আমার রেফার কোড: ${code}\nলিঙ্ক: ${APP_URL}`;
-    
     if(navigator.share) {
-        navigator.share({ title: 'Earn Money Online', text: text });
+        navigator.share({ title: 'Earn Money', text: text });
     } else {
-        navigator.clipboard.writeText(text).then(() => alert("রেফার লিঙ্ক কপি হয়েছে!"));
+        navigator.clipboard.writeText(text).then(() => alert("লিঙ্ক কপি হয়েছে!"));
     }
 };
 
-// ৩. স্পিন লজিক
+// ৩. স্পিন ও টাস্ক
 window.startSpin = () => {
     const wheel = document.getElementById('wheel');
     const btn = document.getElementById('spin-btn');
     btn.disabled = true;
     const deg = Math.floor(Math.random() * 360) + 1440;
     wheel.style.transform = `rotate(${deg}deg)`;
-    
     setTimeout(async () => {
         const rewards = [1, 2, 0, 5, 1, 3];
         const reward = rewards[Math.floor(Math.random() * 6)];
-        const user = auth.currentUser;
-        if(user) {
-            const userRef = ref(db, 'users/' + user.uid);
-            const snap = await get(userRef);
-            await update(userRef, { balance: (snap.val().balance || 0) + reward });
-            if(confirm(`আপনি জিতেছেন ৳${reward}! বোনাস নিতে ওকে করুন।`)) window.location.href = AD_LINK;
-        }
+        const userRef = ref(db, 'users/' + auth.currentUser.uid);
+        const snap = await get(userRef);
+        await update(userRef, { balance: (snap.val().balance || 0) + reward });
+        if(confirm(`আপনি ৳${reward} জিতেছেন! বোনাস নিতে ওকে করুন।`)) window.location.href = AD_LINK;
         btn.disabled = false;
     }, 3500);
 };
 
-// ৪. উইথড্র (মিন: ৫০০) ও হিস্ট্রি
-window.submitWithdraw = async () => {
-    const amount = parseFloat(document.getElementById('w-amount').value);
-    const number = document.getElementById('w-number').value.trim();
-    const method = document.getElementById('method').value;
-    const user = auth.currentUser;
-
-    if(!amount || amount < 500) return alert("সর্বনিম্ন ৫০০ টাকা উইথড্র করতে হবে!");
-    if(number.length < 11) return alert("সঠিক মোবাইল নাম্বার দিন!");
-    
-    const userRef = ref(db, 'users/' + user.uid);
-    const snap = await get(userRef);
-    const bal = snap.val().balance || 0;
-
-    if(bal < amount) return alert("পর্যাপ্ত ব্যালেন্স নেই!");
-
-    await update(userRef, { balance: bal - amount });
-    await push(ref(db, 'withdraw_requests'), {
-        uid: user.uid, name: snap.val().name, amount, number, method, status: "pending", time: new Date().toLocaleString()
-    });
-    alert("রিকোয়েস্ট সফল হয়েছে!");
-};
-
-function loadHistory() {
-    const q = query(ref(db, 'withdraw_requests'), orderByChild('uid'), equalTo(auth.currentUser.uid));
-    onValue(q, snap => {
-        let html = '';
-        snap.forEach(c => {
-            const d = c.val();
-            html += `<div class="history-item"><span>${d.method}: ৳${d.amount}</span><span class="status-p">পেন্ডিং</span></div>`;
-        });
-        document.getElementById('history-list').innerHTML = html || "কোনো হিস্ট্রি নেই";
-    });
-}
-
-// ৫. টাস্ক ও লিডারবোর্ড (সেরা ১০০)
 window.runTask = (reward) => {
     window.open(AD_LINK, '_blank');
     setTimeout(async () => {
@@ -107,6 +64,36 @@ window.runTask = (reward) => {
     }, 10000);
 };
 
+// ৪. উইথড্র ও হিস্ট্রি (মিন: ৫০০)
+window.submitWithdraw = async () => {
+    const amount = parseFloat(document.getElementById('w-amount').value);
+    const number = document.getElementById('w-number').value.trim();
+    const method = document.getElementById('method').value;
+    const user = auth.currentUser;
+    if(!amount || amount < 500) return alert("সর্বনিম্ন ৫০০ টাকা উইথড্র!");
+    const userRef = ref(db, 'users/' + user.uid);
+    const snap = await get(userRef);
+    if((snap.val().balance || 0) < amount) return alert("ব্যালেন্স নেই!");
+    await update(userRef, { balance: snap.val().balance - amount });
+    await push(ref(db, 'withdraw_requests'), {
+        uid: user.uid, name: snap.val().name, amount, number, method, status: "pending", time: new Date().toLocaleString()
+    });
+    alert("রিকোয়েস্ট সফল!");
+};
+
+function loadHistory() {
+    const q = query(ref(db, 'withdraw_requests'), orderByChild('uid'), equalTo(auth.currentUser.uid));
+    onValue(q, snap => {
+        let h = '';
+        snap.forEach(c => {
+            const d = c.val();
+            h += `<div class="history-item"><span>${d.method}: ৳${d.amount}</span><span class="status-p">পেন্ডিং</span></div>`;
+        });
+        document.getElementById('history-list').innerHTML = h || "কোনো ডাটা নেই";
+    });
+}
+
+// ৫. লিডারবোর্ড (সেরা ১০০)
 function loadLeaderboard() {
     const q = query(ref(db, 'users'), orderByChild('balance'), limitToLast(100));
     onValue(q, snap => {
@@ -119,7 +106,7 @@ function loadLeaderboard() {
     });
 }
 
-// ৬. অথেন্টিকেশন ও প্রোফাইল ডাটা
+// ৬. অথেন্টিকেশন ও প্রোফাইল
 onAuthStateChanged(auth, user => {
     if(user) {
         document.getElementById('auth-page').classList.add('hidden');
@@ -129,8 +116,6 @@ onAuthStateChanged(auth, user => {
             if(d) {
                 document.getElementById('u-balance').innerText = (d.balance || 0).toFixed(2);
                 document.getElementById('u-name-display').innerText = d.name;
-                document.getElementById('p-name').innerText = d.name;
-                document.getElementById('p-email').innerText = d.email;
                 document.getElementById('u-refer-code').innerText = d.referCode || "কোড নেই";
             }
         });
@@ -152,23 +137,18 @@ document.getElementById('auth-btn').onclick = async () => {
     const pass = document.getElementById('pass').value;
     if(isReg) {
         const name = document.getElementById('name').value.trim();
-        const referBy = document.getElementById('refer-by').value.trim();
-        const myReferCode = name.substring(0,3).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
-        createUserWithEmailAndPassword(auth, email, pass).then(async (res) => {
+        const rBy = document.getElementById('refer-by').value.trim();
+        const rCode = name.substring(0,3).toUpperCase() + Math.floor(1000 + Math.random()*9000);
+        createUserWithEmailAndPassword(auth, email, pass).then(async res => {
             let bonus = 0;
-            if(referBy) {
-                const usersSnap = await get(ref(db, 'users'));
-                usersSnap.forEach(child => {
-                    if(child.val().referCode === referBy) {
-                        update(ref(db, 'users/' + child.key), { balance: (child.val().balance || 0) + 5 });
-                        bonus = 2;
-                    }
-                });
+            if(rBy) {
+                const uSnap = await get(ref(db, 'users'));
+                uSnap.forEach(c => { if(c.val().referCode === rBy) { update(ref(db, 'users/' + c.key), { balance: (c.val().balance || 0) + 5 }); bonus = 2; } });
             }
-            set(ref(db, 'users/' + res.user.uid), { name, email, balance: bonus, referCode: myReferCode, role: "user" });
-        }).catch(e => alert("ভুল তথ্য!"));
+            set(ref(db, 'users/' + res.user.uid), { name, email, balance: bonus, referCode: rCode, role: "user" });
+        }).catch(() => alert("ব্যর্থ!"));
     } else {
-        signInWithEmailAndPassword(auth, email, pass).catch(e => alert("লগইন ব্যর্থ!"));
+        signInWithEmailAndPassword(auth, email, pass).catch(() => alert("ব্যর্থ!"));
     }
 };
 
