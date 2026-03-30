@@ -21,3 +21,10 @@ input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 
 #wheel { width: 240px; height: 240px; border-radius: 50%; border: 5px solid #1a237e; background: conic-gradient(#f44336 0 60deg, #ffeb3b 60deg 120deg, #4caf50 120deg 180deg, #2196f3 180deg 240deg, #ff9800 240deg 300deg, #9c27b0 300deg 360deg); transition: transform 3s ease-out; }
 .lb-item, .history-item { display: flex; justify-content: space-between; padding: 12px; background: #f9f9f9; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid #ffca28; }
 .status-p { color: orange; font-weight: bold; font-size: 12px; }
+/* কাস্টম অ্যালার্ট বক্স ডিজাইন */
+.alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+.alert-box { background: white; width: 85%; max-width: 350px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: pop 0.3s ease; }
+@keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.alert-box h3 { color: #1a237e; margin-bottom: 10px; }
+.alert-box p { color: #555; margin-bottom: 20px; line-height: 1.5; }
+.alert-box button { background: #1a237e; color: white; padding: 10px 30px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
