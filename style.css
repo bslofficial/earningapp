@@ -1,30 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Hind Siliguri', sans-serif; background: #f4f7f6; }
-header { background: #1a237e; color: white; padding: 20px; text-align: center; border-bottom: 4px solid #ffca28; }
-.logo span { color: #ffca28; font-weight: bold; }
+body { font-family: 'Hind Siliguri', sans-serif; background: #f4f7f6; color: #333; }
+.hidden { display: none !important; }
+
+header { background: #1a237e; color: white; padding: 20px; text-align: center; border-bottom: 4px solid #ffca28; position: sticky; top: 0; z-index: 100; }
+.logo span { color: #ffca28; font-weight: 700; }
 .container { max-width: 500px; margin: 0 auto; padding: 15px; }
 .main-content { padding-bottom: 90px; }
-.auth-box, .user-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; margin-bottom: 15px; }
-.hidden { display: none !important; }
-.balance-card { background: #1a237e; color: white; padding: 25px; border-radius: 15px; margin-top: 15px; }
-.balance-card h2 { color: #ffca28; font-size: 32px; }
-input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; }
-.btn-sm { width: 100%; background: #ffca28; color: #1a237e; padding: 12px; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; }
-.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: white; display: flex; align-items: center; border-top: 1px solid #eee; z-index: 1000; }
-.nav-item { flex: 1; text-align: center; color: #888; font-size: 14px; }
-.nav-item.active { color: #1a237e; font-weight: bold; }
-.task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-.task-card { background: white; padding: 20px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-.wheel-wrapper { display: flex; justify-content: center; margin: 20px 0; position: relative; }
-.wheel-wrapper::before { content: "▼"; position: absolute; top: -10px; font-size: 25px; color: #1a237e; z-index: 5; }
-#wheel { width: 240px; height: 240px; border-radius: 50%; border: 5px solid #1a237e; background: conic-gradient(#f44336 0 60deg, #ffeb3b 60deg 120deg, #4caf50 120deg 180deg, #2196f3 180deg 240deg, #ff9800 240deg 300deg, #9c27b0 300deg 360deg); transition: transform 3s ease-out; }
-.lb-item, .history-item { display: flex; justify-content: space-between; padding: 12px; background: #f9f9f9; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid #ffca28; }
-.status-p { color: orange; font-weight: bold; font-size: 12px; }
-/* কাস্টম অ্যালার্ট বক্স ডিজাইন */
+
+.auth-box, .user-card, .task-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); text-align: center; margin-bottom: 15px; }
+.balance-card { background: linear-gradient(135deg, #1a237e, #283593); color: white; padding: 25px; border-radius: 20px; margin-top: 15px; box-shadow: 0 6px 15px rgba(26, 35, 126, 0.3); }
+.balance-card h2 { color: #ffca28; font-size: 36px; margin: 10px 0; }
+
+input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 16px; }
+.btn-sm { width: 100%; background: #ffca28; color: #1a237e; padding: 14px; border: none; font-weight: bold; cursor: pointer; border-radius: 10px; transition: 0.3s; font-size: 16px; text-transform: uppercase; }
+
+/* লিডারবোর্ড আইটেম */
+.lb-item { display: flex; justify-content: space-between; padding: 15px; background: #fff; margin-bottom: 10px; border-radius: 12px; border-left: 5px solid #ffca28; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+.lb-item b { color: #1a237e; }
+
+/* কাস্টম অ্যালার্ট */
 .alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999; }
 .alert-box { background: white; width: 85%; max-width: 350px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: pop 0.3s ease; }
 @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .alert-box h3 { color: #1a237e; margin-bottom: 10px; }
 .alert-box p { color: #555; margin-bottom: 20px; line-height: 1.5; }
 .alert-box button { background: #1a237e; color: white; padding: 10px 30px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+/* স্পিনার ও ন্যাভ */
+.wheel-wrapper { display: flex; flex-direction: column; align-items: center; margin: 30px 0; position: relative; }
+.wheel-wrapper::before { content: "▼"; color: #1a237e; font-size: 30px; position: absolute; top: -15px; z-index: 10; }
+#wheel { width: 260px; height: 260px; border-radius: 50%; border: 8px solid #1a237e; background: conic-gradient(#f44336 0 60deg, #ffeb3b 60deg 120deg, #4caf50 120deg 180deg, #2196f3 180deg 240deg, #ff9800 240deg 300deg, #9c27b0 300deg 360deg); transition: transform 3s ease-out; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: white; display: flex; align-items: center; border-top: 1px solid #eee; z-index: 1000; }
+.nav-item { flex: 1; text-align: center; color: #888; font-size: 14px; cursor: pointer; }
+.nav-item.active { color: #1a237e; font-weight: 700; }
+.task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
