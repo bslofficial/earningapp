@@ -11,11 +11,11 @@ header { background: #1a237e; color: white; padding: 20px; text-align: center; b
 .balance-card h2 { color: #ffca28; font-size: 32px; }
 input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; }
 .btn-sm { width: 100%; background: #ffca28; color: #1a237e; padding: 12px; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; }
-.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: white; display: flex; align-items: center; border-top: 1px solid #eee; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: white; display: flex; align-items: center; border-top: 1px solid #eee; z-index: 1000; }
 .nav-item { flex: 1; text-align: center; color: #888; font-size: 14px; }
 .nav-item.active { color: #1a237e; font-weight: bold; }
 .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-.task-card { background: white; padding: 20px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.task-card { background: white; padding: 20px; border-radius: 12px; font-weight: bold; cursor: pointer; }
 .wheel-wrapper { display: flex; justify-content: center; margin: 20px 0; position: relative; }
 .wheel-wrapper::before { content: "▼"; position: absolute; top: -10px; font-size: 25px; color: #1a237e; z-index: 5; }
 #wheel { width: 240px; height: 240px; border-radius: 50%; border: 5px solid #1a237e; background: conic-gradient(#f44336 0 60deg, #ffeb3b 60deg 120deg, #4caf50 120deg 180deg, #2196f3 180deg 240deg, #ff9800 240deg 300deg, #9c27b0 300deg 360deg); transition: transform 3s ease-out; }
