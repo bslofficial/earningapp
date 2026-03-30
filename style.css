@@ -13,22 +13,20 @@ header { background: #1a237e; color: white; padding: 20px; text-align: center; b
 .balance-card { background: linear-gradient(135deg, #1a237e, #283593); color: white; padding: 25px; border-radius: 20px; margin-top: 15px; }
 .balance-card h2 { color: #ffca28; font-size: 36px; margin: 10px 0; }
 
-input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; outline: none; }
+input, select { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 16px; }
 .btn-sm { width: 100%; background: #ffca28; color: #1a237e; padding: 14px; border: none; font-weight: bold; cursor: pointer; border-radius: 10px; font-size: 16px; }
 
-/* লিডারবোর্ড আইটেম */
-.lb-item { display: flex; justify-content: space-between; padding: 15px; background: #fff; margin-bottom: 10px; border-radius: 12px; border-left: 5px solid #ffca28; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+/* লিডারবোর্ড */
+.lb-item { display: flex; justify-content: space-between; padding: 15px; background: #fff; margin-bottom: 10px; border-radius: 12px; border-left: 5px solid #ffca28; }
 
 /* কাস্টম অ্যালার্ট */
 .alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-.alert-box { background: white; width: 85%; max-width: 350px; padding: 25px; border-radius: 20px; text-align: center; animation: pop 0.3s ease; }
+.alert-box { background: white; width: 85%; max-width: 350px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: pop 0.3s ease; }
 @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.alert-box h3 { color: #1a237e; margin-bottom: 10px; }
 .alert-box button { background: #1a237e; color: white; padding: 10px 30px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-/* স্পিনার ও ন্যাভ */
-.wheel-wrapper { display: flex; flex-direction: column; align-items: center; margin: 30px 0; position: relative; }
-.wheel-wrapper::before { content: "▼"; color: #1a237e; font-size: 30px; position: absolute; top: -15px; z-index: 10; }
-#wheel { width: 260px; height: 260px; border-radius: 50%; border: 8px solid #1a237e; background: conic-gradient(#f44336 0 60deg, #ffeb3b 60deg 120deg, #4caf50 120deg 180deg, #2196f3 180deg 240deg, #ff9800 240deg 300deg, #9c27b0 300deg 360deg); transition: transform 3s ease-out; }
+/* বটম ন্যাভ */
 .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: white; display: flex; align-items: center; border-top: 1px solid #eee; z-index: 1000; }
 .nav-item { flex: 1; text-align: center; color: #888; font-size: 14px; cursor: pointer; }
 .nav-item.active { color: #1a237e; font-weight: 700; }
