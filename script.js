@@ -11,32 +11,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
-const APP_URL = "https://bslofficial.github.io/earningapp/";
 
-// ১. কাস্টম অ্যালার্ট
+// কাস্টম অ্যালার্ট
 window.showAlert = (msg) => {
     document.getElementById('alert-msg').innerText = msg;
     document.getElementById('custom-alert').classList.remove('hidden');
 };
 window.closeAlert = () => document.getElementById('custom-alert').classList.add('hidden');
 
-// ২. লিডারবোর্ড লোড
-const loadLeaderboard = () => {
-    const lbList = document.getElementById('leaderboard-list');
-    onValue(ref(db, 'users'), (snap) => {
-        const data = snap.val();
-        if (data) {
-            let userArray = Object.values(data).sort((a, b) => (b.balance || 0) - (a.balance || 0));
-            let top100 = userArray.slice(0, 100);
-            lbList.innerHTML = "";
-            top100.forEach((u, i) => {
-                lbList.innerHTML += `<div class="lb-item"><span><b>${i+1}.</b> ${u.name}</span><span>৳${(u.balance || 0).toFixed(2)}</span></div>`;
-            });
-        }
-    });
-};
-
-// ৩. অথেন্টিকেশন স্টেট
+// অথেন্টিকেশন ও প্রোফাইল ডাটা লোড
 onAuthStateChanged(auth, user => {
     if(user) {
         document.getElementById('auth-page').classList.add('hidden');
@@ -46,7 +29,7 @@ onAuthStateChanged(auth, user => {
             if(d) {
                 document.getElementById('u-balance').innerText = (d.balance || 0).toFixed(2);
                 document.getElementById('u-name-display').innerText = d.name;
-                document.getElementById('u-refer-code').innerText = d.referCode || "কোড নেই";
+                document.getElementById('u-refer-code').innerText = d.referCode || "EA0000";
             }
         });
     } else {
@@ -55,7 +38,7 @@ onAuthStateChanged(auth, user => {
     }
 });
 
-// ৪. রেজিস্ট্রেশন (EA2121 ফরম্যাট)
+// রেজিস্ট্রেশন ও রেফার কাউন্ট লজিক (EA2121 ফরম্যাট)
 document.getElementById('auth-btn').onclick = async () => {
     const email = document.getElementById('email').value.trim();
     const pass = document.getElementById('pass').value;
@@ -65,63 +48,53 @@ document.getElementById('auth-btn').onclick = async () => {
         signInWithEmailAndPassword(auth, email, pass).catch(() => showAlert("লগইন ভুল!"));
     } else {
         const name = document.getElementById('name').value.trim();
-        const rBy = document.getElementById('refer-by').value.trim();
-        // নতুন ফরম্যাট: EA + ৪টি সংখ্যা
+        const rBy = document.getElementById('refer-by').value.trim().toUpperCase(); // পেস্ট করা কোড
         const myCode = "EA" + Math.floor(1000 + Math.random() * 9000);
         
+        if(!name || !email || !pass) return showAlert("সব ঘর পূরণ করুন!");
+
         createUserWithEmailAndPassword(auth, email, pass).then(async (res) => {
             let bonus = 0;
+            // রেফার কোড চেক এবং কাউন্ট করা
             if(rBy) {
-                const uSnap = await get(ref(db, 'users'));
-                uSnap.forEach(c => {
-                    if(c.val().referCode === rBy) {
-                        update(ref(db, 'users/' + c.key), { balance: (c.val().balance || 0) + 5 });
-                        bonus = 2; 
+                const usersRef = ref(db, 'users');
+                const snapshot = await get(usersRef);
+                let referValid = false;
+                
+                snapshot.forEach(child => {
+                    if(child.val().referCode === rBy) {
+                        referValid = true;
+                        // রেফারকারী পাবে ৫ টাকা
+                        update(ref(db, 'users/' + child.key), { 
+                            balance: (child.val().balance || 0) + 5 
+                        });
+                        bonus = 2; // নতুন ইউজার পাবে ২ টাকা
                     }
                 });
+                if(!referValid) showAlert("রেফার কোডটি সঠিক নয়!");
             }
-            await set(ref(db, 'users/' + res.user.uid), { name, email, balance: bonus, referCode: myCode });
-            showAlert("সফল! আপনার কোড: " + myCode);
-        }).catch(() => showAlert("রেজিস্ট্রেশন ব্যর্থ!"));
+            
+            await set(ref(db, 'users/' + res.user.uid), { 
+                name, email, balance: bonus, referCode: myCode 
+            });
+            showAlert("সফল! আপনার বোনাস: ৳" + bonus);
+        }).catch((err) => showAlert("ব্যর্থ! ইমেইল চেক করুন।"));
     }
 };
 
-// ৫. অন্যান্য ফাংশন
-window.startSpin = () => {
-    const wheel = document.getElementById('wheel');
-    const deg = Math.floor(Math.random() * 360) + 1440;
-    wheel.style.transform = `rotate(${deg}deg)`;
-    setTimeout(async () => {
-        const reward = [1, 2, 0, 5, 1, 3][Math.floor(Math.random()*6)];
-        const uRef = ref(db, 'users/' + auth.currentUser.uid);
-        const s = await get(uRef);
-        await update(uRef, { balance: (s.val().balance || 0) + reward });
-        showAlert(`জিতেছেন ৳${reward}!`);
-    }, 3500);
+// রেফার কোড কপি করা
+window.copyReferCode = () => {
+    const code = document.getElementById('u-refer-code').innerText;
+    navigator.clipboard.writeText(code).then(() => showAlert("রেফার কোড কপি হয়েছে: " + code));
 };
 
-window.runTask = (reward) => {
-    window.open("https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb", "_blank");
-    setTimeout(async () => {
-        const uRef = ref(db, 'users/' + auth.currentUser.uid);
-        const s = await get(uRef);
-        await update(uRef, { balance: (s.val().balance || 0) + reward });
-        showAlert(`৳${reward} যোগ হয়েছে!`);
-    }, 10000);
-};
-
+// ট্যাব নেভিগেশন
 window.changeTab = (n) => {
-    if(n === 'leaderboard') loadLeaderboard();
+    if(n === 'leaderboard') loadLeaderboard(); // লিডারবোর্ড লোড করা
     document.querySelectorAll('.page-view').forEach(v => v.classList.add('hidden'));
     document.getElementById('view-' + n).classList.remove('hidden');
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    document.getElementById('nav-' + (n === 'spin' || n === 'withdraw' ? 'home' : n)).classList.add('active');
-};
-
-window.shareApp = () => {
-    const code = document.getElementById('u-refer-code').innerText;
-    const text = `আমার রেফার কোড: ${code}\nলিঙ্ক: ${APP_URL}`;
-    navigator.clipboard.writeText(text).then(() => showAlert("কপি হয়েছে!"));
+    document.getElementById('nav-' + (n === 'profile' || n === 'leaderboard' ? n : 'home')).classList.add('active');
 };
 
 window.toggleAuth = () => {
