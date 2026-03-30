@@ -10,9 +10,9 @@
 <body>
     <div id="custom-alert" class="alert-overlay hidden">
         <div class="alert-box">
-            <h3 id="alert-title">Earning App</h3>
+            <h3>Earning App</h3>
             <p id="alert-msg"></p>
-            <button onclick="closeAlert()">OK</button>
+            <button onclick="window.closeAlert()">ঠিক আছে</button>
         </div>
     </div>
 
@@ -28,13 +28,14 @@
                     <input type="text" id="refer-by" placeholder="রেফার কোড (যদি থাকে)">
                 </div>
                 <button id="auth-btn" class="btn-sm">প্রবেশ করুন</button>
-                <p style="margin-top:15px;">একাউন্ট নেই? <span onclick="window.toggleAuth()" style="color:#1a237e; font-weight:bold; cursor:pointer;">রেজিস্ট্রেশন করুন</span></p>
+                <p style="margin-top:15px; cursor:pointer;">একাউন্ট নেই? <span onclick="window.toggleAuth()" style="color:#1a237e; font-weight:bold;">রেজিস্ট্রেশন করুন</span></p>
             </div>
         </div>
 
         <div id="main-page" class="hidden">
             <header><div class="logo">Earning <span>App</span></div></header>
             <div class="container main-content">
+                
                 <div id="view-home" class="page-view">
                     <div class="user-card">
                         <h3>স্বাগতম, <span id="u-name-display">...</span></h3>
@@ -51,6 +52,15 @@
                     </div>
                 </div>
 
+                <div id="view-leaderboard" class="page-view hidden">
+                    <div class="user-card">
+                        <h2>সেরা ১০০ ইউজার 🏆</h2>
+                        <div id="leaderboard-list" style="margin-top: 20px;">
+                            <p>লোড হচ্ছে...</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="view-spin" class="page-view hidden">
                     <div class="user-card">
                         <h2>লাকি স্পিন 🎡</h2>
@@ -62,10 +72,10 @@
                 <div id="view-profile" class="page-view hidden">
                     <div class="user-card">
                         <h2>প্রোফাইল 👤</h2>
-                        <div style="background:#f0f4f8; padding:20px; border-radius:15px; margin-top:15px;">
+                        <div style="background:#e3f2fd; padding:15px; border-radius:15px; margin-top:10px;">
                             <p>আপনার রেফার কোড:</p>
-                            <h3 id="u-refer-code" style="color:#1a237e; margin:10px 0;">লোড হচ্ছে...</h3>
-                            <button onclick="window.shareApp()" class="btn-sm" style="background:#4caf50; color:white;"><i class="fa fa-share-alt"></i> বন্ধুদের শেয়ার করুন</button>
+                            <h3 id="u-refer-code" style="color:#1a237e; letter-spacing: 2px;">লোড হচ্ছে...</h3>
+                            <button onclick="window.shareApp()" class="btn-sm" style="background:#4caf50; color:white; margin-top:10px;"><i class="fa fa-share-alt"></i> বন্ধুদের শেয়ার করুন</button>
                         </div>
                         <button onclick="window.logout()" class="btn-sm" style="background:#ff5252; color:white; margin-top:20px;">লগআউট</button>
                     </div>
@@ -73,29 +83,22 @@
 
                 <div id="view-withdraw" class="page-view hidden">
                     <div class="auth-box">
-                        <h3>উইথড্র (সর্বনিম্ন ৫০০)</h3>
+                        <h3>উইথড্র (মিন: ৫০০)</h3>
                         <select id="method"><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select>
                         <input type="number" id="w-amount" placeholder="পরিমাণ">
-                        <input type="text" id="w-number" placeholder="নাম্বার">
-                        <button onclick="window.submitWithdraw()" class="btn-sm">সাবমিট করুন</button>
+                        <input type="text" id="w-number" placeholder="মোবাইল নাম্বার">
+                        <button onclick="window.submitWithdraw()" class="btn-sm">উইথড্র করুন</button>
                     </div>
                 </div>
             </div>
 
             <nav class="bottom-nav">
                 <div class="nav-item active" id="nav-home" onclick="window.changeTab('home')"><i class="fa fa-home"></i><br>হোম</div>
+                <div class="nav-item" id="nav-leaderboard" onclick="window.changeTab('leaderboard')"><i class="fa fa-trophy"></i><br>সেরা</div>
                 <div class="nav-item" id="nav-profile" onclick="window.changeTab('profile')"><i class="fa fa-user"></i><br>প্রোফাইল</div>
             </nav>
         </div>
     </div>
     <script type="module" src="script.js"></script>
-    <script>
-        // কাস্টম অ্যালার্ট ফাংশন
-        window.showAlert = (msg) => {
-            document.getElementById('alert-msg').innerText = msg;
-            document.getElementById('custom-alert').classList.remove('hidden');
-        };
-        window.closeAlert = () => document.getElementById('custom-alert').classList.add('hidden');
-    </script>
 </body>
 </html>
