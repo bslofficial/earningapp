@@ -11,9 +11,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
+const APP_URL = "https://bslofficial.github.io/earningapp/";
 const AD_LINK = "https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb";
 
-// ১. নেভিগেশন সিস্টেম
+// ১. নেভিগেশন
 window.changeTab = (name) => {
     document.querySelectorAll('.page-view').forEach(v => v.classList.add('hidden'));
     document.getElementById('view-' + name).classList.remove('hidden');
@@ -24,15 +25,17 @@ window.changeTab = (name) => {
     if(name === 'withdraw') loadHistory();
 };
 
-// ২. রেফারেল ও শেয়ার সিস্টেম
+// ২. রেফার ও শেয়ার ফিক্স
 window.shareApp = () => {
     const code = document.getElementById('u-refer-code').innerText;
-    const text = `BSL Official অ্যাপে কাজ করে আয় করুন! আমার রেফার কোড: ${code}\nলিঙ্ক: ${window.location.origin}`;
+    if(code === "লোড হচ্ছে..." || code === "কোড নেই") return alert("দয়া করে অপেক্ষা করুন...");
+    
+    const text = `BSL Official অ্যাপে কাজ করে আয় করুন! আমার রেফার কোড: ${code}\nলিঙ্ক: ${APP_URL}`;
+    
     if(navigator.share) {
-        navigator.share({title: 'Earn Money', text: text, url: window.location.href});
+        navigator.share({ title: 'Earn Money Online', text: text });
     } else {
-        navigator.clipboard.writeText(text);
-        alert("লিঙ্ক কপি হয়েছে!");
+        navigator.clipboard.writeText(text).then(() => alert("রেফার লিঙ্ক কপি হয়েছে!"));
     }
 };
 
@@ -41,8 +44,8 @@ window.startSpin = () => {
     const wheel = document.getElementById('wheel');
     const btn = document.getElementById('spin-btn');
     btn.disabled = true;
-    const randomDeg = Math.floor(Math.random() * 360) + 1440;
-    wheel.style.transform = `rotate(${randomDeg}deg)`;
+    const deg = Math.floor(Math.random() * 360) + 1440;
+    wheel.style.transform = `rotate(${deg}deg)`;
     
     setTimeout(async () => {
         const rewards = [1, 2, 0, 5, 1, 3];
@@ -58,54 +61,49 @@ window.startSpin = () => {
     }, 3500);
 };
 
-// ৪. উইথড্র সিস্টেম (মিন: ৫০০)
+// ৪. উইথড্র (মিন: ৫০০) ও হিস্ট্রি
 window.submitWithdraw = async () => {
     const amount = parseFloat(document.getElementById('w-amount').value);
     const number = document.getElementById('w-number').value.trim();
     const method = document.getElementById('method').value;
     const user = auth.currentUser;
 
-    if(!amount || amount < 500) return alert("দুঃখিত, সর্বনিম্ন ৫০০ টাকা উইথড্র করতে হবে!");
-    if(!number || number.length < 11) return alert("সঠিক মোবাইল নাম্বার দিন!");
+    if(!amount || amount < 500) return alert("সর্বনিম্ন ৫০০ টাকা উইথড্র করতে হবে!");
+    if(number.length < 11) return alert("সঠিক মোবাইল নাম্বার দিন!");
     
     const userRef = ref(db, 'users/' + user.uid);
     const snap = await get(userRef);
     const bal = snap.val().balance || 0;
 
-    if(bal < amount) return alert("আপনার ব্যালেন্স পর্যাপ্ত নয়!");
+    if(bal < amount) return alert("পর্যাপ্ত ব্যালেন্স নেই!");
 
-    try {
-        await update(userRef, { balance: bal - amount });
-        await push(ref(db, 'withdraw_requests'), {
-            uid: user.uid, name: snap.val().name, amount, number, method, status: "pending", time: new Date().toLocaleString()
-        });
-        alert("রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
-        document.getElementById('w-amount').value = "";
-        document.getElementById('w-number').value = "";
-    } catch(e) { alert("সমস্যা হয়েছে, আবার চেষ্টা করুন।"); }
+    await update(userRef, { balance: bal - amount });
+    await push(ref(db, 'withdraw_requests'), {
+        uid: user.uid, name: snap.val().name, amount, number, method, status: "pending", time: new Date().toLocaleString()
+    });
+    alert("রিকোয়েস্ট সফল হয়েছে!");
 };
 
-// পেমেন্ট হিস্ট্রি লোড
 function loadHistory() {
     const q = query(ref(db, 'withdraw_requests'), orderByChild('uid'), equalTo(auth.currentUser.uid));
     onValue(q, snap => {
-        let h = '';
+        let html = '';
         snap.forEach(c => {
             const d = c.val();
-            h += `<div class="history-item"><span>${d.method}: ৳${d.amount}</span><span class="status-p">পেন্ডিং</span></div>`;
+            html += `<div class="history-item"><span>${d.method}: ৳${d.amount}</span><span class="status-p">পেন্ডিং</span></div>`;
         });
-        document.getElementById('history-list').innerHTML = h || "কোনো হিস্ট্রি নেই";
+        document.getElementById('history-list').innerHTML = html || "কোনো হিস্ট্রি নেই";
     });
 }
 
-// ৫. টাস্ক ও লিডারবোর্ড (সেরা ১০০ জন)
+// ৫. টাস্ক ও লিডারবোর্ড (সেরা ১০০)
 window.runTask = (reward) => {
     window.open(AD_LINK, '_blank');
     setTimeout(async () => {
         const userRef = ref(db, 'users/' + auth.currentUser.uid);
         const snap = await get(userRef);
         await update(userRef, { balance: (snap.val().balance || 0) + reward });
-        alert(`অভিনন্দন! ৳${reward} যোগ হয়েছে।`);
+        alert(`৳${reward} যোগ হয়েছে!`);
     }, 10000);
 };
 
@@ -113,9 +111,7 @@ function loadLeaderboard() {
     const q = query(ref(db, 'users'), orderByChild('balance'), limitToLast(100));
     onValue(q, snap => {
         let list = [];
-        snap.forEach(c => {
-            if(c.val().balance > 0) list.push(c.val());
-        });
+        snap.forEach(c => { if(c.val().balance > 0) list.push(c.val()); });
         list.sort((a,b) => b.balance - a.balance);
         document.getElementById('lb-list').innerHTML = list.map((u,i) => `
             <div class="lb-item"><span>${i+1}. ${u.name}</span><b>৳${u.balance.toFixed(2)}</b></div>
@@ -123,7 +119,7 @@ function loadLeaderboard() {
     });
 }
 
-// ৬. অথেন্টিকেশন ও রিয়েলটাইম আপডেট
+// ৬. অথেন্টিকেশন ও প্রোফাইল ডাটা
 onAuthStateChanged(auth, user => {
     if(user) {
         document.getElementById('auth-page').classList.add('hidden');
@@ -135,7 +131,7 @@ onAuthStateChanged(auth, user => {
                 document.getElementById('u-name-display').innerText = d.name;
                 document.getElementById('p-name').innerText = d.name;
                 document.getElementById('p-email').innerText = d.email;
-                document.getElementById('u-refer-code').innerText = d.referCode || 'N/A';
+                document.getElementById('u-refer-code').innerText = d.referCode || "কোড নেই";
             }
         });
     } else {
@@ -154,30 +150,23 @@ window.toggleAuth = () => {
 document.getElementById('auth-btn').onclick = async () => {
     const email = document.getElementById('email').value.trim();
     const pass = document.getElementById('pass').value;
-    if(!email || pass.length < 6) return alert("সঠিক ইমেইল ও পাসওয়ার্ড দিন!");
-
     if(isReg) {
         const name = document.getElementById('name').value.trim();
         const referBy = document.getElementById('refer-by').value.trim();
-        if(!name) return alert("নাম দিন!");
-        
         const myReferCode = name.substring(0,3).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
-
         createUserWithEmailAndPassword(auth, email, pass).then(async (res) => {
-            let initialBalance = 0;
+            let bonus = 0;
             if(referBy) {
                 const usersSnap = await get(ref(db, 'users'));
                 usersSnap.forEach(child => {
                     if(child.val().referCode === referBy) {
                         update(ref(db, 'users/' + child.key), { balance: (child.val().balance || 0) + 5 });
-                        initialBalance = 2; // নতুন ইউজার পাবে ২ টাকা
+                        bonus = 2;
                     }
                 });
             }
-            set(ref(db, 'users/' + res.user.uid), { 
-                name, email, balance: initialBalance, referCode: myReferCode, role: "user" 
-            });
-        }).catch(e => alert("রেজিস্ট্রেশন ব্যর্থ!"));
+            set(ref(db, 'users/' + res.user.uid), { name, email, balance: bonus, referCode: myReferCode, role: "user" });
+        }).catch(e => alert("ভুল তথ্য!"));
     } else {
         signInWithEmailAndPassword(auth, email, pass).catch(e => alert("লগইন ব্যর্থ!"));
     }
