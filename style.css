@@ -1,146 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
-
-/* গ্লোবাল স্টাইল */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Hind Siliguri', sans-serif; background: #f4f7f6; color: #333; }
-.hidden { display: none !important; }
-
-/* হেডার */
-header { 
-    background: #1a237e; 
-    color: white; 
-    padding: 20px; 
-    text-align: center; 
-    border-bottom: 4px solid #ffca28; 
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-.logo span { color: #ffca28; font-weight: 700; }
-
-/* কন্টেইনার */
+body { font-family: 'Hind Siliguri', sans-serif; background: #f4f7f6; }
+header { background: #1a237e; color: white; padding: 20px; text-align: center; border-bottom: 4px solid #ffca28; }
+.logo span { color: #ffca28; }
 .container { max-width: 500px; margin: 0 auto; padding: 15px; }
 .main-content { padding-bottom: 90px; }
-
-/* কার্ড ডিজাইন */
-.auth-box, .user-card, .task-card, .admin-content { 
-    background: white; 
-    padding: 20px; 
-    border-radius: 15px; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
-    text-align: center; 
-    margin-bottom: 15px; 
-}
-
-/* ব্যালেন্স কার্ড */
-.balance-card { 
-    background: linear-gradient(135deg, #1a237e, #283593); 
-    color: white; 
-    padding: 25px; 
-    border-radius: 20px; 
-    margin-top: 15px; 
-    box-shadow: 0 6px 15px rgba(26, 35, 126, 0.3);
-}
-.balance-card h2 { color: #ffca28; font-size: 36px; margin: 10px 0; }
-
-/* ইনপুট ও বাটন */
-input, select { 
-    width: 100%; 
-    padding: 12px; 
-    margin-bottom: 15px; 
-    border-radius: 10px; 
-    border: 1px solid #ddd; 
-    outline: none;
-    font-size: 16px;
-}
-.btn-sm { 
-    width: 100%; 
-    background: #ffca28; 
-    color: #1a237e;
-    padding: 14px; 
-    border: none; 
-    font-weight: bold; 
-    cursor: pointer; 
-    border-radius: 10px; 
-    transition: 0.3s; 
-    font-size: 16px;
-    text-transform: uppercase;
-}
-.btn-sm:hover { background: #ffd54f; transform: translateY(-2px); }
-.btn-sm:disabled { background: #ccc; cursor: not-allowed; }
-
-/* বটম নেভিগেশন */
-.bottom-nav { 
-    position: fixed; 
-    bottom: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 75px; 
-    background: white; 
-    display: flex; 
-    align-items: center; 
-    border-top: 1px solid #eee; 
-    z-index: 1000; 
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-}
-.nav-item { flex: 1; text-align: center; color: #888; cursor: pointer; font-size: 14px; transition: 0.3s; }
-.nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
-.nav-item.active { color: #1a237e; font-weight: 700; }
-
-/* টাস্ক গ্রিড */
+.auth-box, .user-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; margin-bottom: 15px; }
+.hidden { display: none !important; }
+.balance-card { background: #1a237e; color: white; padding: 25px; border-radius: 15px; margin-top: 15px; }
+.balance-card h2 { color: #ffca28; font-size: 32px; }
+input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; }
+.btn-sm { width: 100%; background: #ffca28; padding: 12px; border: none; font-weight: bold; cursor: pointer; border-radius: 8px; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: white; display: flex; align-items: center; border-top: 1px solid #eee; }
+.nav-item { flex: 1; text-align: center; color: #888; cursor: pointer; }
+.nav-item.active { color: #1a237e; font-weight: bold; }
 .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-
-/* লিডারবোর্ড */
-.lb-item { 
-    display: flex; 
-    justify-content: space-between; 
-    padding: 15px; 
-    background: #fff; 
-    margin-bottom: 10px; 
-    border-radius: 12px; 
-    border-left: 5px solid #ffca28; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-}
-.lb-item b { color: #1a237e; }
-
-/* --- নতুন স্পিনার ডিজাইন (৬টি ঘর) --- */
-.wheel-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 30px 0;
-}
-
-#wheel {
-    width: 260px;
-    height: 260px;
-    border-radius: 50%;
-    border: 8px solid #1a237e;
-    background: conic-gradient(
-        #f44336 0deg 60deg, 
-        #ffeb3b 60deg 120deg, 
-        #4caf50 120deg 180deg, 
-        #2196f3 180deg 240deg, 
-        #ff9800 240deg 300deg, 
-        #9c27b0 300deg 360deg
-    );
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
-    position: relative;
-}
-
-/* স্পিনারের মাঝখানের পয়েন্টার */
-.wheel-wrapper::before {
-    content: "▼";
-    color: #1a237e;
-    font-size: 30px;
-    position: absolute;
-    z-index: 10;
-    margin-top: -15px;
-}
-
-/* টেবিল স্টাইল (অ্যাডমিন প্যানেল) */
-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-th, td { padding: 12px 8px; text-align: left; border-bottom: 1px solid #eee; }
-th { background: #f8f9fa; color: #1a237e; }
-.approve-btn { background: #4caf50; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
-.reject-btn { background: #f44336; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; margin-left: 3px; }
+.task-card { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); font-weight: bold; cursor: pointer; }
+.wheel-wrapper { display: flex; justify-content: center; margin: 20px 0; position: relative; }
+.wheel-wrapper::before { content: "▼"; position: absolute; top: -10px; font-size: 25px; color: #1a237e; z-index: 5; }
+#wheel { width: 240px; height: 240px; border-radius: 50%; border: 5px solid #1a237e; background: conic-gradient(#f44336 0 60deg, #ffeb3b 60deg 120deg, #4caf50 120deg 180deg, #2196f3 180deg 240deg, #ff9800 240deg 300deg, #9c27b0 300deg 360deg); transition: transform 3s ease-out; }
+.lb-item, .history-item { display: flex; justify-content: space-between; padding: 10px; background: #f9f9f9; margin-bottom: 5px; border-radius: 8px; border-left: 4px solid #ffca28; }
+.status-p { color: orange; font-weight: bold; }
