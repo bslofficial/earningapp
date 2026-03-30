@@ -25,9 +25,9 @@
                 <input type="password" id="pass" placeholder="পাসওয়ার্ড">
                 <div id="reg-inputs" class="hidden">
                     <input type="text" id="name" placeholder="আপনার নাম">
-                    <input type="text" id="refer-by" placeholder="রেফার কোডটি এখানে পেস্ট করুন">
+                    <input type="text" id="refer-by" placeholder="রেফার কোড (যদি থাকে)">
                 </div>
-                <button id="auth-btn" class="btn-sm">সাবমিট করুন</button>
+                <button id="auth-btn" class="btn-sm">প্রবেশ করুন</button>
                 <p style="margin-top:15px; cursor:pointer;">একাউন্ট নেই? <span onclick="window.toggleAuth()" style="color:#1a237e; font-weight:bold;">রেজিস্ট্রেশন করুন</span></p>
             </div>
         </div>
@@ -45,9 +45,9 @@
                         </div>
                     </div>
                     <div class="task-grid">
-                        <div class="task-card" onclick="window.runTask(2)">🎁 ডেইলি বোনাস</div>
+                        <div class="task-card" onclick="window.dailyBonus()">🎁 ডেইলি বোনাস</div>
                         <div class="task-card" onclick="window.changeTab('spin')">🎡 লাকি স্পিন</div>
-                        <div class="task-card" onclick="window.runTask(5)">🎬 ভিডিও টাস্ক</div>
+                        <div class="task-card" onclick="window.runVideoTask()">🎬 ভিডিও টাস্ক</div>
                         <div class="task-card" onclick="window.changeTab('withdraw')">💸 উইথড্র</div>
                     </div>
                 </div>
@@ -55,25 +55,41 @@
                 <div id="view-leaderboard" class="page-view hidden">
                     <div class="user-card">
                         <h2>সেরা ১০০ ইউজার 🏆</h2>
-                        <div id="leaderboard-list" style="margin-top: 20px;">
-                            <p>লোড হচ্ছে...</p>
-                        </div>
+                        <div id="leaderboard-list"></div>
+                    </div>
+                </div>
+
+                <div id="view-spin" class="page-view hidden">
+                    <div class="user-card">
+                        <h2>লাকি স্পিন 🎡</h2>
+                        <div class="wheel-wrapper"><div id="wheel"></div></div>
+                        <button id="spin-btn" onclick="window.startSpin()" class="btn-sm">স্পিন করুন</button>
                     </div>
                 </div>
 
                 <div id="view-profile" class="page-view hidden">
                     <div class="user-card">
                         <h2>প্রোফাইল 👤</h2>
-                        <div style="background:#e3f2fd; padding:20px; border-radius:15px; margin-top:15px; border: 2px dashed #1a237e;">
-                            <p style="font-weight: bold; color: #555;">আপনার রেফার কোড</p>
-                            <h3 id="u-refer-code" style="color:#1a237e; font-size: 28px; margin:10px 0; letter-spacing:3px;">লোড হচ্ছে...</h3>
-                            <button onclick="window.copyReferCode()" class="btn-sm" style="background:#4caf50; color:white; margin-top:10px;"><i class="fa fa-copy"></i> কোড কপি করুন</button>
+                        <div class="refer-box">
+                            <p>আপনার রেফার কোড</p>
+                            <h3 id="u-refer-code">লোড হচ্ছে...</h3>
+                            <button onclick="window.copyRefer()" class="btn-sm" style="background:#4caf50; color:white; margin-top:10px;">কপি করুন</button>
                         </div>
                         <button onclick="window.logout()" class="btn-sm" style="background:#ff5252; color:white; margin-top:20px;">লগআউট</button>
                     </div>
                 </div>
 
+                <div id="view-withdraw" class="page-view hidden">
+                    <div class="auth-box">
+                        <h3>উইথড্র (মিন: ৫০০)</h3>
+                        <select id="method"><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select>
+                        <input type="number" id="w-amount" placeholder="পরিমাণ">
+                        <input type="text" id="w-number" placeholder="নাম্বার">
+                        <button onclick="window.submitWithdraw()" class="btn-sm">সাবমিট</button>
+                    </div>
                 </div>
+
+            </div>
 
             <nav class="bottom-nav">
                 <div class="nav-item active" id="nav-home" onclick="window.changeTab('home')"><i class="fa fa-home"></i><br>হোম</div>
