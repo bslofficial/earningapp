@@ -12,14 +12,15 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// কাস্টম অ্যালার্ট
+// আপনার এডস্টারা ডাইরেক্ট লিঙ্ক
+const ADSTERRA_LINK = "https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb";
+
 window.showAlert = (msg) => {
     document.getElementById('alert-msg').innerText = msg;
     document.getElementById('custom-alert').classList.remove('hidden');
 };
 window.closeAlert = () => document.getElementById('custom-alert').classList.add('hidden');
 
-// ইউজার স্টেট চেক
 onAuthStateChanged(auth, user => {
     if(user) {
         document.getElementById('auth-page').classList.add('hidden');
@@ -29,7 +30,6 @@ onAuthStateChanged(auth, user => {
             if(d) {
                 document.getElementById('u-balance').innerText = (d.balance || 0).toFixed(2);
                 document.getElementById('u-name-display').innerText = d.name;
-                // পুরাতন ইউজারের কোড না থাকলে নতুন কোড তৈরি করে আপডেট করবে
                 if(!d.referCode) {
                     const newCode = "EA" + Math.floor(1000 + Math.random()*9000);
                     update(ref(db, 'users/' + user.uid), { referCode: newCode });
@@ -43,7 +43,6 @@ onAuthStateChanged(auth, user => {
     }
 });
 
-// রেজিস্ট্রেশন ও রেফার
 document.getElementById('auth-btn').onclick = async () => {
     const email = document.getElementById('email').value.trim();
     const pass = document.getElementById('pass').value;
@@ -73,8 +72,8 @@ document.getElementById('auth-btn').onclick = async () => {
     }
 };
 
-// বাটন ফাংশনসমূহ (Window Object এ রাখা হয়েছে যাতে HTML থেকে কাজ করে)
 window.dailyBonus = async () => {
+    window.open(ADSTERRA_LINK, "_blank");
     const uRef = ref(db, 'users/' + auth.currentUser.uid);
     const s = await get(uRef);
     const lastDate = s.val().lastBonusDate;
@@ -82,12 +81,12 @@ window.dailyBonus = async () => {
 
     if(lastDate === today) return showAlert("আজকের বোনাস নিয়েছেন!");
     await update(uRef, { balance: (s.val().balance || 0) + 2, lastBonusDate: today });
-    showAlert("৳২ ডেইলি বোনাস পেয়েছেন!");
+    showAlert("৳২ বোনাস পেয়েছেন!");
 };
 
 window.runVideoTask = () => {
-    window.open("https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb", "_blank");
-    showAlert("১০ সেকেন্ড পর বোনাস যোগ হবে...");
+    window.open(ADSTERRA_LINK, "_blank");
+    showAlert("বিজ্ঞাপনটি দেখুন, ১০ সেকেন্ড পর বোনাস পাবেন...");
     setTimeout(async () => {
         const uRef = ref(db, 'users/' + auth.currentUser.uid);
         const s = await get(uRef);
@@ -105,7 +104,8 @@ window.startSpin = () => {
         const uRef = ref(db, 'users/' + auth.currentUser.uid);
         const s = await get(uRef);
         await update(uRef, { balance: (s.val().balance || 0) + reward });
-        showAlert(`আপনি ৳${reward} জিতেছেন!`);
+        showAlert(`জিতেছেন ৳${reward}!`);
+        if(reward > 0) window.open(ADSTERRA_LINK, "_blank");
     }, 3500);
 };
 
@@ -121,13 +121,15 @@ window.submitWithdraw = async () => {
     showAlert("রিকোয়েস্ট পাঠানো হয়েছে!");
 };
 
-// নেভিগেশন ও অন্যান্য
 window.changeTab = (n) => {
     if(n === 'leaderboard') {
         const lb = document.getElementById('leaderboard-list');
         onValue(ref(db, 'users'), s => {
-            let arr = Object.values(s.val()).sort((a,b) => b.balance - a.balance).slice(0,100);
-            lb.innerHTML = arr.map((u,i) => `<div class="lb-item"><span>${i+1}. ${u.name}</span><span>৳${u.balance.toFixed(2)}</span></div>`).join('');
+            let data = s.val();
+            if(data){
+                let arr = Object.values(data).sort((a,b) => (b.balance||0) - (a.balance||0)).slice(0,100);
+                lb.innerHTML = arr.map((u,i) => `<div class="lb-item"><span>${i+1}. ${u.name}</span><span>৳${(u.balance||0).toFixed(2)}</span></div>`).join('');
+            }
         });
     }
     document.querySelectorAll('.page-view').forEach(v => v.classList.add('hidden'));
@@ -137,7 +139,8 @@ window.changeTab = (n) => {
 };
 
 window.copyRefer = () => {
-    navigator.clipboard.writeText(document.getElementById('u-refer-code').innerText).then(() => showAlert("কোড কপি হয়েছে!"));
+    const code = document.getElementById('u-refer-code').innerText;
+    navigator.clipboard.writeText(code).then(() => showAlert("কোড কপি হয়েছে!"));
 };
 window.toggleAuth = () => {
     document.getElementById('reg-inputs').classList.toggle('hidden');
