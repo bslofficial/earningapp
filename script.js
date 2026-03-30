@@ -12,7 +12,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// আপনার এডস্টারা ডাইরেক্ট লিঙ্ক
+// এডস্টারা ডাইরেক্ট লিঙ্ক
 const ADSTERRA_LINK = "https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb";
 
 window.showAlert = (msg) => {
@@ -21,6 +21,7 @@ window.showAlert = (msg) => {
 };
 window.closeAlert = () => document.getElementById('custom-alert').classList.add('hidden');
 
+// ইউজার লগইন স্টেট ও ডাটা লোড
 onAuthStateChanged(auth, user => {
     if(user) {
         document.getElementById('auth-page').classList.add('hidden');
@@ -30,11 +31,13 @@ onAuthStateChanged(auth, user => {
             if(d) {
                 document.getElementById('u-balance').innerText = (d.balance || 0).toFixed(2);
                 document.getElementById('u-name-display').innerText = d.name;
+                
+                // পুরাতন ইউজারদের জন্য অটোমেটিক রেফার কোড জেনারেশন
                 if(!d.referCode) {
                     const newCode = "EA" + Math.floor(1000 + Math.random()*9000);
                     update(ref(db, 'users/' + user.uid), { referCode: newCode });
                 }
-                document.getElementById('u-refer-code').innerText = d.referCode || "...";
+                document.getElementById('u-refer-code').innerText = d.referCode || "EA0000";
             }
         });
     } else {
@@ -43,6 +46,7 @@ onAuthStateChanged(auth, user => {
     }
 });
 
+// রেজিস্ট্রেশন লজিক (EA2121 ফরম্যাট)
 document.getElementById('auth-btn').onclick = async () => {
     const email = document.getElementById('email').value.trim();
     const pass = document.getElementById('pass').value;
@@ -55,6 +59,8 @@ document.getElementById('auth-btn').onclick = async () => {
         const rBy = document.getElementById('refer-by').value.trim().toUpperCase();
         const myCode = "EA" + Math.floor(1000 + Math.random()*9000);
         
+        if(!name || !email || !pass) return showAlert("সব ঘর পূরণ করুন!");
+
         createUserWithEmailAndPassword(auth, email, pass).then(async (res) => {
             let bonus = 0;
             if(rBy) {
@@ -62,16 +68,17 @@ document.getElementById('auth-btn').onclick = async () => {
                 uSnap.forEach(c => {
                     if(c.val().referCode === rBy) {
                         update(ref(db, 'users/' + c.key), { balance: (c.val().balance || 0) + 5 });
-                        bonus = 2;
+                        bonus = 2; // নতুন ইউজারের বোনাস
                     }
                 });
             }
             await set(ref(db, 'users/' + res.user.uid), { name, email, balance: bonus, referCode: myCode });
-            showAlert("রেজিস্ট্রেশন সফল!");
-        }).catch(() => showAlert("ভুল হয়েছে!"));
+            showAlert("রেজিস্ট্রেশন সফল! বোনাস: ৳" + bonus);
+        }).catch(() => showAlert("ভুল ইমেইল বা পাসওয়ার্ড!"));
     }
 };
 
+// টাস্ক ফাংশনসমূহ
 window.dailyBonus = async () => {
     window.open(ADSTERRA_LINK, "_blank");
     const uRef = ref(db, 'users/' + auth.currentUser.uid);
@@ -79,14 +86,14 @@ window.dailyBonus = async () => {
     const lastDate = s.val().lastBonusDate;
     const today = new Date().toDateString();
 
-    if(lastDate === today) return showAlert("আজকের বোনাস নিয়েছেন!");
+    if(lastDate === today) return showAlert("আজকের বোনাস নেওয়া শেষ!");
     await update(uRef, { balance: (s.val().balance || 0) + 2, lastBonusDate: today });
-    showAlert("৳২ বোনাস পেয়েছেন!");
+    showAlert("অভিনন্দন! আপনি ৳২ ডেইলি বোনাস পেয়েছেন।");
 };
 
 window.runVideoTask = () => {
     window.open(ADSTERRA_LINK, "_blank");
-    showAlert("বিজ্ঞাপনটি দেখুন, ১০ সেকেন্ড পর বোনাস পাবেন...");
+    showAlert("বিজ্ঞাপনটি দেখুন, ১০ সেকেন্ড পর বোনাস যোগ হবে...");
     setTimeout(async () => {
         const uRef = ref(db, 'users/' + auth.currentUser.uid);
         const s = await get(uRef);
@@ -104,7 +111,7 @@ window.startSpin = () => {
         const uRef = ref(db, 'users/' + auth.currentUser.uid);
         const s = await get(uRef);
         await update(uRef, { balance: (s.val().balance || 0) + reward });
-        showAlert(`জিতেছেন ৳${reward}!`);
+        showAlert(`অভিনন্দন! জিতেছেন ৳${reward}`);
         if(reward > 0) window.open(ADSTERRA_LINK, "_blank");
     }, 3500);
 };
@@ -112,15 +119,16 @@ window.startSpin = () => {
 window.submitWithdraw = async () => {
     const amount = parseFloat(document.getElementById('w-amount').value);
     const num = document.getElementById('w-number').value.trim();
-    if(amount < 500) return showAlert("মিনিমাম ৫০০ টাকা!");
+    if(amount < 500) return showAlert("মিনিমাম ৫০০ টাকা লাগবে!");
     const s = await get(ref(db, 'users/' + auth.currentUser.uid));
-    if(s.val().balance < amount) return showAlert("ব্যালেন্স নেই!");
+    if(s.val().balance < amount) return showAlert("পর্যাপ্ত ব্যালেন্স নেই!");
     
     await update(ref(db, 'users/' + auth.currentUser.uid), { balance: s.val().balance - amount });
     await push(ref(db, 'withdraw_requests'), { uid: auth.currentUser.uid, amount, number: num, method: document.getElementById('method').value, time: new Date().toLocaleString() });
-    showAlert("রিকোয়েস্ট পাঠানো হয়েছে!");
+    showAlert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
 };
 
+// নেভিগেশন
 window.changeTab = (n) => {
     if(n === 'leaderboard') {
         const lb = document.getElementById('leaderboard-list');
@@ -140,8 +148,9 @@ window.changeTab = (n) => {
 
 window.copyRefer = () => {
     const code = document.getElementById('u-refer-code').innerText;
-    navigator.clipboard.writeText(code).then(() => showAlert("কোড কপি হয়েছে!"));
+    navigator.clipboard.writeText(code).then(() => showAlert("রেফার কোড কপি হয়েছে!"));
 };
+
 window.toggleAuth = () => {
     document.getElementById('reg-inputs').classList.toggle('hidden');
     document.getElementById('auth-title').innerText = document.getElementById('reg-inputs').classList.contains('hidden') ? "লগইন করুন" : "রেজিস্ট্রেশন করুন";
