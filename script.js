@@ -20,7 +20,7 @@ window.showAlert = (msg) => {
 };
 window.closeAlert = () => document.getElementById('custom-alert').classList.add('hidden');
 
-// ২. লিডারবোর্ড লোড (সেরা ১০০)
+// ২. লিডারবোর্ড লোড
 const loadLeaderboard = () => {
     const lbList = document.getElementById('leaderboard-list');
     onValue(ref(db, 'users'), (snap) => {
@@ -55,7 +55,7 @@ onAuthStateChanged(auth, user => {
     }
 });
 
-// ৪. রেজিস্ট্রেশন ও রেফার
+// ৪. রেজিস্ট্রেশন (EA2121 ফরম্যাট)
 document.getElementById('auth-btn').onclick = async () => {
     const email = document.getElementById('email').value.trim();
     const pass = document.getElementById('pass').value;
@@ -66,7 +66,8 @@ document.getElementById('auth-btn').onclick = async () => {
     } else {
         const name = document.getElementById('name').value.trim();
         const rBy = document.getElementById('refer-by').value.trim();
-        const myCode = name.substring(0,3).toUpperCase() + Math.floor(1000 + Math.random()*9000);
+        // নতুন ফরম্যাট: EA + ৪টি সংখ্যা
+        const myCode = "EA" + Math.floor(1000 + Math.random() * 9000);
         
         createUserWithEmailAndPassword(auth, email, pass).then(async (res) => {
             let bonus = 0;
@@ -75,13 +76,13 @@ document.getElementById('auth-btn').onclick = async () => {
                 uSnap.forEach(c => {
                     if(c.val().referCode === rBy) {
                         update(ref(db, 'users/' + c.key), { balance: (c.val().balance || 0) + 5 });
-                        bonus = 2; // নতুন ইউজার পাবে ২ টাকা
+                        bonus = 2; 
                     }
                 });
             }
             await set(ref(db, 'users/' + res.user.uid), { name, email, balance: bonus, referCode: myCode });
-            showAlert("রেজিস্ট্রেশন সফল!");
-        }).catch(() => showAlert("ব্যর্থ হয়েছে!"));
+            showAlert("সফল! আপনার কোড: " + myCode);
+        }).catch(() => showAlert("রেজিস্ট্রেশন ব্যর্থ!"));
     }
 };
 
@@ -119,8 +120,10 @@ window.changeTab = (n) => {
 
 window.shareApp = () => {
     const code = document.getElementById('u-refer-code').innerText;
-    navigator.clipboard.writeText(`রেফার কোড: ${code}\nলিঙ্ক: ${APP_URL}`).then(() => showAlert("কপি হয়েছে!"));
+    const text = `আমার রেফার কোড: ${code}\nলিঙ্ক: ${APP_URL}`;
+    navigator.clipboard.writeText(text).then(() => showAlert("কপি হয়েছে!"));
 };
+
 window.toggleAuth = () => {
     document.getElementById('reg-inputs').classList.toggle('hidden');
     document.getElementById('auth-title').innerText = document.getElementById('reg-inputs').classList.contains('hidden') ? "লগইন করুন" : "রেজিস্ট্রেশন করুন";
