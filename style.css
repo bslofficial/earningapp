@@ -6,6 +6,7 @@ body { font-family: 'Hind Siliguri', sans-serif; background: #f4f7f6; color: #33
 
 header { background: #1a237e; color: white; padding: 20px; text-align: center; border-bottom: 4px solid #ffca28; position: sticky; top: 0; z-index: 100; }
 .logo span { color: #ffca28; font-weight: 700; }
+
 .container { max-width: 500px; margin: 0 auto; padding: 15px; }
 .main-content { padding-bottom: 90px; }
 
@@ -17,18 +18,22 @@ input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 
 .btn-sm { width: 100%; background: #ffca28; color: #1a237e; padding: 14px; border: none; font-weight: bold; border-radius: 10px; cursor: pointer; font-size: 16px; }
 
 .refer-box { background: #e3f2fd; padding: 20px; border-radius: 15px; border: 2px dashed #1a237e; margin-top: 10px; }
-#u-refer-code { font-size: 24px; color: #1a237e; letter-spacing: 2px; margin: 10px 0; }
+#u-refer-code { font-size: 26px; color: #1a237e; letter-spacing: 2px; margin: 10px 0; font-family: monospace; }
 
 .lb-item { display: flex; justify-content: space-between; padding: 12px; background: #fff; border-bottom: 1px solid #eee; }
 
+/* কাস্টম অ্যালার্ট */
 .alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-.alert-box { background: white; width: 80%; max-width: 350px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-.alert-box button { background: #1a237e; color: white; padding: 10px 25px; border: none; border-radius: 8px; margin-top: 15px; cursor: pointer; }
+.alert-box { background: white; width: 85%; max-width: 350px; padding: 25px; border-radius: 20px; text-align: center; animation: pop 0.3s ease; }
+@keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.alert-box button { background: #1a237e; color: white; padding: 10px 30px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
 
-.wheel-wrapper { margin: 20px auto; width: 260px; height: 260px; position: relative; }
-#wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #1a237e; background: conic-gradient(#f44336 0 60deg, #ffeb3b 60deg 120deg, #4caf50 120deg 180deg, #2196f3 180deg 240deg, #ff9800 240deg 300deg, #9c27b0 300deg 360deg); transition: 3s cubic-bezier(0.2, 0, 0.2, 1); }
+/* স্পিনার ডিজাইন */
+.wheel-wrapper { margin: 20px auto; width: 260px; height: 260px; position: relative; display: flex; justify-content: center; }
+.wheel-wrapper::before { content: "▼"; color: #1a237e; font-size: 30px; position: absolute; top: -15px; z-index: 10; }
+#wheel { width: 100%; height: 100%; border-radius: 50%; border: 6px solid #1a237e; background: conic-gradient(#f44336 0 60deg, #ffeb3b 60deg 120deg, #4caf50 120deg 180deg, #2196f3 180deg 240deg, #ff9800 240deg 300deg, #9c27b0 300deg 360deg); transition: 3s cubic-bezier(0.2, 0, 0.2, 1); }
 
-.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: white; display: flex; align-items: center; border-top: 1px solid #ddd; z-index: 1000; }
-.nav-item { flex: 1; text-align: center; color: #888; font-size: 12px; cursor: pointer; }
+.bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: white; display: flex; align-items: center; border-top: 1px solid #ddd; z-index: 1000; }
+.nav-item { flex: 1; text-align: center; color: #888; font-size: 13px; cursor: pointer; }
 .nav-item.active { color: #1a237e; font-weight: bold; }
 .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
