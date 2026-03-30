@@ -16,7 +16,8 @@
                 <input type="email" id="email" placeholder="ইমেইল">
                 <input type="password" id="pass" placeholder="পাসওয়ার্ড">
                 <div id="reg-inputs" class="hidden">
-                    <input type="text" id="name" placeholder="আপনার পুরো নাম">
+                    <input type="text" id="name" placeholder="আপনার নাম">
+                    <input type="text" id="refer-by" placeholder="রেফার কোড (ঐচ্ছিক)">
                 </div>
                 <button id="auth-btn" class="btn-sm">প্রবেশ করুন</button>
                 <p style="margin-top:15px; cursor:pointer;">একাউন্ট নেই? <span onclick="window.toggleAuth()" style="color:#1a237e; font-weight:bold;">রেজিস্ট্রেশন করুন</span></p>
@@ -27,7 +28,6 @@
             <header><div class="logo">Earning <span>App</span></div></header>
             
             <div class="container main-content">
-                
                 <div id="view-home" class="page-view">
                     <div class="user-card">
                         <h3>স্বাগতম, <span id="u-name-display">...</span></h3>
@@ -47,28 +47,20 @@
                 <div id="view-spin" class="page-view hidden">
                     <div class="user-card">
                         <h2>লাকি স্পিন 🎡</h2>
-                        <div class="wheel-wrapper">
-                            <div id="wheel"></div> </div>
-                        <p id="spin-status">আপনার ভাগ্য পরীক্ষা করুন!</p>
-                        <button id="spin-btn" onclick="window.startSpin()" class="btn-sm" style="margin-top: 20px;">স্পিন করুন</button>
-                        <button onclick="window.changeTab('home')" class="btn-sm" style="background:#666; margin-top:10px;">ফিরে যান</button>
-                    </div>
-                </div>
-
-                <div id="view-leader" class="page-view hidden">
-                    <div class="user-card">
-                        <h2>সেরা ১০ জন 🏆</h2>
-                        <div id="lb-list">লোড হচ্ছে...</div>
+                        <div class="wheel-wrapper"><div id="wheel"></div></div>
+                        <button id="spin-btn" onclick="window.startSpin()" class="btn-sm" style="margin-top:20px;">স্পিন করুন</button>
                     </div>
                 </div>
 
                 <div id="view-profile" class="page-view hidden">
                     <div class="user-card">
                         <h2>প্রোফাইল 👤</h2>
-                        <div class="profile-info" style="text-align: left; padding: 10px;">
-                            <p><strong>নাম:</strong> <span id="p-name">...</span></p>
-                            <p><strong>ইমেইল:</strong> <span id="p-email">...</span></p>
-                            <p><strong>ব্যালেন্স:</strong> <span id="p-balance" style="color: #1a237e; font-weight: bold;">৳ 0.00</span></p>
+                        <p>নাম: <span id="p-name">...</span></p>
+                        <p>ইমেইল: <span id="p-email">...</span></p>
+                        <div style="background:#e3f2fd; padding:15px; border-radius:10px; margin-top:10px;">
+                            <p>আপনার রেফার কোড:</p>
+                            <h3 id="u-refer-code" style="color:#1a237e;">...</h3>
+                            <button onclick="window.shareApp()" class="btn-sm" style="background:#4caf50; color:white; margin-top:5px;">শেয়ার করুন</button>
                         </div>
                         <button onclick="window.logout()" class="btn-sm" style="background:#ff5252; color:white; margin-top:15px;">লগআউট</button>
                     </div>
@@ -76,34 +68,30 @@
                 
                 <div id="view-withdraw" class="page-view hidden">
                     <div class="auth-box">
-                        <h3>উইথড্র রিকোয়েস্ট 💸</h3>
-                        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">সর্বনিম্ন উইথড্র ৫০ টাকা</p>
-                        <select id="method">
-                            <option value="bKash">bKash</option>
-                            <option value="Nagad">Nagad</option>
-                        </select>
-                        <input type="number" id="w-amount" placeholder="টাকার পরিমাণ">
-                        <input type="text" id="w-number" placeholder="বিকাশ/নগদ নাম্বার">
-                        <button onclick="window.submitWithdraw()" class="btn-sm">উইথড্র রিকোয়েস্ট পাঠান</button>
-                        <button onclick="window.changeTab('home')" class="btn-sm" style="background:#666; margin-top:10px;">বাতিল করুন</button>
+                        <h3>উইথড্র করুন</h3>
+                        <select id="method"><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select>
+                        <input type="number" id="w-amount" placeholder="টাকার পরিমাণ (মিন: ৫০০)">
+                        <input type="text" id="w-number" placeholder="মোবাইল নাম্বার">
+                        <button onclick="window.submitWithdraw()" class="btn-sm">রিকোয়েস্ট পাঠান</button>
                     </div>
+                    <div class="user-card" style="margin-top:15px;">
+                        <h4>পেমেন্ট হিস্ট্রি</h4>
+                        <div id="history-list" style="text-align:left; font-size:14px;">লোড হচ্ছে...</div>
+                    </div>
+                </div>
+
+                <div id="view-leader" class="page-view hidden">
+                    <div class="user-card"><h2>সেরা ১০০ জন 🏆</h2><div id="lb-list">লোড হচ্ছে...</div></div>
                 </div>
             </div>
 
             <nav class="bottom-nav">
-                <div class="nav-item active" id="nav-home" onclick="window.changeTab('home')">
-                    <i class="fa fa-home"></i><br>হোম
-                </div>
-                <div class="nav-item" id="nav-leader" onclick="window.changeTab('leader')">
-                    <i class="fa fa-trophy"></i><br>সেরা
-                </div>
-                <div class="nav-item" id="nav-profile" onclick="window.changeTab('profile')">
-                    <i class="fa fa-user"></i><br>প্রোফাইল
-                </div>
+                <div class="nav-item active" id="nav-home" onclick="window.changeTab('home')"><i class="fa fa-home"></i><br>হোম</div>
+                <div class="nav-item" id="nav-leader" onclick="window.changeTab('leader')"><i class="fa fa-trophy"></i><br>সেরা</div>
+                <div class="nav-item" id="nav-profile" onclick="window.changeTab('profile')"><i class="fa fa-user"></i><br>প্রোফাইল</div>
             </nav>
         </div>
     </div>
-    
     <script type="module" src="script.js"></script>
 </body>
 </html>
