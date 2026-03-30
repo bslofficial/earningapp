@@ -27,7 +27,7 @@ window.changeTab = (name) => {
     if(name === 'leader') loadLeaderboard();
 };
 
-// ২. লিডারবোর্ড ফাংশন (সব ইউজারকে দেখানোর জন্য আপডেট করা হয়েছে)
+// ২. লিডারবোর্ড ফাংশন
 function loadLeaderboard() {
     const q = query(ref(db, 'users'), orderByChild('balance'), limitToLast(10));
     onValue(q, snap => {
@@ -39,7 +39,6 @@ function loadLeaderboard() {
             users.push(userData);
         });
         
-        // ব্যালেন্স অনুযায়ী বড় থেকে ছোট সাজানো
         users.sort((a, b) => b.balance - a.balance);
         
         users.forEach((u, i) => {
@@ -49,7 +48,7 @@ function loadLeaderboard() {
     });
 }
 
-// ৩. উইথড্র সাবমিট (অ্যাডমিন প্যানেলে রিকোয়েস্ট পাঠানোর জন্য)
+// ৩. উইথড্র সাবমিট
 window.submitWithdraw = async function() {
     const amountInput = document.getElementById('w-amount');
     const numberInput = document.getElementById('w-number');
@@ -71,10 +70,8 @@ window.submitWithdraw = async function() {
     if(currentBal < amount) return alert("আপনার ব্যালেন্স পর্যাপ্ত নয়!");
 
     try {
-        // ইউজারের ব্যালেন্স থেকে টাকা কেটে নেওয়া
         await update(userRef, { balance: currentBal - amount });
         
-        // ডাটাবেসের 'withdraw_requests' ফোল্ডারে রিকোয়েস্ট পাঠানো
         await push(ref(db, 'withdraw_requests'), {
             uid: user.uid,
             name: userData.name,
@@ -107,26 +104,36 @@ window.runTask = (reward) => {
     }, 10000);
 };
 
-// ৫. স্পিন লজিক
+// ৫. আপডেট করা স্পিন লজিক (৬টি ঘর এবং ডাইরেক্ট এড লিংক)
 window.startSpin = () => {
     const wheel = document.getElementById('wheel');
     const btn = document.getElementById('spin-btn');
     if(!wheel) return;
     
     btn.disabled = true;
-    wheel.style.transform = `rotate(${Math.floor(Math.random() * 360) + 1440}deg)`;
+    const randomDegree = Math.floor(Math.random() * 360);
+    wheel.style.transition = "transform 3s ease-out";
+    wheel.style.transform = `rotate(${1440 + randomDegree}deg)`;
     
     setTimeout(async () => {
-        const reward = Math.floor(Math.random() * 5);
+        // ৬টি ঘরের জন্য পুরস্কারের তালিকা
+        const rewards = [1, 2, 0, 5, 1, 3]; 
+        const reward = rewards[Math.floor(Math.random() * rewards.length)];
+        
         const user = auth.currentUser;
         if(user) {
             const userRef = ref(db, 'users/' + user.uid);
             const snap = await get(userRef);
             await update(userRef, { balance: (snap.val().balance || 0) + reward });
-            alert(`আপনি জিতেছেন ৳${reward}!`);
+            
+            // এলার্টে ক্লিক করলে সরাসরি এ্যাড লিংকে নিয়ে যাবে
+            if(confirm(`আপনি জিতেছেন ৳${reward}! বোনাস নিতে ওকে ক্লিক করুন।`)) {
+                window.location.href = AD_LINK; 
+            }
+            
             btn.disabled = false;
         }
-    }, 4000);
+    }, 3500);
 };
 
 // ৬. অথেন্টিকেশন ও প্রোফাইল ডাটা আপডেট
