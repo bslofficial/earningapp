@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 const firebaseConfig = { 
     apiKey: "AIzaSyDvbee_sFG5mIhFPEPO8ggizDByB0byTAM", 
@@ -110,7 +110,6 @@ window.dailyBonus = async () => {
     if(lastDate === today) return showAlert("আজকের বোনাস নেওয়া শেষ!");
     await updateDoc(userRef, { balance: (s.data().balance || 0) + 2, lastBonusDate: today });
     
-    // ব্যালেন্স আপডেট স্ক্রিনে দেখানোর জন্য
     document.getElementById('u-balance').innerText = ((s.data().balance || 0) + 2).toFixed(2);
     showAlert("অভিনন্দন! আপনি ৳২ ডেইলি বোনাস পেয়েছেন।");
 };
@@ -176,22 +175,27 @@ window.submitWithdraw = async () => {
     showAlert("উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
 };
 
-// নেভিগেশন ও লিডারবোর্ড আপডেট (Firestore)
+// নেভিগেশন ও লিডারবোর্ড আপডেট (Firestore Index-Free)
 window.changeTab = async (n) => {
     if(n === 'leaderboard') {
         const lb = document.getElementById('leaderboard-list');
         lb.innerHTML = "<p style='text-align:center;'>লোড হচ্ছে...</p>";
         
         try {
-            const q = query(collection(db, 'users'), orderBy('balance', 'desc'), limit(100));
-            const querySnapshot = await getDocs(q);
-            let html = '';
-            let index = 1;
+            const querySnapshot = await getDocs(collection(db, 'users'));
+            let usersArray = [];
             querySnapshot.forEach((docSnap) => {
-                const u = docSnap.data();
-                html += `<div class="lb-item" style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>${index}. ${u.name || "ইউজার"}</span><span>৳${(u.balance||0).toFixed(2)}</span></div>`;
-                index++;
+                usersArray.push(docSnap.data());
             });
+
+            usersArray.sort((a, b) => (b.balance || 0) - (a.balance || 0));
+            let topUsers = usersArray.slice(0, 100);
+
+            let html = '';
+            topUsers.forEach((u, index) => {
+                html += `<div class="lb-item" style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>${index + 1}. ${u.name || "ইউজার"}</span><span>৳${(u.balance||0).toFixed(2)}</span></div>`;
+            });
+
             lb.innerHTML = html || "<p style='text-align:center;'>কোনো ডাটা পাওয়া যায়নি</p>";
         } catch (error) {
             lb.innerHTML = "<p style='text-align:center; color:red;'>লিডারবোর্ড লোড করতে সমস্যা হয়েছে</p>";
