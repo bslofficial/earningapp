@@ -16,6 +16,15 @@
         </div>
     </div>
 
+    <!-- ১০ সেকেন্ড কাউন্টডাউন পপআপ মোডাল -->
+    <div id="timer-modal" class="hidden" style="position: fixed; top: 0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 999;">
+        <div style="background: white; padding: 25px; border-radius: 10px; text-align: center; width: 80%; max-width: 300px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom: 10px; color: #333;">দয়া করে অপেক্ষা করুন...</h3>
+            <h1 id="countdown-number" style="color: #1a237e; margin: 15px 0; font-size: 45px;">10</h1>
+            <p style="color: #666; font-size: 14px;">সেকেন্ড পর আপনার বোনাস যোগ হবে।</p>
+        </div>
+    </div>
+
     <div id="app">
         <!-- Auth Page -->
         <div id="auth-page" class="container">
@@ -55,12 +64,10 @@
                         <div class="task-card" onclick="window.changeTab('withdraw')">💸 উইথড্র</div>
                     </div>
 
-                    <!-- ব্যানার অ্যাড বসানোর জায়গা (এখানে আপনার Adsterra ব্যানার কোড বসাবেন) -->
-                    <div id="banner-ad-container" style="text-align: center; margin: 20px 0; overflow: hidden;">
-                        <!-- উদাহরণ: আপনার অ্যাডস্টারা ব্যানার স্ক্রিপ্ট ট্যাগ এখানে পেস্ট করবেন -->
-                        <script type="text/javascript">
-                            // আপনার ব্যানার অ্যাড কোড এখানে বসবে
-                        </script>
+                    <!-- ব্যানার অ্যাড বসানোর জায়গা -->
+                    <div id="banner-ad-container" style="text-align: center; margin: 20px 0; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden;">
+                        <p style="font-size: 11px; color: #aaa; margin-bottom: 5px;">বিজ্ঞাপন</p>
+                        <!-- আপনার Adsterra ব্যানার অ্যাড স্ক্রিপ্ট এখানে পেস্ট করবেন -->
                     </div>
                 </div>
 
