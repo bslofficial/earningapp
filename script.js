@@ -21,23 +21,36 @@ window.showAlert = (msg) => {
 };
 window.closeAlert = () => document.getElementById('custom-alert').classList.add('hidden');
 
-// ইউজার লগইন স্টেট ও ডাটা লোড
+// ইউজার লগইন স্টেট ও ডাটা লোড (সংশোধিত ও উন্নত)
 onAuthStateChanged(auth, user => {
     if(user) {
         document.getElementById('auth-page').classList.add('hidden');
         document.getElementById('main-page').classList.remove('hidden');
-        onValue(ref(db, 'users/' + user.uid), snap => {
+        
+        const userRef = ref(db, 'users/' + user.uid);
+        onValue(userRef, snap => {
             const d = snap.val();
             if(d) {
                 document.getElementById('u-balance').innerText = (d.balance || 0).toFixed(2);
-                document.getElementById('u-name-display').innerText = d.name;
+                document.getElementById('u-name-display').innerText = d.name || "ইউজার";
                 
-                // পুরাতন ইউজারদের জন্য অটোমেটিক রেফার কোড জেনারেশন
+                // যদি রেফার কোড না থাকে, তবে সাথে সাথে জেনারেট করে সেভ করে দিবে
                 if(!d.referCode) {
                     const newCode = "EA" + Math.floor(1000 + Math.random()*9000);
-                    update(ref(db, 'users/' + user.uid), { referCode: newCode });
+                    update(userRef, { referCode: newCode });
+                    document.getElementById('u-refer-code').innerText = newCode;
+                } else {
+                    document.getElementById('u-refer-code').innerText = d.referCode;
                 }
-                document.getElementById('u-refer-code').innerText = d.referCode || "EA0000";
+            } else {
+                // যদি ডাটাবেসে ইউজারের নোড না থাকে তবে ডিফল্ট ডাটা তৈরি করে দিবে
+                const defaultCode = "EA" + Math.floor(1000 + Math.random()*9000);
+                set(userRef, {
+                    name: user.email.split('@')[0],
+                    email: user.email,
+                    balance: 0,
+                    referCode: defaultCode
+                });
             }
         });
     } else {
@@ -46,14 +59,14 @@ onAuthStateChanged(auth, user => {
     }
 });
 
-// রেজিস্ট্রেশন লজিক (EA2121 ফরম্যাট)
+// রেজিস্ট্রেশন লজিক
 document.getElementById('auth-btn').onclick = async () => {
     const email = document.getElementById('email').value.trim();
     const pass = document.getElementById('pass').value;
     const isReg = !document.getElementById('reg-inputs').classList.contains('hidden');
 
     if(!isReg) {
-        signInWithEmailAndPassword(auth, email, pass).catch(() => showAlert("লগইন ভুল!"));
+        signInWithEmailAndPassword(auth, email, pass).catch(() => showAlert("লগইন ভুল! ইমেইল ও পাসওয়ার্ড চেক করুন।"));
     } else {
         const name = document.getElementById('name').value.trim();
         const rBy = document.getElementById('refer-by').value.trim().toUpperCase();
@@ -61,28 +74,34 @@ document.getElementById('auth-btn').onclick = async () => {
         
         if(!name || !email || !pass) return showAlert("সব ঘর পূরণ করুন!");
 
-        createUserWithEmailAndPassword(auth, email, pass).then(async (res) => {
+        try {
+            const res = await createUserWithEmailAndPassword(auth, email, pass);
             let bonus = 0;
             if(rBy) {
                 const uSnap = await get(ref(db, 'users'));
                 uSnap.forEach(c => {
                     if(c.val().referCode === rBy) {
                         update(ref(db, 'users/' + c.key), { balance: (c.val().balance || 0) + 5 });
-                        bonus = 2; // নতুন ইউজারের বোনাস
+                        bonus = 2; 
                     }
                 });
             }
             await set(ref(db, 'users/' + res.user.uid), { name, email, balance: bonus, referCode: myCode });
             showAlert("রেজিস্ট্রেশন সফল! বোনাস: ৳" + bonus);
-        }).catch(() => showAlert("ভুল ইমেইল বা পাসওয়ার্ড!"));
+        } catch (error) {
+            showAlert("রেজিস্ট্রেশন ব্যর্থ হয়েছে! সঠিক তথ্য দিন।");
+        }
     }
 };
 
 // টাস্ক ফাংশনসমূহ
 window.dailyBonus = async () => {
     window.open(ADSTERRA_LINK, "_blank");
+    if (!auth.currentUser) return;
     const uRef = ref(db, 'users/' + auth.currentUser.uid);
     const s = await get(uRef);
+    if(!s.exists()) return;
+    
     const lastDate = s.val().lastBonusDate;
     const today = new Date().toDateString();
 
@@ -95,10 +114,13 @@ window.runVideoTask = () => {
     window.open(ADSTERRA_LINK, "_blank");
     showAlert("বিজ্ঞাপনটি দেখুন, ১০ সেকেন্ড পর বোনাস যোগ হবে...");
     setTimeout(async () => {
+        if (!auth.currentUser) return;
         const uRef = ref(db, 'users/' + auth.currentUser.uid);
         const s = await get(uRef);
-        await update(uRef, { balance: (s.val().balance || 0) + 5 });
-        showAlert("৳৫ বোনাস যোগ হয়েছে!");
+        if(s.exists()) {
+            await update(uRef, { balance: (s.val().balance || 0) + 5 });
+            showAlert("৳৫ বোনাস যোগ হয়েছে!");
+        }
     }, 10000);
 };
 
@@ -107,28 +129,36 @@ window.startSpin = () => {
     const deg = Math.floor(Math.random() * 360) + 1440;
     wheel.style.transform = `rotate(${deg}deg)`;
     setTimeout(async () => {
+        if (!auth.currentUser) return;
         const reward = [1, 2, 0, 5, 1, 3][Math.floor(Math.random()*6)];
         const uRef = ref(db, 'users/' + auth.currentUser.uid);
         const s = await get(uRef);
-        await update(uRef, { balance: (s.val().balance || 0) + reward });
-        showAlert(`অভিনন্দন! জিতেছেন ৳${reward}`);
-        if(reward > 0) window.open(ADSTERRA_LINK, "_blank");
+        if(s.exists()) {
+            await update(uRef, { balance: (s.val().balance || 0) + reward });
+            showAlert(`অভিনন্দন! জিতেছেন ৳${reward}`);
+            if(reward > 0) window.open(ADSTERRA_LINK, "_blank");
+        }
     }, 3500);
 };
 
 window.submitWithdraw = async () => {
     const amount = parseFloat(document.getElementById('w-amount').value);
     const num = document.getElementById('w-number').value.trim();
-    if(amount < 500) return showAlert("মিনিমাম ৫০০ টাকা লাগবে!");
-    const s = await get(ref(db, 'users/' + auth.currentUser.uid));
+    if(isNaN(amount) || amount < 500) return showAlert("মিনিমাম ৫০০ টাকা লাগবে!");
+    if(!num) return showAlert("মোবাইল নাম্বার দিন!");
+    
+    const uRef = ref(db, 'users/' + auth.currentUser.uid);
+    const s = await get(uRef);
+    if(!s.exists()) return;
+    
     if(s.val().balance < amount) return showAlert("পর্যাপ্ত ব্যালেন্স নেই!");
     
-    await update(ref(db, 'users/' + auth.currentUser.uid), { balance: s.val().balance - amount });
+    await update(uRef, { balance: s.val().balance - amount });
     await push(ref(db, 'withdraw_requests'), { uid: auth.currentUser.uid, amount, number: num, method: document.getElementById('method').value, time: new Date().toLocaleString() });
-    showAlert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
+    showAlert("উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
 };
 
-// নেভিগেশন
+// নেভিগেশন ও লিডারবোর্ড আপডেট
 window.changeTab = (n) => {
     if(n === 'leaderboard') {
         const lb = document.getElementById('leaderboard-list');
@@ -136,7 +166,9 @@ window.changeTab = (n) => {
             let data = s.val();
             if(data){
                 let arr = Object.values(data).sort((a,b) => (b.balance||0) - (a.balance||0)).slice(0,100);
-                lb.innerHTML = arr.map((u,i) => `<div class="lb-item"><span>${i+1}. ${u.name}</span><span>৳${(u.balance||0).toFixed(2)}</span></div>`).join('');
+                lb.innerHTML = arr.map((u,i) => `<div class="lb-item" style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>${i+1}. ${u.name || "ইউজার"}</span><span>৳${(u.balance||0).toFixed(2)}</span></div>`).join('');
+            } else {
+                lb.innerHTML = "<p style='text-align:center;'>কোনো ডাটা পাওয়া যায়নি</p>";
             }
         });
     }
@@ -148,11 +180,16 @@ window.changeTab = (n) => {
 
 window.copyRefer = () => {
     const code = document.getElementById('u-refer-code').innerText;
-    navigator.clipboard.writeText(code).then(() => showAlert("রেফার কোড কপি হয়েছে!"));
+    if(code && code !== "লোড হচ্ছে...") {
+        navigator.clipboard.writeText(code).then(() => showAlert("রেফার কোড কপি হয়েছে!"));
+    } else {
+        showAlert("কোড এখনো লোড হয়নি!");
+    }
 };
 
 window.toggleAuth = () => {
     document.getElementById('reg-inputs').classList.toggle('hidden');
     document.getElementById('auth-title').innerText = document.getElementById('reg-inputs').classList.contains('hidden') ? "লগইন করুন" : "রেজিস্ট্রেশন করুন";
 };
+
 window.logout = () => signOut(auth).then(() => location.reload());
