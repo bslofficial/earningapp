@@ -17,6 +17,7 @@
     </div>
 
     <div id="app">
+        <!-- Auth Page -->
         <div id="auth-page" class="container">
             <header><div class="logo">Earning <span>App</span></div></header>
             <div class="auth-box">
@@ -32,10 +33,12 @@
             </div>
         </div>
 
+        <!-- Main App Page -->
         <div id="main-page" class="hidden">
             <header><div class="logo">Earning <span>App</span></div></header>
             <div class="container main-content">
                 
+                <!-- Home View -->
                 <div id="view-home" class="page-view">
                     <div class="user-card">
                         <h3>স্বাগতম, <span id="u-name-display">...</span></h3>
@@ -44,14 +47,24 @@
                             <h2>৳ <span id="u-balance">0.00</span></h2>
                         </div>
                     </div>
+                    
                     <div class="task-grid">
                         <div class="task-card" onclick="window.dailyBonus()">🎁 ডেইলি বোনাস</div>
                         <div class="task-card" onclick="window.changeTab('spin')">🎡 লাকি স্পিন</div>
                         <div class="task-card" onclick="window.runVideoTask()">🎬 ভিডিও টাস্ক</div>
                         <div class="task-card" onclick="window.changeTab('withdraw')">💸 উইথড্র</div>
                     </div>
+
+                    <!-- ব্যানার অ্যাড বসানোর জায়গা (এখানে আপনার Adsterra ব্যানার কোড বসাবেন) -->
+                    <div id="banner-ad-container" style="text-align: center; margin: 20px 0; overflow: hidden;">
+                        <!-- উদাহরণ: আপনার অ্যাডস্টারা ব্যানার স্ক্রিপ্ট ট্যাগ এখানে পেস্ট করবেন -->
+                        <script type="text/javascript">
+                            // আপনার ব্যানার অ্যাড কোড এখানে বসবে
+                        </script>
+                    </div>
                 </div>
 
+                <!-- Leaderboard View -->
                 <div id="view-leaderboard" class="page-view hidden">
                     <div class="user-card">
                         <h2>সেরা ১০০ ইউজার 🏆</h2>
@@ -59,6 +72,7 @@
                     </div>
                 </div>
 
+                <!-- Spin View -->
                 <div id="view-spin" class="page-view hidden">
                     <div class="user-card">
                         <h2>লাকি স্পিন 🎡</h2>
@@ -67,6 +81,7 @@
                     </div>
                 </div>
 
+                <!-- Profile View -->
                 <div id="view-profile" class="page-view hidden">
                     <div class="user-card">
                         <h2>প্রোফাইল 👤</h2>
@@ -79,6 +94,7 @@
                     </div>
                 </div>
 
+                <!-- Withdraw View -->
                 <div id="view-withdraw" class="page-view hidden">
                     <div class="auth-box">
                         <h3>উইথড্র (মিন: ৫০০)</h3>
@@ -90,6 +106,7 @@
                 </div>
             </div>
 
+            <!-- Bottom Navigation -->
             <nav class="bottom-nav">
                 <div class="nav-item active" id="nav-home" onclick="window.changeTab('home')"><i class="fa fa-home"></i><br>হোম</div>
                 <div class="nav-item" id="nav-leaderboard" onclick="window.changeTab('leaderboard')"><i class="fa fa-trophy"></i><br>সেরা</div>
