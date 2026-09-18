@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getDatabase, ref, onValue, update, get, set, push } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
 const firebaseConfig = { 
     apiKey: "AIzaSyDvbee_sFG5mIhFPEPO8ggizDByB0byTAM", 
@@ -10,7 +10,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = getDatabase(app);
 
 // এডস্টারা ডাইরেক্ট লিঙ্ক
 const ADSTERRA_LINK = "https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb";
@@ -21,40 +21,37 @@ window.showAlert = (msg) => {
 };
 window.closeAlert = () => document.getElementById('custom-alert').classList.add('hidden');
 
-// ইউজার লগইন স্টেট ও ডাটা লোড (Firestore)
-onAuthStateChanged(auth, async (user) => {
+// ইউজার লগইন স্টেট ও ডাটা লোড
+onAuthStateChanged(auth, user => {
     if(user) {
         document.getElementById('auth-page').classList.add('hidden');
         document.getElementById('main-page').classList.remove('hidden');
         
-        const userRef = doc(db, 'users', user.uid);
-        const userSnap = await getDoc(userRef);
-        
-        if(userSnap.exists()) {
-            const d = userSnap.data();
-            document.getElementById('u-balance').innerText = (d.balance || 0).toFixed(2);
-            document.getElementById('u-name-display').innerText = d.name || "ইউজার";
-            
-            if(!d.referCode) {
-                const newCode = "EA" + Math.floor(1000 + Math.random()*9000);
-                await updateDoc(userRef, { referCode: newCode });
-                document.getElementById('u-refer-code').innerText = newCode;
+        const userRef = ref(db, 'users/' + user.uid);
+        onValue(userRef, snap => {
+            const d = snap.val();
+            if(d) {
+                document.getElementById('u-balance').innerText = (d.balance || 0).toFixed(2);
+                document.getElementById('u-name-display').innerText = d.name || "ইউজার";
+                
+                // যদি রেফার কোড না থাকে, তবে সাথে সাথে জেনারেট করে সেভ করে দিবে
+                if(!d.referCode) {
+                    const newCode = "EA" + Math.floor(1000 + Math.random()*9000);
+                    update(userRef, { referCode: newCode });
+                    document.getElementById('u-refer-code').innerText = newCode;
+                } else {
+                    document.getElementById('u-refer-code').innerText = d.referCode;
+                }
             } else {
-                document.getElementById('u-refer-code').innerText = d.referCode;
+                const defaultCode = "EA" + Math.floor(1000 + Math.random()*9000);
+                set(userRef, {
+                    name: user.email.split('@')[0],
+                    email: user.email,
+                    balance: 0,
+                    referCode: defaultCode
+                });
             }
-        } else {
-            const defaultCode = "EA" + Math.floor(1000 + Math.random()*9000);
-            await setDoc(userRef, {
-                name: user.email.split('@')[0],
-                email: user.email,
-                balance: 0,
-                referCode: defaultCode,
-                role: 'user'
-            });
-            document.getElementById('u-balance').innerText = "0.00";
-            document.getElementById('u-name-display').innerText = user.email.split('@')[0];
-            document.getElementById('u-refer-code').innerText = defaultCode;
-        }
+        });
     } else {
         document.getElementById('auth-page').classList.remove('hidden');
         document.getElementById('main-page').classList.add('hidden');
@@ -80,15 +77,15 @@ document.getElementById('auth-btn').onclick = async () => {
             const res = await createUserWithEmailAndPassword(auth, email, pass);
             let bonus = 0;
             if(rBy) {
-                const usersQuery = await getDocs(collection(db, 'users'));
-                usersQuery.forEach(async (c) => {
-                    if(c.data().referCode === rBy) {
-                        await updateDoc(doc(db, 'users', c.id), { balance: (c.data().balance || 0) + 5 });
+                const uSnap = await get(ref(db, 'users'));
+                uSnap.forEach(c => {
+                    if(c.val().referCode === rBy) {
+                        update(ref(db, 'users/' + c.key), { balance: (c.val().balance || 0) + 5 });
                         bonus = 2; 
                     }
                 });
             }
-            await setDoc(doc(db, 'users', res.user.uid), { name, email, balance: bonus, referCode: myCode, role: 'user' });
+            await set(ref(db, 'users/' + res.user.uid), { name, email, balance: bonus, referCode: myCode });
             showAlert("রেজিস্ট্রেশন সফল! বোনাস: ৳" + bonus);
         } catch (error) {
             showAlert("রেজিস্ট্রেশন ব্যর্থ হয়েছে! সঠিক তথ্য দিন।");
@@ -96,40 +93,55 @@ document.getElementById('auth-btn').onclick = async () => {
     }
 };
 
-// টাস্ক ফাংশনসমূহ
+// ডেইলি বোনাস
 window.dailyBonus = async () => {
     window.open(ADSTERRA_LINK, "_blank");
     if (!auth.currentUser) return;
-    const userRef = doc(db, 'users', auth.currentUser.uid);
-    const s = await getDoc(userRef);
+    const uRef = ref(db, 'users/' + auth.currentUser.uid);
+    const s = await get(uRef);
     if(!s.exists()) return;
     
-    const lastDate = s.data().lastBonusDate;
+    const lastDate = s.val().lastBonusDate;
     const today = new Date().toDateString();
 
     if(lastDate === today) return showAlert("আজকের বোনাস নেওয়া শেষ!");
-    await updateDoc(userRef, { balance: (s.data().balance || 0) + 2, lastBonusDate: today });
-    
-    document.getElementById('u-balance').innerText = ((s.data().balance || 0) + 2).toFixed(2);
+    await update(uRef, { balance: (s.val().balance || 0) + 2, lastBonusDate: today });
     showAlert("অভিনন্দন! আপনি ৳২ ডেইলি বোনাস পেয়েছেন।");
 };
 
+// ভিডিও টাস্ক - ১০ সেকেন্ড কাউন্টডাউন সহ
 window.runVideoTask = () => {
     window.open(ADSTERRA_LINK, "_blank");
-    showAlert("বিজ্ঞাপনটি দেখুন, ১০ সেকেন্ড পর বোনাস যোগ হবে...");
-    setTimeout(async () => {
-        if (!auth.currentUser) return;
-        const userRef = doc(db, 'users', auth.currentUser.uid);
-        const s = await getDoc(userRef);
-        if(s.exists()) {
-            const newBal = (s.data().balance || 0) + 5;
-            await updateDoc(userRef, { balance: newBal });
-            document.getElementById('u-balance').innerText = newBal.toFixed(2);
-            showAlert("৳৫ বোনাস যোগ হয়েছে!");
+    
+    const modal = document.getElementById('timer-modal');
+    const counterEl = document.getElementById('countdown-number');
+    modal.classList.remove('hidden');
+    
+    let timeLeft = 10;
+    counterEl.innerText = timeLeft;
+
+    const timer = setInterval(() => {
+        timeLeft--;
+        counterEl.innerText = timeLeft;
+        if(timeLeft <= 0) {
+            clearInterval(timer);
+            modal.classList.add('hidden');
+            grantVideoReward();
         }
-    }, 10000);
+    }, 1000);
 };
 
+async function grantVideoReward() {
+    if (!auth.currentUser) return;
+    const uRef = ref(db, 'users/' + auth.currentUser.uid);
+    const s = await get(uRef);
+    if(s.exists()) {
+        await update(uRef, { balance: (s.val().balance || 0) + 5 });
+        showAlert("৳৫ বোনাস যোগ হয়েছে!");
+    }
+}
+
+// লাকি স্পিন টাস্ক
 window.startSpin = () => {
     const wheel = document.getElementById('wheel');
     const deg = Math.floor(Math.random() * 360) + 1440;
@@ -137,69 +149,48 @@ window.startSpin = () => {
     setTimeout(async () => {
         if (!auth.currentUser) return;
         const reward = [1, 2, 0, 5, 1, 3][Math.floor(Math.random()*6)];
-        const userRef = doc(db, 'users', auth.currentUser.uid);
-        const s = await getDoc(userRef);
+        const uRef = ref(db, 'users/' + auth.currentUser.uid);
+        const s = await get(uRef);
         if(s.exists()) {
-            const newBal = (s.data().balance || 0) + reward;
-            await updateDoc(userRef, { balance: newBal });
-            document.getElementById('u-balance').innerText = newBal.toFixed(2);
+            await update(uRef, { balance: (s.val().balance || 0) + reward });
             showAlert(`অভিনন্দন! জিতেছেন ৳${reward}`);
             if(reward > 0) window.open(ADSTERRA_LINK, "_blank");
         }
     }, 3500);
 };
 
+// উইথড্র রিকোয়েস্ট
 window.submitWithdraw = async () => {
     const amount = parseFloat(document.getElementById('w-amount').value);
     const num = document.getElementById('w-number').value.trim();
     if(isNaN(amount) || amount < 500) return showAlert("মিনিমাম ৫০০ টাকা লাগবে!");
     if(!num) return showAlert("মোবাইল নাম্বার দিন!");
     
-    const userRef = doc(db, 'users', auth.currentUser.uid);
-    const s = await getDoc(userRef);
+    const uRef = ref(db, 'users/' + auth.currentUser.uid);
+    const s = await get(uRef);
     if(!s.exists()) return;
     
-    if(s.data().balance < amount) return showAlert("পর্যাপ্ত ব্যালেন্স নেই!");
+    if(s.val().balance < amount) return showAlert("পর্যাপ্ত ব্যালেন্স নেই!");
     
-    const newBal = s.data().balance - amount;
-    await updateDoc(userRef, { balance: newBal });
-    document.getElementById('u-balance').innerText = newBal.toFixed(2);
-    
-    await addDoc(collection(db, 'withdrawals'), { 
-        uid: auth.currentUser.uid, 
-        amount, 
-        number: num, 
-        method: document.getElementById('method').value, 
-        time: new Date().toLocaleString() 
-    });
+    await update(uRef, { balance: s.val().balance - amount });
+    await push(ref(db, 'withdraw_requests'), { uid: auth.currentUser.uid, amount, number: num, method: document.getElementById('method').value, time: new Date().toLocaleString() });
     showAlert("উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
 };
 
-// নেভিগেশন ও লিডারবোর্ড আপডেট (Firestore Index-Free)
-window.changeTab = async (n) => {
+// নেভিগেশন ও লিডারবোর্ড আপডেট
+window.changeTab = (n) => {
     if(n === 'leaderboard') {
         const lb = document.getElementById('leaderboard-list');
         lb.innerHTML = "<p style='text-align:center;'>লোড হচ্ছে...</p>";
-        
-        try {
-            const querySnapshot = await getDocs(collection(db, 'users'));
-            let usersArray = [];
-            querySnapshot.forEach((docSnap) => {
-                usersArray.push(docSnap.data());
-            });
-
-            usersArray.sort((a, b) => (b.balance || 0) - (a.balance || 0));
-            let topUsers = usersArray.slice(0, 100);
-
-            let html = '';
-            topUsers.forEach((u, index) => {
-                html += `<div class="lb-item" style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>${index + 1}. ${u.name || "ইউজার"}</span><span>৳${(u.balance||0).toFixed(2)}</span></div>`;
-            });
-
-            lb.innerHTML = html || "<p style='text-align:center;'>কোনো ডাটা পাওয়া যায়নি</p>";
-        } catch (error) {
-            lb.innerHTML = "<p style='text-align:center; color:red;'>লিডারবোর্ড লোড করতে সমস্যা হয়েছে</p>";
-        }
+        onValue(ref(db, 'users'), s => {
+            let data = s.val();
+            if(data){
+                let arr = Object.values(data).sort((a,b) => (b.balance||0) - (a.balance||0)).slice(0,100);
+                lb.innerHTML = arr.map((u,i) => `<div class="lb-item" style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>${i+1}. ${u.name || "ইউজার"}</span><span>৳${(u.balance||0).toFixed(2)}</span></div>`).join('');
+            } else {
+                lb.innerHTML = "<p style='text-align:center;'>কোনো ডাটা পাওয়া যায়নি</p>";
+            }
+        });
     }
     document.querySelectorAll('.page-view').forEach(v => v.classList.add('hidden'));
     document.getElementById('view-' + n).classList.remove('hidden');
