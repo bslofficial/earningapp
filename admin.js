@@ -18,11 +18,11 @@ window.showAlert = (msg) => {
 };
 window.closeAlert = () => document.getElementById('custom-alert').classList.add('hidden');
 
-// অ্যাডমিন অথেন্টিকেশন এবং ইমেইল সিকিউরিটি চেক
+// অ্যাডমিন অথেন্টিকেশন এবং নির্দিষ্ট জিমেইল সিকিউরিটি চেক
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        // শুধুমাত্র নির্দিষ্ট অ্যাডমিন ইমেইল চেক করা হচ্ছে
-        if (user.email === "admin@gmail.com") {
+        // এখানে আপনার নির্দিষ্ট জিমেইলটি সেট করা হয়েছে
+        if (user.email === "mddulalhosen0@gmail.com") {
             document.getElementById('admin-login-page').classList.add('hidden');
             document.getElementById('admin-dashboard').classList.remove('hidden');
             loadAdminData();
