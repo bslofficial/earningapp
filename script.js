@@ -12,7 +12,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// এডস্টারা ডাইরেক্ট লিঙ্ক
+// আপনার ডাইরেক্ট লিঙ্ক
 const ADSTERRA_LINK = "https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb";
 
 window.showAlert = (msg) => {
@@ -62,7 +62,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// রেজিস্ট্রেশন ও লগইন লজিক
+// রেজিস্ট্রেশন ও লগইন লজিক (রেফারকারী ১০ টাকা, নতুন ইউজার ৫ টাকা)
 document.getElementById('auth-btn').onclick = async () => {
     const email = document.getElementById('email').value.trim();
     const pass = document.getElementById('pass').value;
@@ -79,18 +79,36 @@ document.getElementById('auth-btn').onclick = async () => {
 
         try {
             const res = await createUserWithEmailAndPassword(auth, email, pass);
-            let bonus = 0;
+            let newUserBonus = 0;
+            
             if(rBy) {
                 const usersQuery = await getDocs(collection(db, 'users'));
+                let referrerFound = false;
+                
                 usersQuery.forEach(async (c) => {
                     if(c.data().referCode === rBy) {
-                        await updateDoc(doc(db, 'users', c.id), { balance: (c.data().balance || 0) + 5 });
-                        bonus = 2; 
+                        referrerFound = true;
+                        // যার রেফার কোড ব্যবহার করা হয়েছে, তিনি পাবেন ১০ টাকা
+                        await updateDoc(doc(db, 'users', c.id), { 
+                            balance: (c.data().balance || 0) + 10 
+                        });
                     }
                 });
+                
+                if(referrerFound) {
+                    newUserBonus = 5; // নতুন ইউজার পাবে ৫ টাকা
+                }
             }
-            await setDoc(doc(db, 'users', res.user.uid), { name, email, balance: bonus, referCode: myCode, role: 'user' });
-            showAlert("রেজিস্ট্রেশন সফল! বোনাস: ৳" + bonus);
+            
+            await setDoc(doc(db, 'users', res.user.uid), { 
+                name, 
+                email, 
+                balance: newUserBonus, 
+                referCode: myCode, 
+                role: 'user' 
+            });
+            
+            showAlert("রেজিস্ট্রেশন সফল! বোনাস: ৳" + newUserBonus);
         } catch (error) {
             showAlert("রেজিস্ট্রেশন ব্যর্থ হয়েছে! সঠিক তথ্য দিন।");
         }
