@@ -3,53 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Earning App</title>
+    <title>অ্যাডমিন প্যানেল - আর্নিং অ্যাপ</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
+        .admin-container { max-width: 900px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        h2, h3 { color: #333; text-align: center; }
+        .section-box { margin-bottom: 25px; padding: 15px; background: #fafafa; border: 1px solid #eee; border-radius: 8px; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        .danger-btn { background: #dc3545; }
+        .danger-btn:hover { background: #c82333; }
+        .success-btn { background: #28a745; }
+        .success-btn:hover { background: #218838; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background: #007bff; color: white; }
+        .hidden { display: none !important; }
+        .flex-row { display: flex; gap: 10px; }
+    </style>
 </head>
 <body>
-    <div id="custom-alert" class="alert-overlay hidden">
-        <div class="alert-box">
-            <h3>Admin Panel</h3>
-            <p id="alert-msg"></p>
-            <button onclick="window.closeAlert()">ঠিক আছে</button>
+
+    <!-- অ্যাডমিন লগইন সেকশন -->
+    <div id="admin-login-page" class="admin-container" style="max-width: 400px; margin-top: 80px;">
+        <h2>অ্যাডমিন লগইন</h2>
+        <input type="email" id="admin-email" placeholder="অ্যাডমিন ইমেইল">
+        <input type="password" id="admin-pass" placeholder="পাসওয়ার্ড">
+        <button id="admin-login-btn">লগইন করুন</button>
+    </div>
+
+    <!-- মূল অ্যাডমিন ড্যাশবোর্ড -->
+    <div id="admin-dashboard" class="admin-container hidden">
+        <h2>অ্যাডমিন কন্ট্রোল প্যানেল</h2>
+        <div style="text-align: right; margin-bottom: 15px;">
+            <button id="admin-logout-btn" style="width: auto; background: #6c757d;">লগআউট</button>
+        </div>
+
+        <!-- ১. উইথড্র রিকোয়েস্ট ম্যানেজমেন্ট -->
+        <div class="section-box">
+            <h3>উইথড্র রিকোয়েস্টসমূহ</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>নাম</th>
+                            <th>নাম্বার</th>
+                            <th>মেথড</th>
+                            <th>টাকা</th>
+                            <th>সময়</th>
+                            <th>অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdraw-list">
+                        <tr><td colspan="6">লোড হচ্ছে...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ২. অ্যাড লিংক ও সেটিংস কন্ট্রোল -->
+        <div class="section-box">
+            <h3>অ্যাপ সেটিংস ও অ্যাড লিংক</h3>
+            <label>অ্যাডস্টারা লিংক / ডাইরেক্ট লিংক:</label>
+            <input type="text" id="setting-ad-link" placeholder="লিংক এখানে দিন">
+            
+            <label>ডেইলি বোনাস অ্যামাউন্ট (৳):</label>
+            <input type="number" id="setting-daily-bonus" placeholder="যেমন: 2">
+
+            <label>ভিডিও টাস্ক বোনাস (৳):</label>
+            <input type="number" id="setting-video-bonus" placeholder="যেমন: 5">
+
+            <button class="success-btn" onclick="saveSettings()">সেটিংস আপডেট করুন</button>
+        </div>
+
+        <!-- ৩. নোটিশ বোর্ড কন্ট্রোল -->
+        <div class="section-box">
+            <h3>নোটিশ বোর্ড আপডেট</h3>
+            <textarea id="setting-notice" rows="3" placeholder="অ্যাপের হোম পেজে দেখানোর জন্য নোটিশ লিখুন..."></textarea>
+            <button onclick="saveNotice()">নোটিশ পাবলিশ করুন</button>
+        </div>
+
+        <!-- ৪. ইউজার ম্যানেজমেন্ট -->
+        <div class="section-box">
+            <h3>ইউজার ম্যানেজমেন্ট ও ব্যালেন্স কন্ট্রোল</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>নাম</th>
+                            <th>ইমেইল</th>
+                            <th>ব্যালেন্স</th>
+                            <th>অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-list">
+                        <tr><td colspan="4">লোড হচ্ছে...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <div id="app">
-        <!-- Admin Login Page -->
-        <div id="admin-auth-page" class="container">
-            <header><div class="logo">Admin <span>Panel</span></div></header>
-            <div class="auth-box">
-                <h2>অ্যাডমিন লগইন</h2>
-                <input type="email" id="admin-email" placeholder="অ্যাডমিন ইমেইল">
-                <input type="password" id="admin-pass" placeholder="পাসওয়ার্ড">
-                <button id="admin-login-btn" class="btn-sm">লগইন করুন</button>
-            </div>
-        </div>
-
-        <!-- Admin Dashboard -->
-        <div id="admin-dashboard" class="hidden" style="padding: 15px; max-width: 600px; margin: auto;">
-            <header style="display: flex; justify-content: space-between; align-items: center; background: #1a237e; color: white; padding: 15px; border-radius: 8px;">
-                <div class="logo" style="font-size: 20px;">অ্যাডমিন ড্যাশবোর্ড</div>
-                <button onclick="window.adminLogout()" style="background: #ff5252; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">লগআউট</button>
-            </header>
-
-            <div style="margin-top: 20px;">
-                <h3 style="margin-bottom: 10px; color: #333;">উইথড্র রিকোয়েস্টসমূহ</h3>
-                <div id="withdraw-requests-list" style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); min-height: 100px;">
-                    <p style="text-align: center; color: #666;">লোড হচ্ছে...</p>
-                </div>
-            </div>
-
-            <div style="margin-top: 30px;">
-                <h3 style="margin-bottom: 10px; color: #333;">সকল ইউজার লিস্ট</h3>
-                <div id="all-users-list" style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); min-height: 100px;">
-                    <p style="text-align: center; color: #666;">লোড হচ্ছে...</p>
-                </div>
-            </div>
+    <!-- কাস্টম অ্যালার্ট মোডাল -->
+    <div id="custom-alert" class="hidden" style="position: fixed; top: 0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;">
+        <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; width: 300px;">
+            <p id="alert-msg" style="margin-bottom: 15px; font-weight: bold;"></p>
+            <button onclick="closeAlert()">ঠিক আছে</button>
         </div>
     </div>
+
     <script type="module" src="admin.js"></script>
 </body>
 </html>
