@@ -21,14 +21,16 @@ window.closeAlert = () => document.getElementById('custom-alert').classList.add(
 // অ্যাডমিন অথেন্টিকেশন এবং নির্দিষ্ট জিমেইল সিকিউরিটি চেক
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        // এখানে আপনার নির্দিষ্ট জিমেইলটি সেট করা হয়েছে
-        if (user.email === "mddulalhosen0@gmail.com") {
+        // ছোট হাতের বা বড় হাতের ইমেইল যেন মিলে যায় সেজন্য toLowerCase() ব্যবহার করা হলো
+        if (user.email && user.email.toLowerCase() === "mddulalhosen0@gmail.com") {
             document.getElementById('admin-login-page').classList.add('hidden');
             document.getElementById('admin-dashboard').classList.remove('hidden');
             loadAdminData();
         } else {
-            showAlert("আপনার এই প্যানেলে প্রবেশ করার অনুমতি নেই!");
             await signOut(auth);
+            document.getElementById('admin-login-page').classList.remove('hidden');
+            document.getElementById('admin-dashboard').classList.add('hidden');
+            showAlert("আপনার এই প্যানেলে প্রবেশ করার অনুমতি নেই!");
         }
     } else {
         document.getElementById('admin-login-page').classList.remove('hidden');
