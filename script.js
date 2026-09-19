@@ -58,7 +58,7 @@ onAuthStateChanged(auth, user => {
     }
 });
 
-// রেজিস্ট্রেশন লজিক
+// রেজিস্ট্রেশন ও লগইন লজিক
 document.getElementById('auth-btn').onclick = async () => {
     const email = document.getElementById('email').value.trim();
     const pass = document.getElementById('pass').value;
@@ -159,7 +159,7 @@ window.startSpin = () => {
     }, 3500);
 };
 
-// উইথড্র রিকোয়েস্ট
+// উইথড্র রিকোয়েস্ট (অ্যাডমিন প্যানেলে নামসহ সেভ করার লজিক যুক্ত)
 window.submitWithdraw = async () => {
     const amount = parseFloat(document.getElementById('w-amount').value);
     const num = document.getElementById('w-number').value.trim();
@@ -173,7 +173,17 @@ window.submitWithdraw = async () => {
     if(s.val().balance < amount) return showAlert("পর্যাপ্ত ব্যালেন্স নেই!");
     
     await update(uRef, { balance: s.val().balance - amount });
-    await push(ref(db, 'withdraw_requests'), { uid: auth.currentUser.uid, amount, number: num, method: document.getElementById('method').value, time: new Date().toLocaleString() });
+    
+    // অ্যাডমিন প্যানেলে নাম দেখানোর জন্য 'name' প্রপার্টি সহ পুশ করা হলো
+    await push(ref(db, 'withdraw_requests'), { 
+        uid: auth.currentUser.uid, 
+        name: s.val().name || "ইউজার", 
+        amount: amount, 
+        number: num, 
+        method: document.getElementById('method').value, 
+        time: new Date().toLocaleString() 
+    });
+    
     showAlert("উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
 };
 
@@ -186,7 +196,12 @@ window.changeTab = (n) => {
             let data = s.val();
             if(data){
                 let arr = Object.values(data).sort((a,b) => (b.balance||0) - (a.balance||0)).slice(0,100);
-                lb.innerHTML = arr.map((u,i) => `<div class="lb-item" style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>${i+1}. ${u.name || "ইউজার"}</span><span>৳${(u.balance||0).toFixed(2)}</span></div>`).join('');
+                lb.innerHTML = arr.map((u,i) => `
+                    <div class="lb-item" style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;">
+                        <span>${i+1}. ${u.name || "ইউজার"}</span>
+                        <span>৳${(u.balance||0).toFixed(2)}</span>
+                    </div>
+                `).join('');
             } else {
                 lb.innerHTML = "<p style='text-align:center;'>কোনো ডাটা পাওয়া যায়নি</p>";
             }
