@@ -18,19 +18,25 @@ window.showAlert = (msg) => {
 };
 window.closeAlert = () => document.getElementById('custom-alert').classList.add('hidden');
 
-// অ্যাডমিন অথেন্টিকেশন চেক
+// অ্যাডমিন অথেন্টিকেশন এবং ইমেইল সিকিউরিটি চেক
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        document.getElementById('admin-login-page').classList.add('hidden');
-        document.getElementById('admin-dashboard').classList.remove('hidden');
-        loadAdminData();
+        // শুধুমাত্র নির্দিষ্ট অ্যাডমিন ইমেইল চেক করা হচ্ছে
+        if (user.email === "admin@gmail.com") {
+            document.getElementById('admin-login-page').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.remove('hidden');
+            loadAdminData();
+        } else {
+            showAlert("আপনার এই প্যানেলে প্রবেশ করার অনুমতি নেই!");
+            await signOut(auth);
+        }
     } else {
         document.getElementById('admin-login-page').classList.remove('hidden');
         document.getElementById('admin-dashboard').classList.add('hidden');
     }
 });
 
-// অ্যাডমিন লগইন (সঠিক এরর মেসেজসহ)
+// অ্যাডমিন লগইন
 document.getElementById('admin-login-btn').onclick = () => {
     const email = document.getElementById('admin-email').value.trim();
     const pass = document.getElementById('admin-pass').value;
