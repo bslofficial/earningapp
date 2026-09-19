@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getDatabase, ref, onValue, update, remove, get, set } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
 const firebaseConfig = { 
     apiKey: "AIzaSyDvbee_sFG5mIhFPEPO8ggizDByB0byTAM", 
@@ -10,7 +10,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = getDatabase(app);
 
 window.showAlert = (msg) => {
     document.getElementById('alert-msg').innerText = msg;
@@ -20,80 +20,133 @@ window.closeAlert = () => document.getElementById('custom-alert').classList.add(
 
 // অ্যাডমিন অথেন্টিকেশন চেক
 onAuthStateChanged(auth, async (user) => {
-    if(user) {
-        // এখানে আপনার নির্দিষ্ট অ্যাডমিন ইমেইল দিতে পারেন নিরাপত্তার জন্য
-        document.getElementById('admin-auth-page').classList.add('hidden');
+    if (user) {
+        // সিকিউরিটির জন্য চেক করতে পারেন ইউজারটি অ্যাডমিন কি না
+        document.getElementById('admin-login-page').classList.add('hidden');
         document.getElementById('admin-dashboard').classList.remove('hidden');
-        loadWithdrawRequests();
-        loadAllUsers();
+        loadAdminData();
     } else {
-        document.getElementById('admin-auth-page').classList.remove('hidden');
+        document.getElementById('admin-login-page').classList.remove('hidden');
         document.getElementById('admin-dashboard').classList.add('hidden');
     }
 });
 
+// অ্যাডমিন লগইন
 document.getElementById('admin-login-btn').onclick = () => {
     const email = document.getElementById('admin-email').value.trim();
     const pass = document.getElementById('admin-pass').value;
     signInWithEmailAndPassword(auth, email, pass)
-        .catch(() => showAlert("লগইন ব্যর্থ হয়েছে! সঠিক তথ্য দিন।"));
+        .catch(() => showAlert("লগইন ব্যর্থ হয়েছে! সঠিক ইমেইল ও পাসওয়ার্ড দিন।"));
 };
 
-// উইথড্র রিকোয়েস্ট লোড করা
-async function loadWithdrawRequests() {
-    const listDiv = document.getElementById('withdraw-requests-list');
-    try {
-        const querySnapshot = await getDocs(collection(db, 'withdrawals'));
-        let html = '';
-        querySnapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            html += `
-                <div style="border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <strong>মেথড:</strong> ${data.method} <br>
-                        <strong>নাম্বার:</strong> ${data.number} <br>
-                        <strong>টাকা:</strong> ৳${data.amount} <br>
-                        <small style="color: #888;">${data.time}</small>
-                    </div>
-                    <button onclick="window.deleteRequest('${docSnap.id}')" style="background: #4caf50; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">পেমেন্ট সম্পন্ন</button>
-                </div>
-            `;
-        });
-        listDiv.innerHTML = html || "<p style='text-align: center; color: #666;'>কোনো উইথড্র রিকোয়েস্ট নেই</p>";
-    } catch (error) {
-        listDiv.innerHTML = "<p style='text-align: center; color: red;'>লোড করতে সমস্যা হয়েছে</p>";
-    }
+document.getElementById('admin-logout-btn').onclick = () => signOut(auth);
+
+// ডাটা লোড করা (উইথড্র, ইউজার ও সেটিংস)
+function loadAdminData() {
+    // ১. উইথড্র রিকোয়েস্ট লোড
+    onValue(ref(db, 'withdraw_requests'), (snapshot) => {
+        const data = snapshot.val();
+        const tbody = document.getElementById('withdraw-list');
+        if (data) {
+            tbody.innerHTML = Object.entries(data).map(([id, req]) => `
+                <tr>
+                    <td>${req.name || "ইউজার"}</td>
+                    <td>${req.number} (${req.method})</td>
+                    <td>${req.method}</td>
+                    <td>৳${req.amount}</td>
+                    <td><small>${req.time}</small></td>
+                    <td>
+                        <button class="success-btn" style="padding:5px 10px; font-size:12px;" onclick="approveWithdraw('${id}', '${req.uid}', ${req.amount})">Approve</button>
+                        <button class="danger-btn" style="padding:5px 10px; font-size:12px; margin-top:3px;" onclick="rejectWithdraw('${id}', '${req.uid}', ${req.amount})">Reject</button>
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            tbody.innerHTML = `<tr><td colspan="6">কোনো উইথড্র রিকোয়েস্ট নেই</td></tr>`;
+        }
+    });
+
+    // ২. ইউজার লিস্ট লোড
+    onValue(ref(db, 'users'), (snapshot) => {
+        const data = snapshot.val();
+        const tbody = document.getElementById('users-table-list');
+        if (data) {
+            tbody.innerHTML = Object.entries(data).map(([uid, u]) => `
+                <tr>
+                    <td>${u.name || "ইউজার"}</td>
+                    <td>${u.email}</td>
+                    <td>৳${(u.balance || 0).toFixed(2)}</td>
+                    <td>
+                        <button style="padding:5px; font-size:11px;" onclick="adjustBalance('${uid}', ${u.balance || 0})">ব্যালেন্স এডিট</button>
+                        <button class="danger-btn" style="padding:5px; font-size:11px; margin-top:3px;" onclick="deleteUser('${uid}')">ডিলিট</button>
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            tbody.innerHTML = `<tr><td colspan="4">কোনো ইউজার নেই</td></tr>`;
+        }
+    });
+
+    // ৩. সেটিংস ইনপুট ফিল্ড লোড
+    get(ref(db, 'settings')).then((snap) => {
+        if(snap.exists()) {
+            const s = snap.val();
+            if(s.adLink) document.getElementById('setting-ad-link').value = s.adLink;
+            if(s.dailyBonus) document.getElementById('setting-daily-bonus').value = s.dailyBonus;
+            if(s.videoBonus) document.getElementById('setting-video-bonus').value = s.videoBonus;
+            if(s.notice) document.getElementById('setting-notice').value = s.notice;
+        }
+    });
 }
 
-window.deleteRequest = async (id) => {
-    if(confirm("আপনি কি পেমেন্ট সম্পন্ন করেছেন?")) {
-        await deleteDoc(doc(db, 'withdrawals', id));
-        showAlert("রিকোয়েস্ট সফলভাবে ডিলিট/কমপ্লিট করা হয়েছে!");
-        loadWithdrawRequests();
+// উইথড্র অ্যাপ্রুভ (রিকোয়েস্ট ডিলিট হবে)
+window.approveWithdraw = async (reqId) => {
+    await remove(ref(db, 'withdraw_requests/' + reqId));
+    showAlert("উইথড্র রিকোয়েস্ট সফলভাবে অ্যাপ্রুভ করা হয়েছে!");
+};
+
+// উইথড্র রিজেক্ট (ব্যালেন্স ইউজারের অ্যাকাউন্টে ফেরত যাবে)
+window.rejectWithdraw = async (reqId, uid, amount) => {
+    const userRef = ref(db, 'users/' + uid);
+    const snap = await get(userRef);
+    if(snap.exists()) {
+        const currentBal = snap.val().balance || 0;
+        await update(userRef, { balance: currentBal + amount });
+    }
+    await remove(ref(db, 'withdraw_requests/' + reqId));
+    showAlert("রিকোয়েস্ট রিজেক্ট করা হয়েছে এবং টাকা ইউজারের অ্যাকাউন্টে ফেরত দেওয়া হয়েছে!");
+};
+
+// ইউজারের ব্যালেন্স পরিবর্তন করা
+window.adjustBalance = async (uid, currentBal) => {
+    let newAmount = prompt("নতুন ব্যালেন্স বা যোগ/বিয়োগ করার পরিমাণ লিখুন:", currentBal);
+    if(newAmount !== null && !isNaN(newAmount)) {
+        await update(ref(db, 'users/' + uid), { balance: parseFloat(newAmount) });
+        showAlert("ব্যালেন্স আপডেট সফল হয়েছে!");
     }
 };
 
-// ইউজার লিস্ট লোড করা
-async function loadAllUsers() {
-    const userDiv = document.getElementById('all-users-list');
-    try {
-        const querySnapshot = await getDocs(collection(db, 'users'));
-        let html = '';
-        querySnapshot.forEach((docSnap) => {
-            const u = docSnap.data();
-            html += `
-                <div style="border-bottom: 1px solid #eee; padding: 8px 0; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <strong>${u.name || "ইউজার"}</strong> (${u.email}) <br>
-                        <small>ব্যালেন্স: ৳${(u.balance || 0).toFixed(2)} | রেফার কোড: ${u.referCode || 'N/A'}</small>
-                    </div>
-                </div>
-            `;
-        });
-        userDiv.innerHTML = html || "<p style='text-align: center; color: #666;'>কোনো ইউজার নেই</p>";
-    } catch (error) {
-        userDiv.innerHTML = "<p style='text-align: center; color: red;'>ইউজার লোড করতে সমস্যা হয়েছে</p>";
+// ইউজার ডিলিট করা
+window.deleteUser = async (uid) => {
+    if(confirm("আপনি কি নিশ্চিতভাবে এই ইউজারকে ডিলিট করতে চান?")) {
+        await remove(ref(db, 'users/' + uid));
+        showAlert("ইউজার সফলভাবে ডিলিট করা হয়েছে!");
     }
-}
+};
 
-window.adminLogout = () => signOut(auth).then(() => location.reload());
+// সেটিংস বা অ্যাড লিংক সেভ করা
+window.saveSettings = async () => {
+    const adLink = document.getElementById('setting-ad-link').value.trim();
+    const dailyBonus = parseFloat(document.getElementById('setting-daily-bonus').value) || 2;
+    const videoBonus = parseFloat(document.getElementById('setting-video-bonus').value) || 5;
+
+    await update(ref(db, 'settings'), { adLink, dailyBonus, videoBonus });
+    showAlert("সেটিংস সফলভাবে আপডেট করা হয়েছে!");
+};
+
+// নোটিশ সেভ করা
+window.saveNotice = async () => {
+    const notice = document.getElementById('setting-notice').value.trim();
+    await update(ref(db, 'settings'), { notice });
+    showAlert("নোটিশ সফলভাবে পাবলিশ করা হয়েছে!");
+};
