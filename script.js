@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 const firebaseConfig = { 
     apiKey: "AIzaSyDvbee_sFG5mIhFPEPO8ggizDByB0byTAM", 
@@ -33,7 +33,7 @@ onAuthStateChanged(auth, async (user) => {
         if(userSnap.exists()) {
             const d = userSnap.data();
             document.getElementById('u-balance').innerText = (d.balance || 0).toFixed(2);
-            document.getElementById('u-name-display').innerText = d.name || "ইউজার";
+            document.getElementById('u-name-display').innerText = d.name || user.email.split('@')[0];
             
             if(!d.referCode) {
                 const newCode = "EA" + Math.floor(1000 + Math.random()*9000);
@@ -43,6 +43,7 @@ onAuthStateChanged(auth, async (user) => {
                 document.getElementById('u-refer-code').innerText = d.referCode;
             }
         } else {
+            // ফায়ারস্টোরে ডাটা না থাকলে অটোমেটিক তৈরি করে নেবে
             const defaultCode = "EA" + Math.floor(1000 + Math.random()*9000);
             await setDoc(userRef, {
                 name: user.email.split('@')[0],
