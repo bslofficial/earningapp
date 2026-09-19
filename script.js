@@ -12,8 +12,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// আপনার ডাইরেক্ট লিঙ্ক
+// আপনার এডস্টারা ডাইরেক্ট লিঙ্ক এবং Clickadilla VAST লিঙ্ক
 const ADSTERRA_LINK = "https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb";
+const VAST_LINK = "https://vast.yomeno.xyz/vast?spot_id=1502211";
 
 window.showAlert = (msg) => {
     document.getElementById('alert-msg').innerText = msg;
@@ -43,7 +44,6 @@ onAuthStateChanged(auth, async (user) => {
                 document.getElementById('u-refer-code').innerText = d.referCode;
             }
         } else {
-            // ফায়ারস্টোরে ডাটা না থাকলে অটোমেটিক তৈরি করে নেবে
             const defaultCode = "EA" + Math.floor(1000 + Math.random()*9000);
             await setDoc(userRef, {
                 name: user.email.split('@')[0],
@@ -62,7 +62,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// রেজিস্ট্রেশন ও লগইন লজিক (রেফারকারী ১০ টাকা, নতুন ইউজার ৫ টাকা)
+// রেজিস্ট্রেশন ও লগইন লজিক (রেফার কমিশন: নতুন ইউজার ৫ টাকা, রেফারকারী ১০ টাকা)
 document.getElementById('auth-btn').onclick = async () => {
     const email = document.getElementById('email').value.trim();
     const pass = document.getElementById('pass').value;
@@ -95,8 +95,9 @@ document.getElementById('auth-btn').onclick = async () => {
                     }
                 });
                 
+                // সঠিক রেফার কোড পেলে নতুন ইউজার পাবে ৫ টাকা
                 if(referrerFound) {
-                    newUserBonus = 5; // নতুন ইউজার পাবে ৫ টাকা
+                    newUserBonus = 5; 
                 }
             }
             
@@ -154,20 +155,37 @@ window.dailyBonus = async () => {
     showAlert("অভিনন্দন! আপনি ৳২ ডেইলি বোনাস পেয়েছেন।");
 };
 
+// আপডেট করা ভিডিও টাস্ক (VAST লিংক এবং ১০ সেকেন্ড কাউন্টডাউন মোডাল সহ)
 window.runVideoTask = () => {
-    window.open(ADSTERRA_LINK, "_blank");
-    showAlert("বিজ্ঞাপনটি দেখুন, ১০ সেকেন্ড পর বোনাস যোগ হবে...");
-    setTimeout(async () => {
-        if (!auth.currentUser) return;
-        const userRef = doc(db, 'users', auth.currentUser.uid);
-        const s = await getDoc(userRef);
-        if(s.exists()) {
-            const newBal = (s.data().balance || 0) + 5;
-            await updateDoc(userRef, { balance: newBal });
-            document.getElementById('u-balance').innerText = newBal.toFixed(2);
-            showAlert("৳৫ বোনাস যোগ হয়েছে!");
+    const modal = document.getElementById('timer-modal');
+    const counterEl = document.getElementById('countdown-number');
+    
+    // মোডাল চালু করা এবং VAST লিংক ওপেন করা
+    modal.classList.remove('hidden');
+    window.open(VAST_LINK, "_blank");
+    
+    let timeLeft = 10;
+    counterEl.innerText = timeLeft;
+
+    const timer = setInterval(async () => {
+        timeLeft--;
+        counterEl.innerText = timeLeft;
+        if(timeLeft <= 0) {
+            clearInterval(timer);
+            modal.classList.add('hidden');
+            
+            // সময় শেষ হলে ব্যালেন্স যোগ করা
+            if (!auth.currentUser) return;
+            const userRef = doc(db, 'users', auth.currentUser.uid);
+            const s = await getDoc(userRef);
+            if(s.exists()) {
+                const newBal = (s.data().balance || 0) + 5;
+                await updateDoc(userRef, { balance: newBal });
+                document.getElementById('u-balance').innerText = newBal.toFixed(2);
+                showAlert("অভিনন্দন! ৳৫ ভিডিও বোনাস সফলভাবে যোগ হয়েছে।");
+            }
         }
-    }, 10000);
+    }, 1000);
 };
 
 window.startSpin = () => {
