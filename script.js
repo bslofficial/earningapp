@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 const firebaseConfig = { 
@@ -12,9 +12,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// অ্যাড ও VAST লিংক
+// আপনার এডস্টারা ডাইরেক্ট লিঙ্ক এবং Clickadilla VAST লিঙ্ক
 const ADSTERRA_LINK = "https://glamourpicklessteward.com/mur0zqw1i?key=1357f8fdd3f1c4497af9b8581d8ad6cb";
-const VAST_AD_LINK = "https://vast.yomeno.xyz/vast?spot_id=1502212";
+const VAST_LINK = "https://vast.yomeno.xyz/vast?spot_id=1502211";
 
 window.showAlert = (msg) => {
     document.getElementById('alert-msg').innerText = msg;
@@ -22,7 +22,7 @@ window.showAlert = (msg) => {
 };
 window.closeAlert = () => document.getElementById('custom-alert').classList.add('hidden');
 
-// ইউজার লগইন স্টেট ও ডাটা লোড
+// ইউজার লগইন স্টেট ও ডাটা লোড (Firestore)
 onAuthStateChanged(auth, async (user) => {
     if(user) {
         document.getElementById('auth-page').classList.add('hidden');
@@ -34,7 +34,7 @@ onAuthStateChanged(auth, async (user) => {
         if(userSnap.exists()) {
             const d = userSnap.data();
             document.getElementById('u-balance').innerText = (d.balance || 0).toFixed(2);
-            document.getElementById('u-name-display').innerText = d.name || "ইউজার";
+            document.getElementById('u-name-display').innerText = d.name || user.email.split('@')[0];
             
             if(!d.referCode) {
                 const newCode = "EA" + Math.floor(1000 + Math.random()*9000);
@@ -62,7 +62,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// রেজিস্ট্রেশন ও লগইন লজিক
+// রেজিস্ট্রেশন ও লগইন লজিক (রেফার কমিশন: নতুন ইউজার ৫ টাকা, রেফারকারী ১০ টাকা)
 document.getElementById('auth-btn').onclick = async () => {
     const email = document.getElementById('email').value.trim();
     const pass = document.getElementById('pass').value;
@@ -79,25 +79,65 @@ document.getElementById('auth-btn').onclick = async () => {
 
         try {
             const res = await createUserWithEmailAndPassword(auth, email, pass);
-            let bonus = 0;
+            let newUserBonus = 0;
+            
             if(rBy) {
                 const usersQuery = await getDocs(collection(db, 'users'));
+                let referrerFound = false;
+                
                 usersQuery.forEach(async (c) => {
                     if(c.data().referCode === rBy) {
-                        await updateDoc(doc(db, 'users', c.id), { balance: (c.data().balance || 0) + 5 });
-                        bonus = 2; 
+                        referrerFound = true;
+                        // যার রেফার কোড ব্যবহার করা হয়েছে, তিনি পাবেন ১০ টাকা
+                        await updateDoc(doc(db, 'users', c.id), { 
+                            balance: (c.data().balance || 0) + 10 
+                        });
                     }
                 });
+                
+                // সঠিক রেফার কোড পেলে নতুন ইউজার পাবে ৫ টাকা
+                if(referrerFound) {
+                    newUserBonus = 5; 
+                }
             }
-            await setDoc(doc(db, 'users', res.user.uid), { name, email, balance: bonus, referCode: myCode, role: 'user' });
-            showAlert("রেজিস্ট্রেশন সফল! বোনাস: ৳" + bonus);
+            
+            await setDoc(doc(db, 'users', res.user.uid), { 
+                name, 
+                email, 
+                balance: newUserBonus, 
+                referCode: myCode, 
+                role: 'user' 
+            });
+            
+            showAlert("রেজিস্ট্রেশন সফল! বোনাস: ৳" + newUserBonus);
         } catch (error) {
             showAlert("রেজিস্ট্রেশন ব্যর্থ হয়েছে! সঠিক তথ্য দিন।");
         }
     }
 };
 
-// ডেইলি বোনাস
+// পাসওয়ার্ড ভুলে গেলে রিকভারি ফাংশন
+window.forgotPassword = async () => {
+    const email = document.getElementById('email').value.trim();
+    if(!email) {
+        return showAlert("দয়া করে প্রথমে উপরে আপনার ইমেইলটি লিখুন!");
+    }
+
+    try {
+        await sendPasswordResetEmail(auth, email);
+        showAlert("পাসওয়ার্ড রিসেট করার লিংক আপনার ইমেইলে পাঠানো হয়েছে। ইনবক্স বা স্প্যাম ফোল্ডার চেক করুন।");
+    } catch (error) {
+        let msg = "পাসওয়ার্ড রিকভারি ব্যর্থ হয়েছে!";
+        if(error.code === 'auth/user-not-found') {
+            msg = "এই ইমেইল দিয়ে কোনো অ্যাকাউন্ট রেজিস্ট করা নেই!";
+        } else if(error.code === 'auth/invalid-email') {
+            msg = "ইমেইল ফরম্যাট সঠিক নয়!";
+        }
+        showAlert(msg);
+    }
+};
+
+// টাস্ক ফাংশনসমূহ
 window.dailyBonus = async () => {
     window.open(ADSTERRA_LINK, "_blank");
     if (!auth.currentUser) return;
@@ -108,48 +148,46 @@ window.dailyBonus = async () => {
     const lastDate = s.data().lastBonusDate;
     const today = new Date().toDateString();
 
-    if(lastDate === today) return showAlert("আজকের ডেইলি বোনাস নেওয়া শেষ!");
+    if(lastDate === today) return showAlert("আজকের বোনাস নেওয়া শেষ!");
     await updateDoc(userRef, { balance: (s.data().balance || 0) + 2, lastBonusDate: today });
     
     document.getElementById('u-balance').innerText = ((s.data().balance || 0) + 2).toFixed(2);
     showAlert("অভিনন্দন! আপনি ৳২ ডেইলি বোনাস পেয়েছেন।");
 };
 
-// ভিডিও টাস্ক - ১০ সেকেন্ড কাউন্টডাউন ও VAST লিংক সহ
+// আপডেট করা ভিডিও টাস্ক (VAST লিংক এবং ১০ সেকেন্ড কাউন্টডাউন মোডাল সহ)
 window.runVideoTask = () => {
-    window.open(VAST_AD_LINK, "_blank");
-    
     const modal = document.getElementById('timer-modal');
     const counterEl = document.getElementById('countdown-number');
+    
+    // মোডাল চালু করা এবং VAST লিংক ওপেন করা
     modal.classList.remove('hidden');
+    window.open(VAST_LINK, "_blank");
     
     let timeLeft = 10;
     counterEl.innerText = timeLeft;
 
-    const timer = setInterval(() => {
+    const timer = setInterval(async () => {
         timeLeft--;
         counterEl.innerText = timeLeft;
         if(timeLeft <= 0) {
             clearInterval(timer);
             modal.classList.add('hidden');
-            grantVideoReward();
+            
+            // সময় শেষ হলে ব্যালেন্স যোগ করা
+            if (!auth.currentUser) return;
+            const userRef = doc(db, 'users', auth.currentUser.uid);
+            const s = await getDoc(userRef);
+            if(s.exists()) {
+                const newBal = (s.data().balance || 0) + 5;
+                await updateDoc(userRef, { balance: newBal });
+                document.getElementById('u-balance').innerText = newBal.toFixed(2);
+                showAlert("অভিনন্দন! ৳৫ ভিডিও বোনাস সফলভাবে যোগ হয়েছে।");
+            }
         }
     }, 1000);
 };
 
-async function grantVideoReward() {
-    if (!auth.currentUser) return;
-    const userRef = doc(db, 'users', auth.currentUser.uid);
-    const s = await getDoc(userRef);
-    if(s.exists()) {
-        const newBal = (s.data().balance || 0) + 5;
-        await updateDoc(userRef, { balance: newBal });
-        document.getElementById('u-balance').innerText = newBal.toFixed(2);
-        showAlert("টাস্ক সম্পন্ন! ৳৫ বোনাস যোগ হয়েছে।");
-    }
-}
-
-// লাকি স্পিন টাস্ক
 window.startSpin = () => {
     const wheel = document.getElementById('wheel');
     const deg = Math.floor(Math.random() * 360) + 1440;
@@ -169,7 +207,6 @@ window.startSpin = () => {
     }, 3500);
 };
 
-// উইথড্র রিকোয়েস্ট
 window.submitWithdraw = async () => {
     const amount = parseFloat(document.getElementById('w-amount').value);
     const num = document.getElementById('w-number').value.trim();
@@ -196,7 +233,7 @@ window.submitWithdraw = async () => {
     showAlert("উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
 };
 
-// লিডারবোর্ড ও ট্যাব পরিবর্তন
+// নেভিগেশন ও লিডারবোর্ড আপডেট
 window.changeTab = async (n) => {
     if(n === 'leaderboard') {
         const lb = document.getElementById('leaderboard-list');
